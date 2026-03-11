@@ -40,6 +40,15 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Smart Campus Team" }],
   robots: "index, follow",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png' }
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "ar_EG",
