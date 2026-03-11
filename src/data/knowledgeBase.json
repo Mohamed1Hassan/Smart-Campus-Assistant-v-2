@@ -1,0 +1,164 @@
+[
+  {
+    "id": "k1",
+    "question": "next class|next lecture|when is my next class|بعد كده محاضرة|المحاضرة القادمة|ايه المحاضرة الجاية",
+    "answer": "I can help you find your next class! Please check your schedule section for the most up-to-date information about your upcoming lectures, including times and locations.",
+    "category": "schedule",
+    "language": "en",
+    "tags": ["schedule", "next class", "lecture"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k1_ar",
+    "question": "next class|next lecture|when is my next class|بعد كده محاضرة|المحاضرة القادمة|ايه المحاضرة الجاية",
+    "answer": "يمكنني مساعدتك في العثور على محاضرتك التالية! يرجى التحقق من قسم الجدول للحصول على أحدث المعلومات حول محاضراتك القادمة، بما في ذلك الأوقات والمواقع.",
+    "category": "schedule",
+    "language": "ar",
+    "tags": ["schedule", "next class", "lecture"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k2",
+    "question": "attendance policy|attendance rules|حضور|سياسة الحضور|attendance percentage",
+    "answer": "The university attendance policy requires students to maintain at least 75% attendance to be eligible for final exams. You can track your attendance in the attendance section and contact your professor if you have any concerns.",
+    "category": "attendance",
+    "language": "en",
+    "tags": ["attendance", "policy", "rules"],
+    "confidence": 0.95
+  },
+  {
+    "id": "k2_ar",
+    "question": "attendance policy|attendance rules|حضور|سياسة الحضور|attendance percentage",
+    "answer": "سياسة الحضور في الجامعة تتطلب من الطلاب الحفاظ على حضور 75% على الأقل ليكونوا مؤهلين لامتحانات النهائية. يمكنك تتبع حضورك في قسم الحضور والاتصال بأستاذك إذا كان لديك أي مخاوف.",
+    "category": "attendance",
+    "language": "ar",
+    "tags": ["attendance", "policy", "rules"],
+    "confidence": 0.95
+  },
+  {
+    "id": "k3",
+    "question": "course information|course details|معلومات المادة|تفاصيل المادة|course syllabus",
+    "answer": "I can help you with course information! Please specify which course you're asking about, and I'll provide details about the syllabus, professor, schedule, and requirements.",
+    "category": "course",
+    "language": "en",
+    "tags": ["course", "information", "syllabus"],
+    "confidence": 0.85
+  },
+  {
+    "id": "k3_ar",
+    "question": "course information|course details|معلومات المادة|تفاصيل المادة|course syllabus",
+    "answer": "يمكنني مساعدتك في معلومات المادة! يرجى تحديد المادة التي تسأل عنها، وسأقدم تفاصيل حول المنهج والأستاذ والجدول والمتطلبات.",
+    "category": "course",
+    "language": "ar",
+    "tags": ["course", "information", "syllabus"],
+    "confidence": 0.85
+  },
+  {
+    "id": "k4",
+    "question": "assignment|homework|project|واجب|مشروع|assignment due date",
+    "answer": "I can help you with assignment information! Check your assignments section for current tasks, due dates, and submission requirements. Contact your professor if you need clarification on any assignment.",
+    "category": "assignment",
+    "language": "en",
+    "tags": ["assignment", "homework", "project"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k4_ar",
+    "question": "assignment|homework|project|واجب|مشروع|assignment due date",
+    "answer": "يمكنني مساعدتك في معلومات الواجبات! تحقق من قسم الواجبات للمهام الحالية ومواعيد التسليم ومتطلبات التقديم. اتصل بأستاذك إذا كنت بحاجة إلى توضيح حول أي واجب.",
+    "category": "assignment",
+    "language": "ar",
+    "tags": ["assignment", "homework", "project"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k5",
+    "question": "exam|test|quiz|امتحان|اختبار|exam schedule",
+    "answer": "I can help you with exam information! Check your schedule section for upcoming exams, or contact your professor for specific exam details, dates, and requirements.",
+    "category": "exam",
+    "language": "en",
+    "tags": ["exam", "test", "quiz"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k5_ar",
+    "question": "exam|test|quiz|امتحان|اختبار|exam schedule",
+    "answer": "يمكنني مساعدتك في معلومات الامتحانات! تحقق من قسم الجدول للامتحانات القادمة، أو اتصل بأستاذك للحصول على تفاصيل الامتحان وتواريخه ومتطلباته.",
+    "category": "exam",
+    "language": "ar",
+    "tags": ["exam", "test", "quiz"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k6",
+    "question": "professor|instructor|teacher|أستاذ|مدرس|professor contact",
+    "answer": "I can help you with professor information! Check your course details for professor contact information, office hours, and communication preferences.",
+    "category": "professor",
+    "language": "en",
+    "tags": ["professor", "instructor", "contact"],
+    "confidence": 0.85
+  },
+  {
+    "id": "k6_ar",
+    "question": "professor|instructor|teacher|أستاذ|مدرس|professor contact",
+    "answer": "يمكنني مساعدتك في معلومات الأستاذ! تحقق من تفاصيل مادتك للحصول على معلومات الاتصال بساعات العمل وتفضيلات التواصل.",
+    "category": "professor",
+    "language": "ar",
+    "tags": ["professor", "instructor", "contact"],
+    "confidence": 0.85
+  },
+  {
+    "id": "k7",
+    "question": "grades|marks|results|درجات|علامات|grade report",
+    "answer": "I can help you with grade information! Check your academic summary section for current grades and performance. Contact your professor if you have questions about specific grades.",
+    "category": "grades",
+    "language": "en",
+    "tags": ["grades", "marks", "results"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k7_ar",
+    "question": "grades|marks|results|درجات|علامات|grade report",
+    "answer": "يمكنني مساعدتك في معلومات الدرجات! تحقق من قسم الملخص الأكاديمي للدرجات الحالية والأداء. اتصل بأستاذك إذا كان لديك أسئلة حول درجات محددة.",
+    "category": "grades",
+    "language": "ar",
+    "tags": ["grades", "marks", "results"],
+    "confidence": 0.9
+  },
+  {
+    "id": "k8",
+    "question": "library|books|resources|مكتبة|كتب|موارد|library hours",
+    "answer": "I can help you with library information! The university library provides access to books, digital resources, and study spaces. Check the library section for hours, services, and available resources.",
+    "category": "library",
+    "language": "en",
+    "tags": ["library", "books", "resources"],
+    "confidence": 0.8
+  },
+  {
+    "id": "k8_ar",
+    "question": "library|books|resources|مكتبة|كتب|موارد|library hours",
+    "answer": "يمكنني مساعدتك في معلومات المكتبة! توفر مكتبة الجامعة الوصول إلى الكتب والموارد الرقمية ومساحات الدراسة. تحقق من قسم المكتبة للساعات والخدمات والموارد المتاحة.",
+    "category": "library",
+    "language": "ar",
+    "tags": ["library", "books", "resources"],
+    "confidence": 0.8
+  },
+  {
+    "id": "k9",
+    "question": "help|support|مساعدة|دعم|how to use|كيفية الاستخدام",
+    "answer": "I'm here to help! I can assist you with course information, schedules, attendance, assignments, and general academic questions. Just ask me what you need help with!",
+    "category": "help",
+    "language": "en",
+    "tags": ["help", "support", "assistance"],
+    "confidence": 0.95
+  },
+  {
+    "id": "k9_ar",
+    "question": "help|support|مساعدة|دعم|how to use|كيفية الاستخدام",
+    "answer": "أنا هنا للمساعدة! يمكنني مساعدتك في معلومات المواد والجداول والحضور والواجبات والأسئلة الأكاديمية العامة. فقط اسألني عما تحتاج مساعدة فيه!",
+    "category": "help",
+    "language": "ar",
+    "tags": ["help", "support", "assistance"],
+    "confidence": 0.95
+  }
+]

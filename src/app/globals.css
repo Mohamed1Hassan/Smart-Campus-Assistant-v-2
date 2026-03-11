@@ -1,0 +1,321 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cardDark: #1e293b;
+  --color-textDark: #f8fafc;
+  --color-mutedDark: #94a3b8;
+  --color-borderDark: #334155;
+  --color-bgDark: #0f172a;
+  --color-darkBg: #0f172a;
+}
+
+/* Use `.dark` class on <html> / <body> to control dark mode variants (Tailwind v4) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* === Imported from original src/index.css to restore old look & feel === */
+
+/* Base styles for HTML and body */
+@layer base {
+  html {
+    @apply transition-colors duration-200;
+  }
+
+  body {
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors duration-200;
+  }
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Smooth theme transitions */
+* {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Exclude elements that shouldn't transition */
+button,
+a,
+input,
+textarea,
+select {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Chatbot scroll area scrollbar styles */
+.chat-scroll {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #cbd5e1 #f3f4f6;
+  /* thumb, track */
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  /* gray-100 */
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  /* slate-300 */
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+  /* inset look */
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+  /* slate-400 */
+}
+
+.dark .chat-scroll {
+  scrollbar-color: #4b5563 #0f172a;
+  /* thumb, track */
+}
+
+.dark .chat-scroll::-webkit-scrollbar-track {
+  background: #0f172a;
+  /* slate-900 */
+}
+
+.dark .chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  /* gray-700 */
+  border: 2px solid #0f172a;
+}
+
+.dark .chat-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+  /* gray-600 */
+}
+
+/* Dashboard main scroll area scrollbar styles */
+.dashboard-scroll {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #cbd5e1 #f3f4f6;
+  /* thumb, track */
+}
+
+.dashboard-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  /* gray-100 */
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  /* slate-300 */
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+  /* inset look */
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+  /* slate-400 */
+}
+
+.dark .dashboard-scroll {
+  scrollbar-color: #4b5563 #0f172a;
+  /* thumb, track */
+}
+
+.dark .dashboard-scroll::-webkit-scrollbar-track {
+  background: #0f172a;
+  /* slate-900 */
+}
+
+.dark .dashboard-scroll::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  /* gray-700 */
+  border: 2px solid #0f172a;
+}
+
+.dark .dashboard-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+  /* gray-600 */
+}
+
+/* Global body and html scrollbar styles for light mode */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f3f4f6;
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f3f4f6;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Dark mode scrollbar styles - multiple selectors for better compatibility */
+html.dark,
+html.dark body,
+:root.dark,
+:root.dark body {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+html.dark::-webkit-scrollbar-track,
+:root.dark::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark::-webkit-scrollbar-thumb,
+:root.dark::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border: 2px solid #1f2937;
+}
+
+html.dark::-webkit-scrollbar-thumb:hover,
+:root.dark::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+}
+
+html.dark body::-webkit-scrollbar-track,
+:root.dark body::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark body::-webkit-scrollbar-thumb,
+:root.dark body::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border: 2px solid #1f2937;
+}
+
+html.dark body::-webkit-scrollbar-thumb:hover,
+:root.dark body::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+}
+
+/* Additional fallback for all elements in dark mode */
+.dark *::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark *::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border-radius: 8px;
+  border: 2px solid #1f2937;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+}
+
+/* Command Palette Styles */
+[cmdk-root] {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl;
+}
+
+[cmdk-input] {
+  @apply px-4 py-3 text-base border-0 focus:ring-0 placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-transparent;
+}
+
+[cmdk-list] {
+  @apply px-2 py-2;
+}

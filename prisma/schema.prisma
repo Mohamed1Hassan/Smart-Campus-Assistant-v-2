@@ -1,0 +1,639 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  universityId         String                @unique
+  email                String                @unique
+  password             String
+  firstName            String
+  lastName             String
+  profilePhoto         String?
+  faceDescriptor       Json?
+  role                 UserRole              @default(STUDENT)
+  major                String?
+  level                Int?
+  tokenVersion         Int                   @default(1)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  address              String?
+  bio                  String?
+  department           String?
+  dob                  String?
+  emergencyContact     String?
+  phone                String?
+  isActive             Boolean               @default(true)
+  attendanceAttempts   AttendanceAttempt[]
+  attendanceRecords    AttendanceRecord[]
+  chatSessions         ChatSession[]
+  enrollments          CourseEnrollment[]
+  coursesCreated       Course[]              @relation("CourseCreator")
+  deviceFingerprints   DeviceFingerprint[]
+  examsCreated         Exam[]                @relation("ExamCreator")
+  fraudAlerts          FraudAlert[]
+  gradesAssigned       Grade[]               @relation("ProfessorGrades")
+  gradesReceived       Grade[]               @relation("StudentGrades")
+  notificationSettings NotificationSettings?
+  notifications        Notification[]
+  professorSettings    ProfessorSettings?
+  qrCodesCreated       QRCode[]              @relation("QRCodeCreator")
+  quizSubmissions      QuizSubmission[]
+  refreshTokens        RefreshToken[]
+  schedules            Schedule[]
+
+  @@map("users")
+}
+
+model ProfessorSettings {
+  id                           Int      @id @default(autoincrement())
+  professorId                  Int      @unique
+  defaultGracePeriod           Int      @default(5)
+  defaultMaxAttempts           Int      @default(3)
+  defaultRiskThreshold         Int      @default(70)
+  defaultRadius                Int      @default(50)
+  enableGeofencing             Boolean  @default(true)
+  requireLocationAccuracy      Boolean  @default(true)
+  enableDeviceFingerprinting   Boolean  @default(true)
+  enableDeviceSharingDetection Boolean  @default(true)
+  requirePhotoVerification     Boolean  @default(false)
+  enableFaceDetection          Boolean  @default(false)
+  enableTimeValidation         Boolean  @default(true)
+  enableEmailNotifications     Boolean  @default(true)
+  enablePushNotifications      Boolean  @default(true)
+  notifyOnFraudDetection       Boolean  @default(true)
+  updatedAt                    DateTime @updatedAt
+  professor                    User     @relation(fields: [professorId], references: [id], onDelete: Cascade)
+
+  @@map("professor_settings")
+}
+
+model Course {
+  id                 Int                 @id @default(autoincrement())
+  courseCode         String
+  courseName         String
+  description        String?
+  credits            Int                 @default(3)
+  major              String?
+  level              Int?
+  professorId        Int
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  academicYear       String              @default("2025-2026")
+  isArchived         Boolean             @default(false)
+  semester           SemesterType        @default(FALL)
+  attendanceRecords  AttendanceRecord[]
+  attendanceSessions AttendanceSession[]
+  enrollments        CourseEnrollment[]
+  coverImage         String?
+  capacity           Int                 @default(500)
+  materials          CourseMaterial[]
+  professor          User                @relation("CourseCreator", fields: [professorId], references: [id], onDelete: Cascade)
+  exams              Exam[]
+  grades             Grade[]
+  qrCodes            QRCode[]
+  quizzes            Quiz[]
+  schedules          Schedule[]
+
+  @@unique([courseCode, semester, academicYear])
+  @@index([major])
+  @@index([semester])
+  @@index([major, semester])
+  @@map("courses")
+}
+
+model CourseMaterial {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  type        String
+  url         String
+  fileSize    Int?
+  courseId    Int
+  createdAt   DateTime @default(now())
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_materials")
+}
+
+model CourseEnrollment {
+  id         Int              @id @default(autoincrement())
+  studentId  Int
+  courseId   Int
+  enrolledAt DateTime         @default(now())
+  status     EnrollmentStatus @default(ACTIVE)
+  course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student    User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([status])
+  @@index([enrolledAt])
+  @@map("course_enrollments")
+}
+
+model Schedule {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  professorId Int
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  room        String?
+  semester    String   @default("Fall 2024")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  professor   User     @relation(fields: [professorId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([professorId])
+  @@index([dayOfWeek])
+  @@index([isActive])
+  @@index([semester])
+  @@map("schedules")
+}
+
+model AttendanceRecord {
+  id                Int                @id @default(autoincrement())
+  studentId         Int
+  courseId          Int
+  qrCodeId          Int?
+  sessionId         String?
+  status            AttendanceStatus   @default(PRESENT)
+  notes             String?
+  markedAt          DateTime           @default(now())
+  location          Json?
+  deviceFingerprint String?
+  ipAddress         String?
+  photoUrl          String?
+  fraudScore        Float?
+  attemptId         Int?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  course            Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  qrCode            QRCode?            @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  session           AttendanceSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student           User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([markedAt])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([qrCodeId])
+  @@index([sessionId])
+  @@index([status])
+  @@index([studentId, courseId])
+  @@map("attendance_records")
+}
+
+model QRCode {
+  id                    Int                 @id @default(autoincrement())
+  sessionId             String              @unique
+  courseId              Int
+  professorId           Int
+  title                 String
+  description           String?
+  expiresAt             DateTime
+  isActive              Boolean             @default(true)
+  latitude              Float
+  longitude             Float
+  radius                Int                 @default(50)
+  validFrom             DateTime
+  validTo               DateTime
+  maxAttempts           Int                 @default(3)
+  isLocationRequired    Boolean             @default(true)
+  isPhotoRequired       Boolean             @default(false)
+  isDeviceCheckRequired Boolean             @default(true)
+  gracePeriod           Int                 @default(5)
+  fraudDetectionEnabled Boolean             @default(true)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  attendanceAttempts    AttendanceAttempt[]
+  attendanceRecords     AttendanceRecord[]
+  fraudAlerts           FraudAlert[]
+  course                Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  professor             User                @relation("QRCodeCreator", fields: [professorId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([professorId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([courseId, isActive])
+  @@index([professorId, isActive])
+  @@map("qr_codes")
+}
+
+model Notification {
+  id          Int                  @id @default(autoincrement())
+  userId      Int
+  title       String
+  message     String
+  type        NotificationType
+  category    NotificationCategory
+  isRead      Boolean              @default(false)
+  isEmailSent Boolean              @default(false)
+  metadata    Json?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  readAt      DateTime?
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isRead])
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@index([category])
+  @@map("notifications")
+}
+
+model NotificationSettings {
+  id                      Int            @id @default(autoincrement())
+  userId                  Int            @unique
+  emailNotifications      Boolean        @default(true)
+  pushNotifications       Boolean        @default(true)
+  examNotifications       Boolean        @default(true)
+  assignmentNotifications Boolean        @default(true)
+  attendanceNotifications Boolean        @default(true)
+  courseNotifications     Boolean        @default(true)
+  systemNotifications     Boolean        @default(true)
+  emailFrequency          EmailFrequency @default(IMMEDIATE)
+  quietHoursStart         String?
+  quietHoursEnd           String?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+model ChatSession {
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  sessionName   String?
+  isActive      Boolean       @default(true)
+  language      String        @default("en")
+  context       Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  lastMessageAt DateTime?
+  messages      ChatMessage[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([userId, isActive])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id           Int         @id @default(autoincrement())
+  sessionId    Int
+  role         MessageRole
+  content      String
+  language     String      @default("en")
+  metadata     Json?
+  isProcessed  Boolean     @default(false)
+  responseTime Int?
+  createdAt    DateTime    @default(now())
+  session      ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+model AttendanceAttempt {
+  id                Int                     @id @default(autoincrement())
+  studentId         Int
+  qrCodeId          Int
+  attemptTime       DateTime
+  location          Json?
+  deviceFingerprint String?
+  ipAddress         String?
+  userAgent         String?
+  photoUrl          String?
+  status            AttendanceAttemptStatus
+  failureReason     String?
+  fraudScore        Float?
+  createdAt         DateTime                @default(now())
+  qrCode            QRCode                  @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  student           User                    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([qrCodeId])
+  @@index([status])
+  @@index([attemptTime])
+  @@index([studentId, qrCodeId])
+  @@map("attendance_attempts")
+}
+
+model FraudAlert {
+  id          Int                @id @default(autoincrement())
+  studentId   Int
+  qrCodeId    Int?
+  sessionId   String?
+  alertType   FraudAlertType
+  severity    AlertSeverity
+  description String
+  metadata    Json?
+  isResolved  Boolean            @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  Int?
+  createdAt   DateTime           @default(now())
+  qrCode      QRCode?            @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  session     AttendanceSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student     User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([qrCodeId])
+  @@index([sessionId])
+  @@index([isResolved])
+  @@index([severity])
+  @@index([alertType])
+  @@index([createdAt])
+  @@map("fraud_alerts")
+}
+
+model DeviceFingerprint {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  fingerprint String   @unique
+  deviceInfo  Json
+  isActive    Boolean  @default(true)
+  lastUsed    DateTime
+  createdAt   DateTime @default(now())
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([isActive])
+  @@index([lastUsed])
+  @@map("device_fingerprints")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Quiz {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?
+  courseId    Int
+  isActive    Boolean          @default(false)
+  timeLimit   Int?
+  dueAt       DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  grades      Grade[]
+  questions   Question[]
+  submissions QuizSubmission[]
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@map("quizzes")
+}
+
+model Question {
+  id      Int             @id @default(autoincrement())
+  quizId  Int
+  text    String
+  type    QuestionType    @default(MULTIPLE_CHOICE)
+  points  Int             @default(1)
+  order   Int             @default(0)
+  options Option[]
+  quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers StudentAnswer[]
+
+  @@index([quizId])
+  @@map("questions")
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  text       String
+  isCorrect  Boolean  @default(false)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@map("options")
+}
+
+model QuizSubmission {
+  id          Int             @id @default(autoincrement())
+  quizId      Int
+  studentId   Int
+  score       Float
+  submittedAt DateTime        @default(now())
+  quiz        Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student     User            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers     StudentAnswer[]
+
+  @@unique([quizId, studentId])
+  @@index([quizId])
+  @@index([studentId])
+  @@map("quiz_submissions")
+}
+
+model StudentAnswer {
+  id               Int            @id @default(autoincrement())
+  submissionId     Int
+  questionId       Int
+  selectedOptionId Int?
+  textAnswer       String?
+  isCorrect        Boolean        @default(false)
+  question         Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  submission       QuizSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([questionId])
+  @@map("student_answers")
+}
+
+model AttendanceSession {
+  id                String             @id @default(uuid())
+  courseId          Int
+  professorId       Int
+  status            String             @default("PENDING")
+  title             String?
+  description       String?
+  startTime         DateTime
+  endTime           DateTime
+  location          Json?
+  securitySettings  Json?
+  qrCode            String?
+  isActive          Boolean            @default(true)
+  metadata          Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  attendanceRecords AttendanceRecord[]
+  course            Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  fraudAlerts       FraudAlert[]
+
+  @@index([courseId])
+  @@index([professorId])
+  @@index([status])
+  @@map("attendance_sessions")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  details   Json?
+  timestamp DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
+model Grade {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  courseId  Int
+  quizId    Int?
+  score     Float
+  maxScore  Float    @default(100)
+  type      String   @default("QUIZ")
+  markedBy  Int
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  professor User     @relation("ProfessorGrades", fields: [markedBy], references: [id], onDelete: Cascade)
+  quiz      Quiz?    @relation(fields: [quizId], references: [id])
+  student   User     @relation("StudentGrades", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([courseId])
+  @@index([quizId])
+  @@map("grades")
+}
+
+model Exam {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  professorId Int
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  room        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  professor   User     @relation("ExamCreator", fields: [professorId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([professorId])
+  @@map("exams")
+}
+
+enum UserRole {
+  STUDENT
+  PROFESSOR
+  ADMIN
+}
+
+enum SemesterType {
+  FALL
+  SPRING
+  SUMMER
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  DROPPED
+  COMPLETED
+  INACTIVE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+  URGENT
+}
+
+enum NotificationCategory {
+  EXAM
+  ASSIGNMENT
+  ATTENDANCE
+  COURSE
+  SYSTEM
+  ANNOUNCEMENT
+  DEADLINE
+  REMINDER
+}
+
+enum EmailFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum AttendanceAttemptStatus {
+  SUCCESS
+  FAILED
+  FRAUD_DETECTED
+  LOCATION_INVALID
+  TIME_EXPIRED
+  DEVICE_MISMATCH
+  PHOTO_REQUIRED
+  PERMISSION_DENIED
+}
+
+enum FraudAlertType {
+  LOCATION_SPOOFING
+  TIME_MANIPULATION
+  DEVICE_SHARING
+  MULTIPLE_DEVICES
+  SUSPICIOUS_PATTERN
+  QR_SHARING
+  FRAUD_DETECTED
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  TEXT
+}

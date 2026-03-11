@@ -1,0 +1,28 @@
+{
+  "campus_info": {
+    "name": "Smart University Campus",
+    "location": "Main City, Sector 4",
+    "facilities": ["Library", "Sports Center", "Student Hub", "Innovation Lab"],
+    "working_hours": "08:00 AM - 10:00 PM"
+  },
+  "academic_rules": {
+    "attendance_requirement": "Min 75% for exam eligibility",
+    "grading_system": "Attendance-based GPA (Progressive Points)",
+    "exam_integrity": "Zero tolerance for proctoring violations (Tab switching, Copy/Paste)"
+  },
+  "contacts": {
+    "it_support": "it-support@smartcampus.edu",
+    "student_affairs": "students@smartcampus.edu",
+    "emergency": "911 / Extension 100"
+  },
+  "faq": [
+    {
+      "question": "How is GPA calculated?",
+      "answer": "GPA in this system is calculated based on your attendance percentage. Higher attendance leads to a higher predicted GPA."
+    },
+    {
+      "question": "What happens if I switch tabs during an exam?",
+      "answer": "The system detects tab switching and reports it as a proctoring violation to your professor in real-time."
+    }
+  ]
+}

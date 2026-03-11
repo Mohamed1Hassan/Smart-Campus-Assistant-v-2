@@ -1,0 +1,1340 @@
+{
+  "BA": {
+    "1": [
+      {
+        "courseCode": "BA103",
+        "courseName": "Foreign Language (1)",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 44
+      },
+      {
+        "courseCode": "BA104",
+        "courseName": "Principles of Law",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "BA105",
+        "courseName": "Psychology",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 14
+      },
+      {
+        "courseCode": "BA106",
+        "courseName": "Human Rights",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "BA107",
+        "courseName": "Principles of Mathematics",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 58
+      },
+      {
+        "courseCode": "BA101",
+        "courseName": "Principles of Business Administration",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 5
+      },
+      {
+        "courseCode": "BA102",
+        "courseName": "Principles of Financial Accounting",
+        "credits": 3,
+        "description": "Course for Business Administration Level 1",
+        "major": "BA",
+        "level": 1,
+        "professorId": 7
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "BA201",
+        "courseName": "Principles of Marketing",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 18
+      },
+      {
+        "courseCode": "BA202",
+        "courseName": "Principles of Cost Accounting",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 72
+      },
+      {
+        "courseCode": "BA203",
+        "courseName": "Production & Operations Management",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 17
+      },
+      {
+        "courseCode": "BA204",
+        "courseName": "Principles of Microeconomics",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 61
+      },
+      {
+        "courseCode": "BA205",
+        "courseName": "Business Analytics",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 27
+      },
+      {
+        "courseCode": "BA206",
+        "courseName": "Logistics & Supply Chain Management",
+        "credits": 3,
+        "description": "Course for Business Administration Level 2",
+        "major": "BA",
+        "level": 2,
+        "professorId": 71
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "BA301",
+        "courseName": "Principles of Investment",
+        "credits": 3,
+        "description": "Course for Business Administration Level 3",
+        "major": "BA",
+        "level": 3,
+        "professorId": 35
+      },
+      {
+        "courseCode": "BA302",
+        "courseName": "Insurance & Risk Management",
+        "credits": 3,
+        "description": "Course for Business Administration Level 3",
+        "major": "BA",
+        "level": 3,
+        "professorId": 58
+      },
+      {
+        "courseCode": "BA303",
+        "courseName": "Principles of Macroeconomics",
+        "credits": 3,
+        "description": "Course for Business Administration Level 3",
+        "major": "BA",
+        "level": 3,
+        "professorId": 63
+      },
+      {
+        "courseCode": "BA304",
+        "courseName": "International Marketing",
+        "credits": 3,
+        "description": "Course for Business Administration Level 3",
+        "major": "BA",
+        "level": 3,
+        "professorId": 73
+      },
+      {
+        "courseCode": "BA305",
+        "courseName": "Business Ethics and Governance",
+        "credits": 3,
+        "description": "Course for Business Administration Level 3",
+        "major": "BA",
+        "level": 3,
+        "professorId": 67
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "BA401",
+        "courseName": "Graduation Project",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 73
+      },
+      {
+        "courseCode": "BA402",
+        "courseName": "Applied Statistics",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 74
+      },
+      {
+        "courseCode": "BA403",
+        "courseName": "Financial Portfolio & Derivatives Management",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 23
+      },
+      {
+        "courseCode": "BA404",
+        "courseName": "Enterprise Information Systems",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 37
+      },
+      {
+        "courseCode": "BA405",
+        "courseName": "Leadership",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 73
+      },
+      {
+        "courseCode": "BA406",
+        "courseName": "Strategic Management",
+        "credits": 3,
+        "description": "Course for Business Administration Level 4",
+        "major": "BA",
+        "level": 4,
+        "professorId": 67
+      }
+    ]
+  },
+  "BM": {
+    "1": [
+      {
+        "courseCode": "BM101",
+        "courseName": "Principles of Law",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "BM102",
+        "courseName": "Principles of Financial Accounting",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 7
+      },
+      {
+        "courseCode": "BM103",
+        "courseName": "Foreign Language (1)",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 1
+      },
+      {
+        "courseCode": "BM104",
+        "courseName": "Human Rights",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "BM105",
+        "courseName": "Psychology",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 14
+      },
+      {
+        "courseCode": "BM106",
+        "courseName": "Principles of Business Administration",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 18
+      },
+      {
+        "courseCode": "BM107",
+        "courseName": "Principles of Mathematics",
+        "credits": 3,
+        "description": "Course for Banking Management Level 1",
+        "major": "BM",
+        "level": 1,
+        "professorId": 47
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "BM201",
+        "courseName": "Logistics & Supply Chain Management",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 71
+      },
+      {
+        "courseCode": "BM202",
+        "courseName": "Principles of Cost Accounting",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 72
+      },
+      {
+        "courseCode": "BM203",
+        "courseName": "Principles of Microeconomics",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 61
+      },
+      {
+        "courseCode": "BM204",
+        "courseName": "Business Analytics",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 27
+      },
+      {
+        "courseCode": "BM205",
+        "courseName": "Production & Operations Management",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 17
+      },
+      {
+        "courseCode": "BM206",
+        "courseName": "Principles of Marketing",
+        "credits": 3,
+        "description": "Course for Banking Management Level 2",
+        "major": "BM",
+        "level": 2,
+        "professorId": 18
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "BM301",
+        "courseName": "Economics of Banks",
+        "credits": 3,
+        "description": "Course for Banking Management Level 3",
+        "major": "BM",
+        "level": 3,
+        "professorId": 61
+      },
+      {
+        "courseCode": "BM302",
+        "courseName": "Insurance & Risk Management",
+        "credits": 3,
+        "description": "Course for Banking Management Level 3",
+        "major": "BM",
+        "level": 3,
+        "professorId": 47
+      },
+      {
+        "courseCode": "BM303",
+        "courseName": "Principles of Macroeconomics",
+        "credits": 3,
+        "description": "Course for Banking Management Level 3",
+        "major": "BM",
+        "level": 3,
+        "professorId": 63
+      },
+      {
+        "courseCode": "BM304",
+        "courseName": "Bank Management & Control Systems",
+        "credits": 3,
+        "description": "Course for Banking Management Level 3",
+        "major": "BM",
+        "level": 3,
+        "professorId": 67
+      },
+      {
+        "courseCode": "BM305",
+        "courseName": "Principles of Investment",
+        "credits": 3,
+        "description": "Course for Banking Management Level 3",
+        "major": "BM",
+        "level": 3,
+        "professorId": 35
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "BM401",
+        "courseName": "Money Markets",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 70
+      },
+      {
+        "courseCode": "BM402",
+        "courseName": "Applied Statistics",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 42
+      },
+      {
+        "courseCode": "BM403",
+        "courseName": "Graduation Project",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 73
+      },
+      {
+        "courseCode": "BM404",
+        "courseName": "Management of Specialized Banking Institutions",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 5
+      },
+      {
+        "courseCode": "BM405",
+        "courseName": "Project Finance",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 69
+      },
+      {
+        "courseCode": "BM406",
+        "courseName": "Strategic Management",
+        "credits": 3,
+        "description": "Course for Banking Management Level 4",
+        "major": "BM",
+        "level": 4,
+        "professorId": 67
+      }
+    ]
+  },
+  "CS": {
+    "1": [
+      {
+        "courseCode": "CS101",
+        "courseName": "English Language",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 44
+      },
+      {
+        "courseCode": "CS102",
+        "courseName": "Introduction to Computer Science",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 28
+      },
+      {
+        "courseCode": "CS103",
+        "courseName": "Introduction to Information Systems",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 43
+      },
+      {
+        "courseCode": "CS104",
+        "courseName": "Physics",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 47
+      },
+      {
+        "courseCode": "CS105",
+        "courseName": "Calculus and Integration",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 6
+      },
+      {
+        "courseCode": "CS106",
+        "courseName": "Mathematics",
+        "credits": 3,
+        "description": "Course for Computer Science Level 1",
+        "major": "CS",
+        "level": 1,
+        "professorId": 47
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "CS201",
+        "courseName": "Business Administration",
+        "credits": 3,
+        "description": "Course for Computer Science Level 2",
+        "major": "CS",
+        "level": 2,
+        "professorId": 49
+      },
+      {
+        "courseCode": "CS202",
+        "courseName": "File Processing",
+        "credits": 3,
+        "description": "Course for Computer Science Level 2",
+        "major": "CS",
+        "level": 2,
+        "professorId": 37
+      },
+      {
+        "courseCode": "CS203",
+        "courseName": "Object Oriented Programming (OOP)",
+        "credits": 3,
+        "description": "Course for Computer Science Level 2",
+        "major": "CS",
+        "level": 2,
+        "professorId": 50
+      },
+      {
+        "courseCode": "CS204",
+        "courseName": "Business Ethics",
+        "credits": 3,
+        "description": "Course for Computer Science Level 2",
+        "major": "CS",
+        "level": 2,
+        "professorId": 1
+      },
+      {
+        "courseCode": "CS205",
+        "courseName": "Systems Analysis and Design",
+        "credits": 3,
+        "description": "Course for Computer Science Level 2",
+        "major": "CS",
+        "level": 2,
+        "professorId": 51
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "CS301",
+        "courseName": "Computer Architecture",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 52
+      },
+      {
+        "courseCode": "CS302",
+        "courseName": "Information Retrieval Systems",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 51
+      },
+      {
+        "courseCode": "CS303",
+        "courseName": "Software Engineering",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 53
+      },
+      {
+        "courseCode": "CS304",
+        "courseName": "Web Programming",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 53
+      },
+      {
+        "courseCode": "CS305",
+        "courseName": "Logic Programming",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 51
+      },
+      {
+        "courseCode": "CS306",
+        "courseName": "Analysis of Algorithms",
+        "credits": 3,
+        "description": "Course for Computer Science Level 3",
+        "major": "CS",
+        "level": 3,
+        "professorId": 50
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "CS401",
+        "courseName": "Operating Systems Theories",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 50
+      },
+      {
+        "courseCode": "CS402",
+        "courseName": "Dynamic Languages",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 54
+      },
+      {
+        "courseCode": "CS403",
+        "courseName": "Computer Language Concepts",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 54
+      },
+      {
+        "courseCode": "CS404",
+        "courseName": "E-Business",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 53
+      },
+      {
+        "courseCode": "CS405",
+        "courseName": "Artificial Intelligence",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 54
+      },
+      {
+        "courseCode": "CS406",
+        "courseName": "Graduation Project 1",
+        "credits": 3,
+        "description": "Course for Computer Science Level 4",
+        "major": "CS",
+        "level": 4,
+        "professorId": 52
+      }
+    ]
+  },
+  "IS": {
+    "1": [
+      {
+        "courseCode": "IS101",
+        "courseName": "Foreign Language (1)",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 1
+      },
+      {
+        "courseCode": "IS102",
+        "courseName": "Principles of Business Administration",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 5
+      },
+      {
+        "courseCode": "IS103",
+        "courseName": "Principles of Mathematics",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 6
+      },
+      {
+        "courseCode": "IS104",
+        "courseName": "Principles of Financial Accounting",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 7
+      },
+      {
+        "courseCode": "IS105",
+        "courseName": "Psychology",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 14
+      },
+      {
+        "courseCode": "IS106",
+        "courseName": "Human Rights",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "IS107",
+        "courseName": "Principles of Law",
+        "credits": 3,
+        "description": "Course for Information Systems Level 1",
+        "major": "IS",
+        "level": 1,
+        "professorId": 16
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "IS201",
+        "courseName": "Logistics & Supply Chain Management",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 17
+      },
+      {
+        "courseCode": "IS202",
+        "courseName": "Principles of Marketing",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 18
+      },
+      {
+        "courseCode": "IS206",
+        "courseName": "Business Analytics",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 27
+      },
+      {
+        "courseCode": "IS205",
+        "courseName": "Production & Operations Management",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 17
+      },
+      {
+        "courseCode": "IS203",
+        "courseName": "Principles of Cost Accounting",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 19
+      },
+      {
+        "courseCode": "IS204",
+        "courseName": "Principles of Microeconomics",
+        "credits": 3,
+        "description": "Course for Information Systems Level 2",
+        "major": "IS",
+        "level": 2,
+        "professorId": 23
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "IS301",
+        "courseName": "Computer Program Design",
+        "credits": 3,
+        "description": "Course for Information Systems Level 3",
+        "major": "IS",
+        "level": 3,
+        "professorId": 28
+      },
+      {
+        "courseCode": "IS302",
+        "courseName": "Insurance & Risk Management",
+        "credits": 3,
+        "description": "Course for Information Systems Level 3",
+        "major": "IS",
+        "level": 3,
+        "professorId": 6
+      },
+      {
+        "courseCode": "IS303",
+        "courseName": "Principles of Macroeconomics",
+        "credits": 3,
+        "description": "Course for Information Systems Level 3",
+        "major": "IS",
+        "level": 3,
+        "professorId": 23
+      },
+      {
+        "courseCode": "IS304",
+        "courseName": "Principles of Investment",
+        "credits": 3,
+        "description": "Course for Information Systems Level 3",
+        "major": "IS",
+        "level": 3,
+        "professorId": 35
+      },
+      {
+        "courseCode": "IS305",
+        "courseName": "Databases",
+        "credits": 3,
+        "description": "Course for Information Systems Level 3",
+        "major": "IS",
+        "level": 3,
+        "professorId": 37
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "IS401",
+        "courseName": "Business Analytics & Data Mining",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 38
+      },
+      {
+        "courseCode": "IS402",
+        "courseName": "Strategic Management",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 35
+      },
+      {
+        "courseCode": "IS403",
+        "courseName": "Computer Program Applications",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 38
+      },
+      {
+        "courseCode": "IS404",
+        "courseName": "Applied Statistics",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 42
+      },
+      {
+        "courseCode": "IS405",
+        "courseName": "Graduation Project",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 37
+      },
+      {
+        "courseCode": "IS406",
+        "courseName": "Enterprise Information Systems",
+        "credits": 3,
+        "description": "Course for Information Systems Level 4",
+        "major": "IS",
+        "level": 4,
+        "professorId": 37
+      }
+    ]
+  },
+  "ACC-EN": {
+    "1": [
+      {
+        "courseCode": "ACC-EN101",
+        "courseName": "Principles of Law",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "ACC-EN102",
+        "courseName": "Foreign Language (1)",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 44
+      },
+      {
+        "courseCode": "ACC-EN103",
+        "courseName": "Psychology",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 1
+      },
+      {
+        "courseCode": "ACC-EN104",
+        "courseName": "Principles of Business Administration",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 69
+      },
+      {
+        "courseCode": "ACC-EN105",
+        "courseName": "Principles of Mathematics",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 58
+      },
+      {
+        "courseCode": "ACC-EN106",
+        "courseName": "Principles of Financial Accounting",
+        "credits": 3,
+        "description": "Course for Accounting English Level 1",
+        "major": "ACC-EN",
+        "level": 1,
+        "professorId": 68
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "ACC-EN201",
+        "courseName": "Business Analytics",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 69
+      },
+      {
+        "courseCode": "ACC-EN202",
+        "courseName": "Production & Operations Management",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 70
+      },
+      {
+        "courseCode": "ACC-EN203",
+        "courseName": "Principles of Cost Accounting",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 68
+      },
+      {
+        "courseCode": "ACC-EN204",
+        "courseName": "Logistics & Supply Chain Management",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 14
+      },
+      {
+        "courseCode": "ACC-EN205",
+        "courseName": "Principles of Microeconomics",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 61
+      },
+      {
+        "courseCode": "ACC-EN206",
+        "courseName": "Principles of Marketing",
+        "credits": 3,
+        "description": "Course for Accounting English Level 2",
+        "major": "ACC-EN",
+        "level": 2,
+        "professorId": 70
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "ACC-EN301",
+        "courseName": "Insurance & Risk Management",
+        "credits": 3,
+        "description": "Course for Accounting English Level 3",
+        "major": "ACC-EN",
+        "level": 3,
+        "professorId": 58
+      },
+      {
+        "courseCode": "ACC-EN302",
+        "courseName": "Principles of Macroeconomics",
+        "credits": 3,
+        "description": "Course for Accounting English Level 3",
+        "major": "ACC-EN",
+        "level": 3,
+        "professorId": 63
+      },
+      {
+        "courseCode": "ACC-EN303",
+        "courseName": "Intermediate Accounting (1)",
+        "credits": 3,
+        "description": "Course for Accounting English Level 3",
+        "major": "ACC-EN",
+        "level": 3,
+        "professorId": 65
+      },
+      {
+        "courseCode": "ACC-EN304",
+        "courseName": "Business Ethics and Governance",
+        "credits": 3,
+        "description": "Course for Accounting English Level 3",
+        "major": "ACC-EN",
+        "level": 3,
+        "professorId": 1
+      },
+      {
+        "courseCode": "ACC-EN305",
+        "courseName": "Principles of Investment",
+        "credits": 3,
+        "description": "Course for Accounting English Level 3",
+        "major": "ACC-EN",
+        "level": 3,
+        "professorId": 69
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "ACC-EN401",
+        "courseName": "Strategic Management",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 70
+      },
+      {
+        "courseCode": "ACC-EN402",
+        "courseName": "Advanced Financial Accounting",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 68
+      },
+      {
+        "courseCode": "ACC-EN403",
+        "courseName": "Applied Statistics",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 58
+      },
+      {
+        "courseCode": "ACC-EN404",
+        "courseName": "Corporate Analysis and Valuation",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 68
+      },
+      {
+        "courseCode": "ACC-EN405",
+        "courseName": "Auditing",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 65
+      },
+      {
+        "courseCode": "ACC-EN406",
+        "courseName": "Graduation Project",
+        "credits": 3,
+        "description": "Course for Accounting English Level 4",
+        "major": "ACC-EN",
+        "level": 4,
+        "professorId": 65
+      }
+    ]
+  },
+  "ACC": {
+    "1": [
+      {
+        "courseCode": "ACC101",
+        "courseName": "Principles of Business Administration",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 5
+      },
+      {
+        "courseCode": "ACC102",
+        "courseName": "Principles of Financial Accounting",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 7
+      },
+      {
+        "courseCode": "ACC103",
+        "courseName": "Foreign Language (1)",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 44
+      },
+      {
+        "courseCode": "ACC104",
+        "courseName": "Principles of Law",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "ACC105",
+        "courseName": "Psychology",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 14
+      },
+      {
+        "courseCode": "ACC106",
+        "courseName": "Human Rights",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 15
+      },
+      {
+        "courseCode": "ACC107",
+        "courseName": "Principles of Mathematics",
+        "credits": 3,
+        "description": "Course for Accounting Level 1",
+        "major": "ACC",
+        "level": 1,
+        "professorId": 58
+      }
+    ],
+    "2": [
+      {
+        "courseCode": "ACC201",
+        "courseName": "Principles of Marketing",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 18
+      },
+      {
+        "courseCode": "ACC202",
+        "courseName": "Principles of Cost Accounting",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 19
+      },
+      {
+        "courseCode": "ACC203",
+        "courseName": "Principles of Microeconomics",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 61
+      },
+      {
+        "courseCode": "ACC204",
+        "courseName": "Production & Operations Management",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 17
+      },
+      {
+        "courseCode": "ACC205",
+        "courseName": "Business Analytics",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 27
+      },
+      {
+        "courseCode": "ACC206",
+        "courseName": "Logistics & Supply Chain Management",
+        "credits": 3,
+        "description": "Course for Accounting Level 2",
+        "major": "ACC",
+        "level": 2,
+        "professorId": 27
+      }
+    ],
+    "3": [
+      {
+        "courseCode": "ACC301",
+        "courseName": "Principles of Macroeconomics",
+        "credits": 3,
+        "description": "Course for Accounting Level 3",
+        "major": "ACC",
+        "level": 3,
+        "professorId": 63
+      },
+      {
+        "courseCode": "ACC302",
+        "courseName": "Principles of Investment",
+        "credits": 3,
+        "description": "Course for Accounting Level 3",
+        "major": "ACC",
+        "level": 3,
+        "professorId": 35
+      },
+      {
+        "courseCode": "ACC303",
+        "courseName": "Insurance & Risk Management",
+        "credits": 3,
+        "description": "Course for Accounting Level 3",
+        "major": "ACC",
+        "level": 3,
+        "professorId": 58
+      },
+      {
+        "courseCode": "ACC304",
+        "courseName": "Intermediate Accounting (1)",
+        "credits": 3,
+        "description": "Course for Accounting Level 3",
+        "major": "ACC",
+        "level": 3,
+        "professorId": 65
+      },
+      {
+        "courseCode": "ACC305",
+        "courseName": "Business Ethics and Governance",
+        "credits": 3,
+        "description": "Course for Accounting Level 3",
+        "major": "ACC",
+        "level": 3,
+        "professorId": 67
+      }
+    ],
+    "4": [
+      {
+        "courseCode": "ACC401",
+        "courseName": "Auditing",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 65
+      },
+      {
+        "courseCode": "ACC402",
+        "courseName": "Applied Statistics",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 6
+      },
+      {
+        "courseCode": "ACC403",
+        "courseName": "Corporate Analysis and Valuation",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 68
+      },
+      {
+        "courseCode": "ACC404",
+        "courseName": "Advanced Financial Accounting",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 68
+      },
+      {
+        "courseCode": "ACC405",
+        "courseName": "Strategic Management",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 67
+      },
+      {
+        "courseCode": "ACC406",
+        "courseName": "Graduation Project",
+        "credits": 3,
+        "description": "Course for Accounting Level 4",
+        "major": "ACC",
+        "level": 4,
+        "professorId": 65
+      }
+    ]
+  }
+}
