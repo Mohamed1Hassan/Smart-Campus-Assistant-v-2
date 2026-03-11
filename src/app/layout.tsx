@@ -40,6 +40,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Smart Campus Team" }],
   robots: "index, follow",
+  verification: {
+    google: "UtiHpKBI6P-nUzjNeELS3KM4EH8HU5Mi4QQJMQvag-o",
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
