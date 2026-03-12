@@ -1,11 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
-import { Alert, AlertDescription } from "../ui/alert";
 import {
   Wifi,
   WifiOff,
@@ -19,7 +15,11 @@ import {
   SignalMedium,
   SignalHigh,
 } from "lucide-react";
-import { Socket } from "socket.io-client"; // Import Socket type
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Alert, AlertDescription } from "../ui/alert";
 
 interface ConnectionStatus {
   status: "connected" | "disconnected" | "reconnecting" | "error";
@@ -50,7 +50,6 @@ export const ConnectionStatusIndicator: React.FC<
   ConnectionStatusIndicatorProps
 > = ({
   showDetails = false,
-  autoReconnect = true,
   maxReconnectAttempts = 5,
 }) => {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
@@ -63,21 +62,14 @@ export const ConnectionStatusIndicator: React.FC<
     connectionQuality: "unknown",
     serverStatus: "offline",
     features: {
-      realTime: false,
-      notifications: false,
+      realTime: true,
+      notifications: true,
       fileUpload: false,
       audio: false,
       video: false,
     },
   });
   const [isExpanded, setIsExpanded] = useState(showDetails);
-  const [settings] = useState({
-    autoReconnect,
-    maxReconnectAttempts,
-    connectionTimeout: 10000,
-    heartbeatInterval: 30000,
-    retryDelay: 1000,
-  });
   const [connectionHistory, setConnectionHistory] = useState<
     Array<{
       timestamp: Date;
@@ -86,10 +78,6 @@ export const ConnectionStatusIndicator: React.FC<
       error?: string;
     }>
   >([]);
-  const socketRef = useRef<Socket | null>(null); // Use Socket type
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const heartbeatIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const latencyTestRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const addConnectionHistory = (
     status: string,
@@ -104,12 +92,13 @@ export const ConnectionStatusIndicator: React.FC<
         error,
       },
       ...prev.slice(0, 49),
-    ]); // Keep last 50 entries
+    ]);
   };
 
   const calculateConnectionQuality = (
     latency: number,
   ): "excellent" | "good" | "fair" | "poor" | "unknown" => {
+    if (latency === 0) return "excellent";
     if (latency < 50) return "excellent";
     if (latency < 100) return "good";
     if (latency < 200) return "fair";
@@ -117,205 +106,45 @@ export const ConnectionStatusIndicator: React.FC<
     return "unknown";
   };
 
-  const attemptReconnect = () => {
-    if (connectionStatus.reconnectAttempts >= settings.maxReconnectAttempts) {
-      console.log("Max reconnect attempts reached");
-      return;
-    }
-
-    setConnectionStatus((prev) => ({
-      ...prev,
-      status: "reconnecting",
-      reconnectAttempts: prev.reconnectAttempts + 1,
-    }));
-
-    addConnectionHistory("reconnecting");
-
-    reconnectTimeoutRef.current = setTimeout(
-      () => {
-        if (socketRef.current) {
-          socketRef.current.connect();
-        }
-      },
-      settings.retryDelay * Math.pow(2, connectionStatus.reconnectAttempts),
-    ); // Exponential backoff
-  };
-
-  const startHeartbeat = () => {
-    heartbeatIntervalRef.current = setInterval(() => {
-      if (socketRef.current && socketRef.current.connected) {
-        socketRef.current?.emit("ping");
-      }
-    }, settings.heartbeatInterval);
-  };
-
-  const stopHeartbeat = () => {
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-    }
-  };
-
-  const startLatencyTest = () => {
-    latencyTestRef.current = setInterval(() => {
-      if (socketRef.current && socketRef.current.connected) {
-        const startTime = Date.now();
-        socketRef.current?.emit("ping", () => {
-          const latency = Date.now() - startTime;
+  useEffect(() => {
+    const channel = supabase
+      .channel('system-status')
+      .on(
+        'broadcast',
+        { event: 'system-status:health_check' },
+        (payload: { payload: { latency: number; serverStatus: string } }) => {
           setConnectionStatus((prev) => ({
             ...prev,
-            latency: latency,
-            connectionQuality: calculateConnectionQuality(latency),
+            latency: payload.payload.latency || 0,
+            serverStatus: (payload.payload.serverStatus as ConnectionStatus["serverStatus"]) || "online",
+            connectionQuality: calculateConnectionQuality(payload.payload.latency || 0),
           }));
-        });
-      }
-    }, 5000); // Test every 5 seconds
-  };
-
-  const stopLatencyTest = () => {
-    if (latencyTestRef.current) {
-      clearTimeout(latencyTestRef.current);
-    }
-  };
-
-  useEffect(() => {
-    // Initialize socket connection
-    const initializeSocket = () => {
-      // @ts-expect-error window.io is injected by socket.io-client script
-      if (typeof window !== "undefined" && window.io) {
-        // @ts-expect-error window.io is injected by socket.io-client script
-        socketRef.current = window.io({
-          timeout: settings.connectionTimeout,
-          forceNew: true,
-        });
-
-        socketRef.current?.on("connect", () => {
-          console.log("Connected to server");
+        }
+      )
+      .subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
           setConnectionStatus((prev) => ({
             ...prev,
             status: "connected",
             lastConnected: new Date(),
             reconnectAttempts: 0,
+            connectionQuality: "excellent",
           }));
-
           addConnectionHistory("connected");
-          startLatencyTest();
-          startHeartbeat();
-
-          // Authenticate
-          const token = localStorage.getItem("token");
-          if (token) {
-            socketRef.current?.emit("authenticate", { token });
-          }
-        });
-
-        socketRef.current?.on("disconnect", (reason: string) => {
-          console.log("Disconnected from server:", reason);
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
           setConnectionStatus((prev) => ({
             ...prev,
             status: "disconnected",
             lastDisconnected: new Date(),
           }));
-
-          addConnectionHistory("disconnected", undefined, reason);
-          stopHeartbeat();
-          stopLatencyTest();
-
-          // Auto-reconnect if enabled
-          if (
-            settings.autoReconnect &&
-            connectionStatus.reconnectAttempts < settings.maxReconnectAttempts
-          ) {
-            attemptReconnect();
-          }
-        });
-
-        socketRef.current?.on("connect_error", (error: Error) => {
-          // Changed 'any' to 'Error'
-          console.error("Connection error:", error);
-          setConnectionStatus((prev) => ({
-            ...prev,
-            status: "error",
-            lastDisconnected: new Date(),
-          }));
-
-          addConnectionHistory("error", undefined, error.message);
-
-          if (
-            settings.autoReconnect &&
-            connectionStatus.reconnectAttempts < settings.maxReconnectAttempts
-          ) {
-            attemptReconnect();
-          }
-        });
-
-        socketRef.current?.on(
-          "authenticated",
-          (data: { permissions?: string[] }) => {
-            // Changed 'any' to specific type
-            console.log("Authenticated:", data);
-            setConnectionStatus((prev) => ({
-              ...prev,
-              features: {
-                realTime: true,
-                notifications: true,
-                fileUpload: data.permissions?.includes("file_upload") || false,
-                audio: data.permissions?.includes("audio") || false,
-                video: data.permissions?.includes("video") || false,
-              },
-            }));
-          },
-        );
-
-        socketRef.current?.on(
-          "health_check",
-          (data: {
-            serverStatus?: ConnectionStatus["serverStatus"];
-            latency?: number;
-          }) => {
-            // Changed 'any' to specific type
-            console.log("Health check received:", data);
-            setConnectionStatus((prev) => ({
-              ...prev,
-              serverStatus: data.serverStatus || "online",
-              connectionQuality: calculateConnectionQuality(
-                data.latency || connectionStatus.latency,
-              ),
-            }));
-          },
-        );
-
-        socketRef.current?.on("pong", (latency: number) => {
-          setConnectionStatus((prev) => ({
-            ...prev,
-            latency: latency,
-            connectionQuality: calculateConnectionQuality(latency),
-          }));
-        });
-      }
-    };
-
-    initializeSocket();
+          addConnectionHistory("disconnected");
+        }
+      });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current?.disconnect();
-      }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (heartbeatIntervalRef.current) {
-        clearInterval(heartbeatIntervalRef.current);
-      }
-      if (latencyTestRef.current) {
-        clearTimeout(latencyTestRef.current);
-      }
+      channel.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    settings.autoReconnect,
-    settings.maxReconnectAttempts,
-    connectionStatus.reconnectAttempts,
-  ]);
+  }, []);
 
   const getStatusIcon = () => {
     switch (connectionStatus.status) {
@@ -391,20 +220,11 @@ export const ConnectionStatusIndicator: React.FC<
   };
 
   const handleReconnect = () => {
-    if (socketRef.current) {
-      socketRef.current.connect();
-    }
-  };
-
-  const handleDisconnect = () => {
-    if (socketRef.current) {
-      socketRef.current?.disconnect();
-    }
+    window.location.reload(); // Simple reconnect for Supabase
   };
 
   return (
     <div className="space-y-4">
-      {/* Connection Status Card */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -420,7 +240,6 @@ export const ConnectionStatusIndicator: React.FC<
           </div>
         </CardHeader>
         <CardContent>
-          {/* Connection Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
@@ -446,7 +265,6 @@ export const ConnectionStatusIndicator: React.FC<
             </div>
           </div>
 
-          {/* Connection Quality */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">Connection Quality</span>
@@ -470,7 +288,6 @@ export const ConnectionStatusIndicator: React.FC<
             />
           </div>
 
-          {/* Server Status */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">Server Status</span>
@@ -480,7 +297,6 @@ export const ConnectionStatusIndicator: React.FC<
             </div>
           </div>
 
-          {/* Features Status */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
             {Object.entries(connectionStatus.features).map(
               ([feature, enabled]) => (
@@ -498,7 +314,6 @@ export const ConnectionStatusIndicator: React.FC<
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-wrap gap-2 mb-4">
             <Button
               variant="outline"
@@ -513,49 +328,23 @@ export const ConnectionStatusIndicator: React.FC<
             <Button
               variant="outline"
               size="sm"
-              onClick={handleDisconnect}
-              disabled={connectionStatus.status === "disconnected"}
-            >
-              <WifiOff className="h-4 w-4 mr-2" />
-              Disconnect
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {isExpanded ? "Hide" : "Show"} Details
             </Button>
           </div>
 
-          {/* Connection Issues Alert */}
           {connectionStatus.status === "error" && (
             <Alert className="mb-4">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Connection error detected.{" "}
-                {settings.autoReconnect
-                  ? "Attempting to reconnect..."
-                  : "Please try reconnecting manually."}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {connectionStatus.reconnectAttempts >=
-            settings.maxReconnectAttempts && (
-            <Alert className="mb-4">
-              <XCircle className="h-4 w-4" />
-              <AlertDescription>
-                Maximum reconnect attempts reached. Please check your connection
-                and try again.
+                Connection error detected. Please try reconnecting manually.
               </AlertDescription>
             </Alert>
           )}
         </CardContent>
       </Card>
 
-      {/* Connection Details */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -572,7 +361,6 @@ export const ConnectionStatusIndicator: React.FC<
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {/* Connection Info */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-700">
@@ -590,26 +378,8 @@ export const ConnectionStatusIndicator: React.FC<
                         {connectionStatus.lastDisconnected.toLocaleString()}
                       </p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Reconnect Attempts
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        {connectionStatus.reconnectAttempts} /{" "}
-                        {settings.maxReconnectAttempts}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Connection Timeout
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        {settings.connectionTimeout}ms
-                      </p>
-                    </div>
                   </div>
 
-                  {/* Connection History */}
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2">
                       Connection History
@@ -638,11 +408,6 @@ export const ConnectionStatusIndicator: React.FC<
                               <span className="text-sm font-medium">
                                 {entry.status}
                               </span>
-                              {entry.latency && (
-                                <span className="text-xs text-gray-500">
-                                  {entry.latency}ms
-                                </span>
-                              )}
                             </div>
                             <div className="text-xs text-gray-500">
                               {entry.timestamp.toLocaleTimeString()}

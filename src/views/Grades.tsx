@@ -29,6 +29,21 @@ import DashboardLayout from "../components/common/DashboardLayout";
 import { getStudentGradesAction } from "../actions/grade.actions";
 import { StatsSkeleton } from "../components/common/LoadingSkeleton";
 
+// --- Types ---
+
+interface Grade {
+  score: number | null;
+  maxScore: number;
+  createdAt: string;
+  course: {
+    courseName: string;
+  };
+  quiz?: {
+    title?: string;
+  };
+  type: string;
+}
+
 // --- Components ---
 
 const GlassCard = ({
@@ -175,16 +190,18 @@ export default function Grades() {
     },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const grades = useMemo(
-    () => (gradesResponse as any[]) || [],
+    () => (gradesResponse as Grade[]) || [],
     [gradesResponse],
   );
 
   const stats = useMemo(() => {
     if (!grades.length) return { gpa: 0, total: 0, trend: [] };
 
-    const validGrades = grades.filter((g) => g.score !== null);
+    const validGrades = grades.filter(
+      (g): g is Grade & { score: number } => g.score !== null,
+    );
     const gpa =
       (validGrades.reduce((acc: number, g) => acc + g.score / g.maxScore, 0) /
         (validGrades.length || 1)) *

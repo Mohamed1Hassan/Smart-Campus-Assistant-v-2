@@ -1,5 +1,6 @@
-﻿"use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+"use client";
+import React, { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -34,14 +35,6 @@ interface AttendanceRecord {
   photoUrl?: string;
 }
 
-interface SocketAuthenticatedData {
-  user: { id: string; role: string };
-}
-
-interface SocketErrorData {
-  reason: string;
-  message?: string;
-}
 
 interface SocketFraudData {
   studentName: string;
@@ -53,14 +46,7 @@ interface SocketSessionData {
   title: string;
 }
 
-interface SocketEmergencyData {
-  reason: string;
-}
 
-interface SocketNotificationData {
-  message: string;
-  priority?: string;
-}
 
 interface LiveAttendanceTrackingProps {
   sessionId: string;
@@ -103,8 +89,6 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
     }[]
   >([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const socketRef = useRef<import("socket.io-client").Socket | null>(null);
-  const activityTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const addRecentActivity = useCallback(
     (activity: {
@@ -154,42 +138,15 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
   }, [attendanceRecords]);
 
   useEffect(() => {
-    // Initialize socket connection
-    const initializeSocket = () => {
-      // @ts-expect-error - window.io is added by script tag
-      if (typeof window !== "undefined" && window.io) {
-        // @ts-expect-error - window.io is added by script tag
-        socketRef.current = window.io();
-
-        socketRef.current?.on("connect", () => {
-          console.log("Connected to server");
-          setConnectionStatus("connected");
-
-          // Authenticate
-          const token = localStorage.getItem("token");
-          if (token) {
-            socketRef.current?.emit("authenticate", { token });
-          }
-        });
-
-        socketRef.current?.on("disconnect", () => {
-          console.log("Disconnected from server");
-          setConnectionStatus("disconnected");
-        });
-
-        socketRef.current?.on(
-          "authenticated",
-          (data: SocketAuthenticatedData) => {
-            console.log("Authenticated:", data);
-
-            // Join session
-            socketRef.current?.emit("join_session", { sessionId });
-          },
-        );
-
-        // Attendance events
-        socketRef.current?.on("attendance:marked", (data: AttendanceRecord) => {
-          setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]); // Keep last 50 records
+    // Initialize Supabase Realtime connection
+    const channel = supabase
+      .channel(`session:${sessionId}`)
+      .on(
+        'broadcast',
+        { event: `session:${sessionId}:attendance:marked` },
+        (payload: { payload: AttendanceRecord }) => {
+          const data = payload.payload;
+          setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
           addRecentActivity({
             type: "attendance",
             message: `${data.studentName} marked ${data.status.toLowerCase()}`,
@@ -197,145 +154,57 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
             status: data.status,
           });
           updateStats();
-        });
-
-        socketRef.current?.on("attendance:failed", (data: SocketErrorData) => {
-          addRecentActivity({
-            type: "error",
-            message: `Attendance failed: ${data.reason}`,
+        }
+      )
+      .on(
+        'broadcast',
+        { event: `session:${sessionId}:attendance:fraud_detected` },
+        (payload: { payload: SocketFraudData }) => {
+          const data = payload.payload;
+          const alert = {
+            type: "fraud",
+            message: `Fraud detected for ${data.studentName}`,
             timestamp: new Date(),
-          });
-        });
-
-        socketRef.current?.on(
-          "attendance:fraud_detected",
-          (data: SocketFraudData) => {
-            const alert = {
-              type: "fraud",
-              message: `Fraud detected for ${data.studentName}`,
-              timestamp: new Date(),
-              severity: data.severity,
-            };
-            setFraudAlerts((prev) => [alert, ...prev.slice(0, 9)]);
-            addRecentActivity(alert);
-          },
-        );
-
-        socketRef.current?.on(
-          "attendance:location_warning",
-          (data: SocketErrorData) => {
-            addRecentActivity({
-              type: "warning",
-              message: `Location warning: ${data.reason}`,
-              timestamp: new Date(),
-            });
-          },
-        );
-
-        socketRef.current?.on(
-          "attendance:device_warning",
-          (data: SocketErrorData) => {
-            addRecentActivity({
-              type: "warning",
-              message: `Device warning: ${data.reason}`,
-              timestamp: new Date(),
-            });
-          },
-        );
-
-        // Security events
-        socketRef.current?.on(
-          "security:fraud_alert",
-          (data: SocketFraudData) => {
-            const alert = {
-              type: "security",
-              message: `Security alert: ${data.description || "Fraud detected"}`,
-              timestamp: new Date(),
-              severity: data.severity,
-            };
-            setFraudAlerts((prev) => [alert, ...prev.slice(0, 9)]);
-            addRecentActivity(alert);
-          },
-        );
-
-        socketRef.current?.on("security:risk_high", () => {
-          addRecentActivity({
-            type: "high_risk",
-            message: `High risk activity detected`,
-            timestamp: new Date(),
-          });
-        });
-
-        // Session events
-        socketRef.current?.on("session:started", (data: SocketSessionData) => {
+            severity: data.severity,
+          };
+          setFraudAlerts((prev) => [alert, ...prev.slice(0, 9)]);
+          addRecentActivity(alert);
+        }
+      )
+      .on(
+        'broadcast',
+        { event: `session:${sessionId}:session:started` },
+        (payload: { payload: SocketSessionData }) => {
+          const data = payload.payload;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" started`,
             timestamp: new Date(),
           });
-        });
-
-        socketRef.current?.on("session:ended", (data: SocketSessionData) => {
+        }
+      )
+      .on(
+        'broadcast',
+        { event: `session:${sessionId}:session:ended` },
+        (payload: { payload: SocketSessionData }) => {
+          const data = payload.payload;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" ended`,
             timestamp: new Date(),
           });
-        });
+        }
+      )
+      .subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus("connected");
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          setConnectionStatus("disconnected");
+        }
+      });
 
-        socketRef.current?.on(
-          "session:emergency_Square",
-          (data: SocketEmergencyData) => {
-            addRecentActivity({
-              type: "emergency",
-              message: `Emergency Square: ${data.reason}`,
-              timestamp: new Date(),
-            });
-          },
-        );
-
-        // Notifications
-        socketRef.current?.on(
-          "notification",
-          (data: SocketNotificationData) => {
-            addRecentActivity({
-              type: "notification",
-              message: data.message,
-              timestamp: new Date(),
-              priority: data.priority,
-            });
-          },
-        );
-
-        // Health check
-        socketRef.current?.on(
-          "health_check",
-          (data: { status: string; timestamp: string }) => {
-            console.log("Health check:", data);
-          },
-        );
-
-        socketRef.current?.on("error", (error: SocketErrorData) => {
-          console.error("Socket error:", error);
-          addRecentActivity({
-            type: "error",
-            message: `Connection error: ${error.message}`,
-            timestamp: new Date(),
-          });
-        });
-      }
-    };
-
-    initializeSocket();
-
-    const currentTimeout = activityTimeoutRef.current;
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-      if (currentTimeout) {
-        clearTimeout(currentTimeout);
-      }
+      channel.unsubscribe();
     };
   }, [sessionId, updateStats, addRecentActivity]);
 

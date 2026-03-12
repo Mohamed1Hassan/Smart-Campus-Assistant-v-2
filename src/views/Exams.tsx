@@ -140,9 +140,9 @@ export default function Exams() {
 
   // Sort exams to find the nearest one
   const sortedExams = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     return [...exams].sort(
-      (a: any, b: any) =>
+      (a: { startTime: string }, b: { startTime: string }) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
     );
   }, [exams]);

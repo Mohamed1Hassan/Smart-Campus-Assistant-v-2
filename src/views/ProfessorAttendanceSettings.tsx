@@ -148,11 +148,11 @@ export default function ProfessorAttendanceSettings() {
     loadSettings();
   }, [loadSettings]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const handleSettingChange = (
     category: string,
     setting: string,
-    value: any,
+    value: unknown,
   ) => {
     setSettings((prev) => ({
       ...prev,

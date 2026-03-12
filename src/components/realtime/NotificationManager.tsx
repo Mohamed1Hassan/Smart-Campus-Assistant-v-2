@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -58,8 +59,6 @@ interface NotificationManagerProps {
 
 export const NotificationManager: React.FC<NotificationManagerProps> = ({
   userId,
-  sessionId,
-  courseId,
   showFilters = true,
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -78,7 +77,6 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
     pushNotifications: true,
   });
   const [isExpanded, setIsExpanded] = useState(false);
-  const socketRef = useRef<import("socket.io-client").Socket | null>(null);
   const soundRef = useRef<HTMLAudioElement | null>(null);
 
   const stats = React.useMemo(() => {
@@ -144,111 +142,45 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
   );
 
   useEffect(() => {
-    // Initialize socket connection
-    const initializeSocket = () => {
-      // @ts-expect-error window.io is injected by socket.io-client script
-      if (typeof window !== "undefined" && window.io) {
-        // @ts-expect-error window.io is injected by socket.io-client script
-        socketRef.current = window.io();
-
-        socketRef.current?.on("connect", () => {
-          console.log("Connected to notifications");
-
-          // Authenticate
-          const token = localStorage.getItem("token");
-          if (token) {
-            socketRef.current?.emit("authenticate", { token });
-          }
-        });
-
-        socketRef.current?.on(
-          "authenticated",
-          (data: { user: { id: string } }) => {
-            console.log("Authenticated for notifications:", data);
-
-            // Join relevant rooms
-            if (userId) {
-              socketRef.current?.emit("join_session", {
-                sessionId: `user:${userId}`,
-              });
-            }
-            if (sessionId) {
-              socketRef.current?.emit("join_session", { sessionId });
-            }
-            if (courseId) {
-              socketRef.current?.emit("join_session", {
-                sessionId: `course:${courseId}`,
-              });
-            }
-          },
-        );
-
-        // Notification events
-        socketRef.current?.on(
-          "notification",
-          (data: SocketNotificationData) => {
-            const notification: Notification = {
-              id: data.id || `notification-${Date.now()}`,
-              type: data.type || "SYSTEM",
-              priority: data.priority || "MEDIUM",
-              title: data.title || "Notification",
-              message: data.message || "",
-              data: data.data,
-              timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              userId: data.userId,
-              sessionId: data.sessionId,
-              courseId: data.courseId,
-            };
-
-            setNotifications((prev) => [notification, ...prev]);
-
-            // Play sound if enabled
-            if (settings.soundEnabled) {
-              playNotificationSound();
-            }
-
-            // Show desktop notification if enabled
-            if (settings.desktopNotifications && "Notification" in window) {
-              showDesktopNotification(notification);
-            }
-          },
-        );
-
-        // Specific notification types
-        socketRef.current?.on(
-          "notification:security",
-          (data: SocketNotificationData) => {
-            handleNotification(data, "SECURITY");
-          },
-        );
-
-        socketRef.current?.on(
-          "notification:attendance",
-          (data: SocketNotificationData) => {
-            handleNotification(data, "ATTENDANCE");
-          },
-        );
-
-        socketRef.current?.on(
-          "notification:system",
-          (data: SocketNotificationData) => {
-            handleNotification(data, "SYSTEM");
-          },
-        );
-
-        socketRef.current?.on(
-          "notification:emergency",
-          (data: SocketNotificationData) => {
-            handleNotification(data, "EMERGENCY");
-          },
-        );
-      }
-    };
-
-    initializeSocket();
+    // Initialize Supabase Realtime connection
+    const channel = supabase
+      .channel(`user:${userId}`)
+      .on(
+        'broadcast',
+        { event: 'notification' },
+        (payload: { payload: SocketNotificationData }) => {
+          handleNotification(payload.payload, payload.payload.type || "SYSTEM");
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'notification:security' },
+        (payload: { payload: SocketNotificationData }) => {
+          handleNotification(payload.payload, "SECURITY");
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'notification:attendance' },
+        (payload: { payload: SocketNotificationData }) => {
+          handleNotification(payload.payload, "ATTENDANCE");
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'notification:system' },
+        (payload: { payload: SocketNotificationData }) => {
+          handleNotification(payload.payload, "SYSTEM");
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'notification:emergency' },
+        (payload: { payload: SocketNotificationData }) => {
+          handleNotification(payload.payload, "EMERGENCY");
+        }
+      )
+      .subscribe();
 
     // Initialize sound
     if (typeof window !== "undefined") {
@@ -256,20 +188,9 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
     }
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current?.disconnect();
-      }
+      channel.unsubscribe();
     };
-  }, [
-    userId,
-    sessionId,
-    courseId,
-    settings.soundEnabled,
-    settings.desktopNotifications,
-    handleNotification,
-    playNotificationSound,
-    showDesktopNotification,
-  ]);
+  }, [userId, handleNotification]);
 
   // playNotificationSound and showDesktopNotification are defined above useEffect
 

@@ -1,21 +1,10 @@
-import { Server as SocketIOServer, Socket } from "socket.io";
-import { Server as HTTPServer } from "http";
-import jwt from "jsonwebtoken";
+import { supabase } from "@/lib/supabase";
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/db";
-import { JWTPayload } from "../utils/jwt";
 import { Prisma, NotificationType, NotificationCategory } from "@prisma/client";
 
 // Types
-export interface AuthenticatedSocket extends Socket {
-  userId?: string;
-  userRole?: string;
-  userPermissions?: string[];
-  sessionId?: string;
-  courseId?: number;
-}
-
 export interface NotificationMessage {
   id: string;
   type: "SECURITY" | "ATTENDANCE" | "SYSTEM" | "EMERGENCY";
@@ -23,7 +12,7 @@ export interface NotificationMessage {
   title: string;
   message: string;
   category: string;
-  data?: unknown;
+  data?: Record<string, unknown>;
   timestamp: Date;
   userId?: string;
   sessionId?: string;
@@ -46,16 +35,6 @@ export interface AttendanceEvent {
   photoUrl?: string;
 }
 
-export interface SecurityEvent {
-  type: "FRAUD_ALERT" | "RISK_HIGH" | "DEVICE_CHANGE" | "LOCATION_SPOOF";
-  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  sessionId: string;
-  studentId?: string;
-  description: string;
-  metadata?: unknown;
-  timestamp: Date;
-}
-
 export interface SessionEvent {
   sessionId: string;
   courseId: number;
@@ -66,250 +45,50 @@ export interface SessionEvent {
   reason?: string;
 }
 
-export interface ConnectionStats {
-  totalConnections: number;
-  authenticatedConnections: number;
-  sessionConnections: Map<string, number>;
-  userConnections: Map<string, number>;
-  lastActivity: Date;
-}
-
 // Event emitter for internal events
 const eventEmitter = new EventEmitter();
 
 export class SocketService {
-  private io: SocketIOServer | null = null;
-  private connections: Map<string, AuthenticatedSocket> = new Map();
-  private userSessions: Map<string, Set<string>> = new Map();
-  private sessionUsers: Map<string, Set<string>> = new Map();
-  private connectionStats: ConnectionStats = {
-    totalConnections: 0,
-    authenticatedConnections: 0,
-    sessionConnections: new Map(),
-    userConnections: new Map(),
-    lastActivity: new Date(),
-  };
+  private supabase = supabase;
+  private channel = this.supabase.channel('smart-campus-realtime');
 
-  public initialize(server: HTTPServer): SocketIOServer {
-    if (this.io) {
-      console.warn("[SocketService] Already initialized");
-      return this.io;
-    }
-
-    this.io = new SocketIOServer(server, {
-      path: "/api/socket",
-      addTrailingSlash: false,
-      cors: {
-        origin: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-        methods: ["GET", "POST"],
-        credentials: true,
-      },
-      transports: ["websocket", "polling"],
-      pingTimeout: 60000,
-      pingInterval: 25000,
+  constructor() {
+    this.channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log('[SocketService] Connected to Supabase Realtime');
+      }
     });
-
-    this.setupEventHandlers();
     this.setupInternalEvents();
-    this.startHealthCheck();
+  }
 
-    console.log("[SocketService] Initialized successfully");
-    return this.io;
+  // Helper to send a broadcast
+  private async broadcast(target: string, event: string, payload: Record<string, unknown>) {
+    try {
+      await this.channel.send({
+        type: 'broadcast',
+        event: `${target}:${event}`,
+        payload: payload,
+      });
+    } catch (error) {
+      console.error(`[SocketService] Broadcast error (${target}:${event}):`, error);
+    }
   }
 
   private setupEventHandlers(): void {
-    if (!this.io) return;
-
-    this.io.on("connection", (socket: AuthenticatedSocket) => {
-      console.log(`[SocketService] New connection: ${socket.id}`);
-      this.connectionStats.totalConnections++;
-      this.connectionStats.lastActivity = new Date();
-
-      // Handle authentication
-      socket.on("authenticate", async (data: { token: string }) => {
-        try {
-          const secret = process.env.JWT_SECRET;
-          if (!secret) {
-            console.error("[SocketService] JWT_SECRET not configured");
-            socket.emit("auth_error", {
-              message: "Server configuration error",
-            });
-            return;
-          }
-
-          const decoded = jwt.verify(data.token, secret) as JWTPayload;
-          const user = await prisma.user.findUnique({
-            where: { id: Number(decoded.userId) },
-            select: {
-              id: true,
-              email: true,
-              role: true,
-            },
-          });
-
-          if (!user) {
-            socket.emit("auth_error", { message: "Invalid user" });
-            return;
-          }
-
-          socket.userId = String(user.id);
-          socket.userRole = user.role;
-          this.connections.set(socket.id, socket);
-          this.connectionStats.authenticatedConnections++;
-
-          // Join user-specific room
-          socket.join(`user:${user.id}`);
-
-          // Join role-based rooms
-          socket.join(`role:${user.role}`);
-
-          socket.emit("authenticated", {
-            userId: user.id,
-            role: user.role,
-          });
-
-          console.log(
-            `[SocketService] User authenticated: ${user.id} (${user.role})`,
-          );
-        } catch (error) {
-          console.error("[SocketService] Authentication error:", error);
-          socket.emit("auth_error", { message: "Authentication failed" });
-        }
-      });
-
-      // Handle session joining
-      socket.on("join_session", async (data: { sessionId: string }) => {
-        try {
-          if (!socket.userId) {
-            socket.emit("error", { message: "Not authenticated" });
-            return;
-          }
-
-          const session = await prisma.attendanceSession.findUnique({
-            where: { id: data.sessionId },
-            include: {
-              course: {
-                select: {
-                  enrollments: {
-                    select: { studentId: true },
-                  },
-                },
-              },
-            },
-          });
-
-          if (!session) {
-            socket.emit("error", { message: "Session not found" });
-            return;
-          }
-
-          // Check access permissions
-          if (
-            socket.userRole === "PROFESSOR" &&
-            String(session.professorId) !== socket.userId
-          ) {
-            socket.emit("error", { message: "Access denied" });
-            return;
-          }
-
-          if (socket.userRole === "STUDENT") {
-            const isEnrolled = session.course.enrollments.some(
-              (enrollment: { studentId: number }) =>
-                String(enrollment.studentId) === socket.userId,
-            );
-            if (!isEnrolled) {
-              socket.emit("error", { message: "Not enrolled in course" });
-              return;
-            }
-          }
-
-          socket.sessionId = data.sessionId;
-          socket.courseId = session.courseId;
-
-          // Join session room
-          socket.join(`session:${data.sessionId}`);
-          socket.join(`course:${session.courseId}`);
-
-          // Update tracking
-          if (!this.userSessions.has(socket.userId)) {
-            this.userSessions.set(socket.userId, new Set());
-          }
-          this.userSessions.get(socket.userId)!.add(data.sessionId);
-
-          if (!this.sessionUsers.has(data.sessionId)) {
-            this.sessionUsers.set(data.sessionId, new Set());
-          }
-          this.sessionUsers.get(data.sessionId)!.add(socket.userId);
-
-          // Update connection stats
-          const currentCount =
-            this.connectionStats.sessionConnections.get(data.sessionId) || 0;
-          this.connectionStats.sessionConnections.set(
-            data.sessionId,
-            currentCount + 1,
-          );
-
-          socket.emit("session_joined", {
-            sessionId: data.sessionId,
-            courseId: session.courseId,
-            title: session.title,
-          });
-
-          console.log(
-            `[SocketService] User ${socket.userId} joined session ${data.sessionId}`,
-          );
-        } catch (error) {
-          console.error("[SocketService] Join session error:", error);
-          socket.emit("error", { message: "Failed to join session" });
-        }
-      });
-
-      // ... (Other handlers like leave_session, disconnect, etc.)
-      socket.on("leave_session", () => {
-        if (socket.sessionId) {
-          const sessionId = socket.sessionId;
-          socket.leave(`session:${sessionId}`);
-          socket.sessionId = undefined;
-          socket.courseId = undefined;
-
-          if (socket.userId && this.userSessions.has(socket.userId)) {
-            this.userSessions.get(socket.userId)!.delete(sessionId);
-          }
-
-          if (this.sessionUsers.has(sessionId) && socket.userId) {
-            this.sessionUsers.get(sessionId)!.delete(socket.userId);
-          }
-
-          const currentCount =
-            this.connectionStats.sessionConnections.get(sessionId) || 0;
-          if (currentCount > 0) {
-            this.connectionStats.sessionConnections.set(
-              sessionId,
-              currentCount - 1,
-            );
-          }
-
-          socket.emit("session_left", { sessionId });
-        }
-      });
-
-      socket.on("disconnect", () => {
-        this.handleDisconnection(socket);
-      });
-    });
+    // Legacy - not needed for Supabase Realtime
   }
 
   private setupInternalEvents(): void {
     // Attendance events
     eventEmitter.on("attendance:marked", (data: AttendanceEvent) => {
-      this.broadcastToSession(data.sessionId, "attendance:marked", data);
+      this.broadcastToSession(data.sessionId, "attendance:marked", data as unknown as Record<string, unknown>);
       this.sendNotification({
         type: "ATTENDANCE",
         category: "ATTENDANCE",
         priority: "MEDIUM",
         title: "Attendance Marked",
         message: `${data.studentName} marked attendance`,
-        data,
+        data: data as unknown as Record<string, unknown>,
         sessionId: data.sessionId,
         timestamp: new Date(),
         id: uuidv4(),
@@ -321,75 +100,37 @@ export class SocketService {
     // I will add the rest in subsequent steps.
   }
 
-  private handleDisconnection(socket: AuthenticatedSocket): void {
-    if (socket.userId) {
-      const currentCount =
-        this.connectionStats.userConnections.get(socket.userId) || 0;
-      if (currentCount > 0) {
-        this.connectionStats.userConnections.set(
-          socket.userId,
-          currentCount - 1,
-        );
-      }
-
-      if (socket.sessionId) {
-        const sessCount =
-          this.connectionStats.sessionConnections.get(socket.sessionId) || 0;
-        if (sessCount > 0)
-          this.connectionStats.sessionConnections.set(
-            socket.sessionId,
-            sessCount - 1,
-          );
-
-        if (this.sessionUsers.has(socket.sessionId)) {
-          this.sessionUsers.get(socket.sessionId)!.delete(socket.userId);
-        }
-      }
-    }
-
-    this.connections.delete(socket.id);
-    this.connectionStats.totalConnections--;
-    if (socket.userId) this.connectionStats.authenticatedConnections--;
+  private handleDisconnection(): void {
+    // Legacy
   }
 
   private startHealthCheck(): void {
-    setInterval(() => {
-      if (this.io) {
-        this.io.emit("health_check", {
-          timestamp: new Date(),
-          stats: {
-            totalConnections: this.connectionStats.totalConnections,
-            authenticatedConnections:
-              this.connectionStats.authenticatedConnections,
-          },
-        });
-      }
-    }, 30000);
+    // Legacy
   }
 
   // Public methods for broadcasting
   public broadcastToSession(
     sessionId: string,
     event: string,
-    data: unknown,
+    data: Record<string, unknown>,
   ): void {
-    this.io?.to(`session:${sessionId}`).emit(event, data);
+    this.broadcast(`session:${sessionId}`, event, data);
   }
 
   public broadcastToCourse(
     courseId: number,
     event: string,
-    data: unknown,
+    data: Record<string, unknown>,
   ): void {
-    this.io?.to(`course:${courseId}`).emit(event, data);
+    this.broadcast(`course:${courseId}`, event, data);
   }
 
-  public broadcastToUser(userId: string, event: string, data: unknown): void {
-    this.io?.to(`user:${userId}`).emit(event, data);
+  public broadcastToUser(userId: string, event: string, data: Record<string, unknown>): void {
+    this.broadcast(`user:${userId}`, event, data);
   }
 
-  public broadcastToRole(role: string, event: string, data: unknown): void {
-    this.io?.to(`role:${role}`).emit(event, data);
+  public broadcastToRole(role: string, event: string, data: Record<string, unknown>): void {
+    this.broadcast(`role:${role}`, event, data);
   }
 
   public sendNotification(
@@ -508,7 +249,7 @@ export class SocketService {
         priority: "MEDIUM",
         title: notification.title,
         message: notification.message,
-        data: notification.metadata || notification.data,
+        data: (notification.metadata || notification.data) as Record<string, unknown>,
         timestamp:
           notification.createdAt || notification.timestamp || new Date(),
         category: notification.category || "SYSTEM",
@@ -517,8 +258,8 @@ export class SocketService {
     );
   }
 
-  public getIO(): SocketIOServer | null {
-    return this.io;
+  public getIO(): null {
+    return null;
   }
 }
 

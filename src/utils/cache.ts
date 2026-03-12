@@ -18,6 +18,7 @@ export interface CacheConfig {
   encryptionKey?: string;
 }
 
+
 export interface CacheItem<T = unknown> {
   key: string;
   value: T;
@@ -470,16 +471,15 @@ export const cache = new CacheManager({
 
 // Cache decorator for methods
 export function cached(ttl?: number) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return function (
-    target: any,
+    target: Record<string, unknown>,
     propertyName: string,
     descriptor: PropertyDescriptor,
   ) {
     const method = descriptor.value;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (this: unknown, ...args: unknown[]) {
       const cacheKey = `${target.constructor.name}.${propertyName}.${JSON.stringify(args)}`;
 
       return cache.cache(cacheKey, () => method.apply(this, args), ttl);
@@ -489,10 +489,10 @@ export function cached(ttl?: number) {
 
 // Express middleware for caching responses
 export const cacheMiddleware = (ttl: number = 300) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return async (
     req: { method: string; originalUrl: string },
-    res: { json: (data: any) => any },
+    res: { json: (data: unknown) => unknown },
     next: () => void,
   ) => {
     // Only cache GET requests
@@ -510,8 +510,7 @@ export const cacheMiddleware = (ttl: number = 300) => {
     // Store original res.json
     const originalJson = res.json;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    res.json = function (data: any) {
+    res.json = function (this: unknown, data: unknown) {
       // Cache the response
       cache.set(cacheKey, data, ttl);
 

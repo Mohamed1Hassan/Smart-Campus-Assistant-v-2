@@ -36,6 +36,21 @@ interface ProfileErrors {
   dob?: string;
 }
 
+interface ProfessorProfileData {
+  name?: string;
+  phone?: string;
+  dob?: string;
+  address?: string;
+  department?: string;
+  title?: string;
+  officeHours?: string;
+  researchInterests?: string;
+  notificationsEnabled?: boolean;
+  avatarUrl?: string | null;
+  emergencyContact?: string;
+  user?: ProfessorProfileData;
+}
+
 const initialProfile = {
   id: "",
   name: "",
@@ -127,34 +142,28 @@ export default function ProfessorProfile() {
         }
 
         if (profileResponse.success && profileResponse.data) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const userData = ((profileResponse.data as any).user ||
-            profileResponse.data) as any;
+          const userData = ((profileResponse.data as ProfessorProfileData)
+            .user || profileResponse.data) as ProfessorProfileData;
           return {
             id: user.universityId || "P20251001",
-            name: userData.name || `${user.firstName} ${user.lastName}`,
+            name: (userData.name as string) || `${user.firstName} ${user.lastName}`,
             email: user.email || "",
-            phone: safe(userData.phone, ""),
-            dob: safe(userData.dob, ""),
+            phone: safe(userData.phone as string, ""),
+            dob: safe(userData.dob as string, ""),
             address: safe(
-              userData.address,
+              userData.address as string,
               "Faculty Building, Room 205, Cairo University",
             ),
             department: departmentName || userData.department || "",
-            title: safe(userData.title, "Associate Professor"),
-            officeHours: safe(
-              userData.officeHours,
-              "Mon-Wed 10:00-12:00, Thu 14:00-16:00",
-            ),
-            researchInterests: safe(
-              userData.researchInterests,
-              "Machine Learning, Artificial Intelligence, Data Science",
-            ),
-            notificationsEnabled: userData.notificationsEnabled ?? true,
-            avatarUrl: safe(userData.avatarUrl, null),
-            emergencyContact: safe(userData.emergencyContact, ""),
-            totalStudents: 500,
-          };
+            title: (userData.title as string) || "Professor of Computer Science",
+            officeHours: (userData.officeHours as string) || "Mon, Wed 10:00 AM - 12:00 PM",
+            researchInterests:
+              (userData.researchInterests as string) || "Machine Learning, Neural Networks",
+            notificationsEnabled: userData.notificationsEnabled !== false,
+            avatarUrl: (userData.avatarUrl as string) || null,
+            emergencyContact: (userData.emergencyContact as string) || "+20 123 456 7890",
+            totalStudents: 154,
+          } as typeof initialProfile;
         }
 
         // Fallback if profile fetch fails but we have user data

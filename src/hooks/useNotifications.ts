@@ -12,7 +12,6 @@ import {
   NotificationFilters,
   NotificationType,
   NotificationCategory,
-  SocketNotificationData,
 } from "../types/notification.types";
 
 // WebSocket connection state
@@ -38,7 +37,7 @@ interface UseNotificationsOptions {
   filters?: NotificationFilters;
 }
 
-import { getSocket, disconnectSocket } from "../lib/socket";
+import { supabase } from "../lib/supabase";
 
 // Main hook
 export function useNotifications(options: UseNotificationsOptions = {}) {
@@ -57,58 +56,43 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     },
   });
 
-  // Initialize Socket.io
+  // Initialize Supabase Realtime Channel
   useEffect(() => {
     if (realTime && isAuthenticated && user) {
-      const socket = getSocket(
-        localStorage.getItem("accessToken") || undefined,
-      );
+      const channel = supabase
+        .channel(`user:${user.id}`)
+        .on(
+          'broadcast',
+          { event: `user:${user.id}:notification` },
+          (payload) => {
+            console.log('[useNotifications] New notification:', payload);
+            setState((prev) => ({
+              ...prev,
+              notifications: [
+                payload.payload as unknown as NotificationResponse,
+                ...prev.notifications,
+              ],
+            }));
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            setState((prev) => ({
+              ...prev,
+              wsState: { connected: true, reconnecting: false, error: null },
+            }));
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            setState((prev) => ({
+              ...prev,
+              wsState: { connected: false, reconnecting: false, error: status },
+            }));
+          }
+        });
 
-      socket.on("notification", (data: SocketNotificationData) => {
-        setState((prev) => ({
-          ...prev,
-          notifications: [
-            data as unknown as NotificationResponse,
-            ...prev.notifications,
-          ],
-        }));
-      });
-
-      socket.on("connect", () => {
-        setState((prev) => ({
-          ...prev,
-          wsState: { connected: true, reconnecting: false, error: null },
-        }));
-      });
-
-      socket.on("disconnect", () => {
-        setState((prev) => ({
-          ...prev,
-          wsState: { connected: false, reconnecting: false, error: null },
-        }));
-      });
-
-      socket.on("connect_error", (error) => {
-        setState((prev) => ({
-          ...prev,
-          wsState: {
-            connected: false,
-            reconnecting: false,
-            error: error.message,
-          },
-        }));
-      });
+      return () => {
+        channel.unsubscribe();
+      };
     }
-
-    return () => {
-      // Don't disconnect here as the socket might be shared
-      // But we should remove listeners
-      const socket = getSocket();
-      socket.off("notification");
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("connect_error");
-    };
   }, [isAuthenticated, user, realTime]);
 
   // Fetch notifications
@@ -315,14 +299,14 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
 
   // Connect WebSocket manually
   const connectWebSocket = useCallback(() => {
-    if (isAuthenticated) {
-      getSocket(localStorage.getItem("access_token") || undefined);
-    }
-  }, [isAuthenticated]);
+    // Legacy - Supabase handles connection automatically via subscribe()
+    console.log('[useNotifications] connectWebSocket called (legacy)');
+  }, []);
 
   // Disconnect WebSocket manually
   const disconnectWebSocket = useCallback(() => {
-    disconnectSocket();
+    // Legacy
+    console.log('[useNotifications] disconnectWebSocket called (legacy)');
     setState((prev) => ({
       ...prev,
       wsState: { connected: false, reconnecting: false, error: null },

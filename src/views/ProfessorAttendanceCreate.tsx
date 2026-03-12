@@ -175,19 +175,19 @@ export default function ProfessorAttendanceCreate() {
   }, [isEditMode, selectedSession]);
 
   // Validation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const validateField = useCallback(
-    (field: string, value: any): string | undefined => {
+    (field: string, value: unknown): string | undefined => {
       switch (field) {
         case "courseId":
           return !value ? "Course is required" : undefined;
         case "title":
           if (!value) return "Title is required";
-          if (value.length < 3) return "Title too short";
+          if ((value as string).length < 3) return "Title too short";
           return undefined;
         case "startTime":
           if (!value) return "Start time is required";
-          if (new Date(value) <= new Date()) return "Must be in future";
+          if (new Date(value as string) <= new Date()) return "Must be in future";
           return undefined;
         case "duration":
           return !value ? "Duration is required" : undefined;
@@ -224,15 +224,14 @@ export default function ProfessorAttendanceCreate() {
     const fieldParts = field.split(".");
     const value =
       fieldParts.length > 1
-        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ?  
           (
             formData[fieldParts[0] as keyof typeof formData] as Record<
               string,
-              any
+              unknown
             >
           )[fieldParts[1]]
-        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (formData as Record<string, any>)[field];
+        : (formData as Record<string, unknown>)[field];
     setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
   };
 

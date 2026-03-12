@@ -109,12 +109,12 @@ export default function Attendance() {
 
       try {
         const res = await apiClient.get("/api/attendance/records");
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         if (DEV)
           console.log(
             "📊 Attendance API response:",
             res.success,
-            (res.data as any)?.length,
+            (res.data as unknown[] | null)?.length,
           );
 
         if (

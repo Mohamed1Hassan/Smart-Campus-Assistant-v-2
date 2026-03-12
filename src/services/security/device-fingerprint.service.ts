@@ -247,12 +247,15 @@ export class DeviceFingerprintService {
    */
   private getBatteryInfo(): { level: number; charging: boolean } | undefined {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const battery =
-        (navigator as Navigator & { battery?: any; webkitBattery?: any })
-          .battery ||
-        (navigator as Navigator & { battery?: any; webkitBattery?: any })
-          .webkitBattery;
+        (navigator as Navigator & {
+          getBattery?: () => Promise<{ level: number; charging: boolean }>;
+          battery?: { level: number; charging: boolean };
+          webkitBattery?: { level: number; charging: boolean };
+        }).battery ||
+        (navigator as Navigator & {
+          webkitBattery?: { level: number; charging: boolean };
+        }).webkitBattery;
       if (battery) {
         return {
           level: battery.level,
@@ -269,12 +272,14 @@ export class DeviceFingerprintService {
    * Get network information
    */
   private getNetworkInfo(): { connection: string; effectiveType: string } {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const connection =
-      (navigator as Navigator & { connection?: any; webkitConnection?: any })
-        .connection ||
-      (navigator as Navigator & { connection?: any; webkitConnection?: any })
-        .webkitConnection;
+      (navigator as Navigator & {
+        connection?: { type: string; effectiveType: string };
+        webkitConnection?: { type: string; effectiveType: string };
+      }).connection ||
+      (navigator as Navigator & {
+        webkitConnection?: { type: string; effectiveType: string };
+      }).webkitConnection;
     if (connection) {
       return {
         connection: connection.type || "unknown",

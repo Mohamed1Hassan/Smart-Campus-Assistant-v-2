@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -68,11 +69,10 @@ export const RealTimeFraudAlerts: React.FC<RealTimeFraudAlertsProps> = ({
   const [selectedAlert, setSelectedAlert] = useState<FraudAlert | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [filters, setFilters] = useState({
-    severity: "ALL" as string,
-    type: "ALL" as string,
-    status: "UNRESOLVED" as string,
+    severity: "ALL",
+    type: "ALL",
+    status: "UNRESOLVED",
   });
-  const socketRef = useRef<import("socket.io-client").Socket | null>(null);
 
   const stats = useMemo(() => {
     return {
@@ -86,183 +86,59 @@ export const RealTimeFraudAlerts: React.FC<RealTimeFraudAlertsProps> = ({
   }, [alerts]);
 
   useEffect(() => {
-    // Initialize socket connection
-    const initializeSocket = () => {
-      // @ts-expect-error window.io is injected by socket.io-client script
-      if (typeof window !== "undefined" && window.io) {
-        // @ts-expect-error window.io is injected by socket.io-client script
-        socketRef.current = window.io();
-
-        socketRef.current?.on("connect", () => {
-          console.log("Connected to fraud alerts");
-
-          // Authenticate
-          const token = localStorage.getItem("token");
-          if (token) {
-            socketRef.current?.emit("authenticate", { token });
-          }
-        });
-
-        socketRef.current?.on(
-          "authenticated",
-          (data: { user: { id: string } }) => {
-            console.log("Authenticated for fraud alerts:", data);
-
-            // Join session if provided
-            if (sessionId && socketRef.current) {
-              socketRef.current.emit("join_session", { sessionId });
-            }
-          },
-        );
-
-        // Fraud detection events
-        socketRef.current?.on(
-          "attendance:fraud_detected",
-          (data: SocketFraudData) => {
-            const alert: FraudAlert = {
-              id: data.id || `fraud-${Date.now()}`,
-              type: data.type || "BEHAVIOR_FRAUD",
-              severity: data.severity || "HIGH",
-              sessionId: data.sessionId,
-              studentId: data.studentId,
-              studentName: data.studentName,
-              description: data.description || "Fraud detected",
-              metadata: data.metadata || {},
-              timestamp: new Date(data.timestamp || Date.now()),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              isResolved: false,
-            };
-
-            setAlerts((prev) => [alert, ...prev]);
-          },
-        );
-
-        socketRef.current?.on(
-          "security:fraud_alert",
-          (data: SocketFraudData) => {
-            const alert: FraudAlert = {
-              id: data.id || `alert-${Date.now()}`,
-              type: data.type || "BEHAVIOR_FRAUD",
-              severity: data.severity || "MEDIUM",
-              sessionId: data.sessionId,
-              studentId: data.studentId,
-              studentName: data.studentName,
-              description: data.description || "Fraud alert",
-              metadata: data.metadata || {},
-              timestamp: new Date(data.timestamp || Date.now()),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              isResolved: false,
-            };
-
-            setAlerts((prev) => [alert, ...prev]);
-          },
-        );
-
-        socketRef.current?.on("security:risk_high", (data: SocketFraudData) => {
+    // Initialize Supabase Realtime connection
+    const channel = supabase
+      .channel(`session:${sessionId}:fraud`)
+      .on(
+        'broadcast',
+        { event: 'attendance:fraud_detected' },
+        (payload: { payload: SocketFraudData }) => {
+          const data = payload.payload;
           const alert: FraudAlert = {
-            id: `risk-${Date.now()}`,
-            type: "BEHAVIOR_FRAUD",
-            severity: "HIGH",
+            id: data.id || `fraud-${Date.now()}`,
+            type: data.type || "BEHAVIOR_FRAUD",
+            severity: (data.severity as FraudAlert["severity"]) || "HIGH",
             sessionId: data.sessionId,
             studentId: data.studentId,
             studentName: data.studentName,
-            description: "High-risk activity detected",
-            metadata:
-              data.metadata || (data as unknown as Record<string, unknown>),
-            timestamp: new Date(),
+            description: data.description || "Fraud detected",
+            metadata: data.metadata || {},
+            timestamp: new Date(data.timestamp || Date.now()),
             isRead: false,
             isStarred: false,
             isArchived: false,
             isResolved: false,
           };
-
           setAlerts((prev) => [alert, ...prev]);
-        });
-
-        socketRef.current?.on(
-          "security:location_spoof",
-          (data: SocketFraudData) => {
-            const alert: FraudAlert = {
-              id: `location-${Date.now()}`,
-              type: "LOCATION_FRAUD",
-              severity: "CRITICAL",
-              sessionId: data.sessionId,
-              studentId: data.studentId,
-              studentName: data.studentName,
-              description: "Location spoofing detected",
-              metadata:
-                data.metadata || (data as unknown as Record<string, unknown>),
-              timestamp: new Date(),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              isResolved: false,
-            };
-
-            setAlerts((prev) => [alert, ...prev]);
-          },
-        );
-
-        socketRef.current?.on(
-          "attendance:location_warning",
-          (data: SocketFraudData) => {
-            const alert: FraudAlert = {
-              id: `location-warning-${Date.now()}`,
-              type: "LOCATION_FRAUD",
-              severity: "MEDIUM",
-              sessionId: data.sessionId,
-              studentId: data.studentId,
-              studentName: data.studentName,
-              description: "Location verification failed",
-              metadata:
-                data.metadata || (data as unknown as Record<string, unknown>),
-              timestamp: new Date(),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              isResolved: false,
-            };
-
-            setAlerts((prev) => [alert, ...prev]);
-          },
-        );
-
-        socketRef.current?.on(
-          "attendance:device_warning",
-          (data: SocketFraudData) => {
-            const alert: FraudAlert = {
-              id: `device-warning-${Date.now()}`,
-              type: "DEVICE_FRAUD",
-              severity: "MEDIUM",
-              sessionId: data.sessionId,
-              studentId: data.studentId,
-              studentName: data.studentName,
-              description: "Device verification failed",
-              metadata:
-                data.metadata || (data as unknown as Record<string, unknown>),
-              timestamp: new Date(),
-              isRead: false,
-              isStarred: false,
-              isArchived: false,
-              isResolved: false,
-            };
-
-            setAlerts((prev) => [alert, ...prev]);
-          },
-        );
-      }
-    };
-
-    initializeSocket();
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'security:fraud_alert' },
+        (payload: { payload: SocketFraudData }) => {
+          const data = payload.payload;
+          const alert: FraudAlert = {
+            id: data.id || `alert-${Date.now()}`,
+            type: data.type || "BEHAVIOR_FRAUD",
+            severity: (data.severity as FraudAlert["severity"]) || "MEDIUM",
+            sessionId: data.sessionId,
+            studentId: data.studentId,
+            studentName: data.studentName,
+            description: data.description || "Fraud alert",
+            metadata: data.metadata || {},
+            timestamp: new Date(data.timestamp || Date.now()),
+            isRead: false,
+            isStarred: false,
+            isArchived: false,
+            isResolved: false,
+          };
+          setAlerts((prev) => [alert, ...prev]);
+        }
+      )
+      .subscribe();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      channel.unsubscribe();
     };
   }, [sessionId]);
 
@@ -290,6 +166,9 @@ export const RealTimeFraudAlerts: React.FC<RealTimeFraudAlertsProps> = ({
 
     return filtered;
   }, [alerts, filters, showResolved]);
+
+  // showResolved prop is already used in the filteredAlerts useMemo
+  // No need to synchronously sync it with filters.status in an effect.
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

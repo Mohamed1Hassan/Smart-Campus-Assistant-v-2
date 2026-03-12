@@ -11,6 +11,7 @@ import FilterBar, {
 import NotificationsList from "../components/professor/notifications/NotificationsList";
 import EmptyState from "../components/professor/notifications/EmptyState";
 import { NotificationItem } from "../components/professor/notifications/NotificationCard";
+import { NotificationType, NotificationCategory } from "@/types/notification.types";
 import { useToast } from "../components/common/ToastProvider";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { apiClient } from "../services/api";
@@ -225,11 +226,16 @@ export default function ProfessorNotifications() {
     { id: string | number; courseName: string; courseCode: string }[]
   >([]);
   const [selectedCourse, setSelectedCourse] = useState<string>("all");
-  const [composeData, setComposeData] = useState({
+  const [composeData, setComposeData] = useState<{
+    title: string;
+    message: string;
+    type: NotificationType;
+    category: NotificationCategory;
+  }>({
     title: "",
     message: "",
-    type: "INFO" as const,
-    category: "ANNOUNCEMENT" as const,
+    type: NotificationType.INFO,
+    category: NotificationCategory.ANNOUNCEMENT,
   });
   const [isSending, setIsSending] = useState(false);
 
@@ -280,14 +286,14 @@ export default function ProfessorNotifications() {
           // Standardize response: handle either { data: [...] } or { data: { notifications: [...] } }
           const notificationsData = Array.isArray(res.data)
             ? res.data
-            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            :  
               res.data &&
                 typeof res.data === "object" &&
                 "notifications" in res.data &&
                 Array.isArray(
-                  (res.data as { notifications: any[] }).notifications,
+                  (res.data as { notifications: unknown[] }).notifications,
                 )
-              ? (res.data as { notifications: any[] }).notifications
+              ? (res.data as { notifications: unknown[] }).notifications
               : null;
 
           if (notificationsData) {
@@ -456,23 +462,21 @@ export default function ProfessorNotifications() {
     try {
       const res = await apiClient.get("/api/notifications?userType=professor");
       if (res.success) {
-        const notificationsData = Array.isArray(res.data)
-          ? res.data
-          : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            res.data &&
-              typeof res.data === "object" &&
-              "notifications" in res.data &&
-              Array.isArray(
-                (res.data as { notifications: any[] }).notifications,
-              )
-            ? (res.data as { notifications: any[] }).notifications
-            : null;
+        let notificationsData: NotificationItem[] | null = null;
+        
+        if (Array.isArray(res.data)) {
+          notificationsData = res.data;
+        } else if (res.data && typeof res.data === "object" && "notifications" in res.data) {
+          const data = res.data as { notifications: unknown };
+          if (Array.isArray(data.notifications)) {
+            notificationsData = data.notifications as NotificationItem[];
+          }
+        }
 
         if (notificationsData) {
-          setNotifications(notificationsData as NotificationItem[]);
+          setNotifications(notificationsData);
           setLastSync(new Date());
-          if (DEV)
-            console.log("Notifications refreshed:", notificationsData.length);
+          if (DEV) console.log("Notifications refreshed:", notificationsData.length);
         }
       }
     } catch (error) {
@@ -569,8 +573,8 @@ export default function ProfessorNotifications() {
         ...(composeData as {
           title: string;
           message: string;
-          type: import("@/types/notification.types").NotificationType;
-          category: import("@/types/notification.types").NotificationCategory;
+          type: NotificationType;
+          category: NotificationCategory;
         }),
       });
 
@@ -580,8 +584,8 @@ export default function ProfessorNotifications() {
         setComposeData({
           title: "",
           message: "",
-          type: "INFO",
-          category: "ANNOUNCEMENT",
+          type: NotificationType.INFO,
+          category: NotificationCategory.ANNOUNCEMENT,
         });
       } else {
         showError(res.error || "Failed to send notification");
@@ -1061,11 +1065,11 @@ export default function ProfessorNotifications() {
                     </label>
                     <select
                       value={composeData.type}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                       
                       onChange={(e) =>
                         setComposeData((prev) => ({
                           ...prev,
-                          type: e.target.value as any,
+                          type: e.target.value as NotificationType,
                         }))
                       }
                       className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
@@ -1081,11 +1085,11 @@ export default function ProfessorNotifications() {
                     </label>
                     <select
                       value={composeData.category}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                       
                       onChange={(e) =>
                         setComposeData((prev) => ({
                           ...prev,
-                          category: e.target.value as any,
+                          category: e.target.value as NotificationCategory,
                         }))
                       }
                       className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"

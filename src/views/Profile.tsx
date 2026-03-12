@@ -314,10 +314,10 @@ export default function Profile() {
         return { currentCourses: 0, upcomingExams: 0 };
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const coursesResponse = await apiClient.get<{
-          courses: any[];
-          enrollments: any[];
+          courses: unknown[];
+          enrollments: unknown[];
         }>("/api/courses/student/enrolled");
         if (coursesResponse.success && coursesResponse.data) {
           const enrolledCourses = Array.isArray(coursesResponse.data)

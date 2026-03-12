@@ -104,6 +104,59 @@ interface ApiDevice {
   lastUsed: string;
 }
 
+interface RawAttendanceRecord {
+  id?: string;
+  sessionId?: string;
+  courseId?: string;
+  qrCodeId?: string;
+  courseName?: string;
+  title?: string;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  course?: { courseName: string };
+  session?: { courseName: string };
+  attendedAt?: string;
+  createdAt?: string;
+  timestamp?: string;
+  markedAt?: string;
+  status?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    name?: string;
+    radius?: number;
+  };
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
+  locationVerified?: boolean;
+  distance?: number;
+  deviceFingerprint?: string;
+  fraudAlerts?: string[];
+  fraudScore?: number;
+  photoUrl?: string;
+  photoQuality?: number;
+  photoHasFace?: boolean;
+  photoVerified?: boolean;
+  photoMetadata?: Record<string, unknown>;
+  deviceVerified?: boolean;
+  deviceInfo?: string;
+  device?: {
+    fingerprint?: string;
+    deviceInfo?: string;
+    isNewDevice?: boolean;
+  };
+  riskLevel?: string;
+  security?: {
+    isLocationRequired?: boolean;
+    isPhotoRequired?: boolean;
+    isDeviceCheckRequired?: boolean;
+    gracePeriod?: number;
+    fraudDetectionEnabled?: boolean;
+  };
+}
+
 export default function StudentAttendance() {
   const { user } = useAuth();
   const { error: toastError } = useToast();
@@ -167,8 +220,7 @@ export default function StudentAttendance() {
       if (!user?.id) return null;
       try {
         const sessionId = searchParams?.get("session");
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response = await apiClient.get<{ data: any[] }>(
+        const response = await apiClient.get<{ data: unknown[] }>(
           "/api/attendance/sessions",
           {
             params: sessionId ? { sessionId } : { status: "ACTIVE" },
@@ -176,21 +228,21 @@ export default function StudentAttendance() {
         );
 
         if (response.success && response.data?.data) {
-          const activeSessions = response.data.data;
+          const activeSessions = response.data.data as RawAttendanceRecord[];
           if (activeSessions.length > 0) {
             const session = activeSessions[0];
             return {
               id: session.sessionId || session.id || "",
-              courseId: session.courseId,
-              courseName: session.courseName,
+              courseId: session.courseId || "",
+              courseName: session.courseName || "",
               title: session.title || "Attendance Session",
-              startTime: new Date(session.startTime),
-              endTime: new Date(session.endTime),
+              startTime: new Date(session.startTime || new Date()),
+              endTime: new Date(session.endTime || new Date()),
               location: session.location || {
                 latitude: 0,
                 longitude: 0,
                 radius: 50,
-                name: session.location?.name || "",
+                name: (session.location as { name?: string } | undefined)?.name || "",
               },
               isLocationRequired:
                 session.security?.isLocationRequired !== false,
@@ -227,8 +279,7 @@ export default function StudentAttendance() {
         apiClient.get<Record<string, unknown>[]>("/api/attendance/records", {
           params: { studentId: userId },
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        apiClient.get<Record<string, any>>("/api/attendance/stats", {
+        apiClient.get<Record<string, unknown>>("/api/attendance/stats", {
           params: { userId: user.universityId || userId },
         }),
       ]);
@@ -239,9 +290,9 @@ export default function StudentAttendance() {
         recordsResponse.value.success &&
         Array.isArray(recordsResponse.value.data)
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         history = recordsResponse.value.data.map(
-          (record: Record<string, any>) => ({
+          (record: RawAttendanceRecord) => ({
             id: record.id || `att-${record.sessionId}`,
             sessionId: record.sessionId || record.qrCodeId || "",
             courseName:
@@ -250,20 +301,20 @@ export default function StudentAttendance() {
               record.session?.courseName ||
               "Unknown Course",
             timestamp: new Date(
-              record.attendedAt ||
+              (record.attendedAt ||
                 record.createdAt ||
                 record.timestamp ||
-                record.markedAt,
+                record.markedAt) as string || new Date().toISOString(),
             ),
             location: {
               latitude: record.location?.latitude || record.latitude || 0,
               longitude: record.location?.longitude || record.longitude || 0,
               accuracy: record.location?.accuracy || record.accuracy || 0,
               timestamp: new Date(
-                record.attendedAt ||
+                (record.attendedAt ||
                   record.createdAt ||
                   record.timestamp ||
-                  record.markedAt,
+                  record.markedAt) as string || new Date().toISOString(),
               ),
               isVerified: record.locationVerified !== false,
               distance: record.distance || 0,
@@ -281,14 +332,12 @@ export default function StudentAttendance() {
               isVerified: record.deviceVerified !== false,
               isNewDevice: record.device?.isNewDevice || false,
               lastUsed: new Date(
-                record.attendedAt ||
+                (record.attendedAt ||
                   record.createdAt ||
                   record.timestamp ||
-                  record.markedAt ||
-                  new Date(),
+                  record.markedAt) as string || new Date().toISOString(),
               ),
-              riskLevel:
-                record.riskLevel ||
+              riskLevel: (record.riskLevel as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL") ||
                 (record.fraudScore && record.fraudScore > 70
                   ? "HIGH"
                   : record.fraudScore && record.fraudScore > 40
@@ -299,11 +348,10 @@ export default function StudentAttendance() {
               ? {
                   url: record.photoUrl,
                   timestamp: new Date(
-                    record.attendedAt ||
+                    (record.attendedAt ||
                       record.createdAt ||
                       record.timestamp ||
-                      record.markedAt ||
-                      new Date(),
+                      record.markedAt) as string || new Date().toISOString(),
                   ),
                   quality: record.photoQuality || 85,
                   hasFace: record.photoHasFace !== false,
@@ -343,9 +391,9 @@ export default function StudentAttendance() {
           recordsResponse.status === "fulfilled" &&
           recordsResponse.value.success &&
           Array.isArray(recordsResponse.value.data)
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ?  
               recordsResponse.value.data.filter(
-                (r: Record<string, any>) => r.status === "LATE",
+                (r: RawAttendanceRecord) => r.status === "LATE",
               ).length
             : 0;
 
@@ -1024,8 +1072,8 @@ export default function StudentAttendance() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const attendanceRecord: AttendanceRecord = {
           id: response.data.id || `att-${Date.now()}`,
-          sessionId: scanResult,
-          courseName: currentSession.courseName,
+          sessionId: scanResult || "",
+          courseName: currentSession?.courseName || "Unknown Course",
           timestamp: new Date(
             response.data.attendedAt || response.data.createdAt || new Date(),
           ),
@@ -1060,12 +1108,12 @@ export default function StudentAttendance() {
     } catch (error: unknown) {
       console.error("Failed to submit attendance:", error);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const is409 =
         error &&
         typeof error === "object" &&
         "response" in error &&
-        (error as any).response?.status === 409;
+        (error as { response?: { status: number } }).response?.status === 409;
 
       if (is409) {
         setSuccessMessage({

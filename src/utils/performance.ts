@@ -338,17 +338,16 @@ export function trackPerformance(
   name?: string,
   metadata?: Record<string, unknown>,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return function (
-    target: any,
+    target: Record<string, unknown>,
     propertyName: string,
     descriptor: PropertyDescriptor,
   ) {
     const method = descriptor.value;
     const trackName = name || `${target.constructor.name}.${propertyName}`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (this: Record<string, unknown>, ...args: unknown[]) {
       return performanceMonitor.trackFunction(
         trackName,
         () => method.apply(this, args),
@@ -362,17 +361,16 @@ export function trackSyncPerformance(
   name?: string,
   metadata?: Record<string, unknown>,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return function (
-    target: any,
+    target: Record<string, unknown>,
     propertyName: string,
     descriptor: PropertyDescriptor,
   ) {
     const method = descriptor.value;
     const trackName = name || `${target.constructor.name}.${propertyName}`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (this: Record<string, unknown>, ...args: unknown[]) {
       return performanceMonitor.trackSyncFunction(
         trackName,
         () => method.apply(this, args),
@@ -396,8 +394,7 @@ export const usePerformanceTracking = (componentName: string) => {
 };
 
 // Express middleware for request performance tracking
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const performanceMiddleware = (req: any, res: any, next: any) => {
+export const performanceMiddleware = (req: { method: string; url: string }, res: { on: (event: string, cb: () => void) => void; statusCode: number }, next: () => void) => {
   const startTime = performance.now();
 
   res.on("finish", () => {

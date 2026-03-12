@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -86,7 +87,6 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
   >("disconnected");
   const [isExpanded, setIsExpanded] = useState(showDetails);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const socketRef = useRef<import("socket.io-client").Socket | null>(null);
   const refreshIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const updateMetrics = React.useCallback(() => {
@@ -147,191 +147,97 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
   }, [securityStatuses]);
 
   useEffect(() => {
-    // Initialize socket connection
-    const initializeSocket = () => {
-      // @ts-expect-error - window.io is added by script tag
-      if (typeof window !== "undefined" && window.io) {
-        // @ts-expect-error - window.io is added by script tag
-        socketRef.current = window.io();
-
-        socketRef.current?.on("connect", () => {
-          console.log("Connected to security status");
-          setConnectionStatus("connected");
-
-          // Authenticate
-          const token = localStorage.getItem("token");
-          if (token) {
-            socketRef.current?.emit("authenticate", { token });
-          }
-        });
-
-        socketRef.current?.on("disconnect", () => {
-          console.log("Disconnected from security status");
-          setConnectionStatus("disconnected");
-        });
-
-        socketRef.current?.on(
-          "authenticated",
-          (data: { user: { id: string } }) => {
-            console.log("Authenticated for security status:", data);
-
-            // Join session if provided
-            if (sessionId && socketRef.current) {
-              socketRef.current.emit("join_session", { sessionId });
-            }
-          },
-        );
-
-        // Security status events
-        socketRef.current?.on(
-          "security:status_update",
-          (data: SocketSecurityData) => {
-            const status: SecurityStatus = {
-              id: data.id || `status-${Date.now()}`,
-              type: data.type || "SESSION",
-              status: data.status || "UNKNOWN",
-              message: data.message || "Security status updated",
-              timestamp: new Date(data.timestamp || Date.now()),
-              details: data.details,
-              actionRequired: data.actionRequired || false,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]); // Keep last 50
-            updateMetrics();
-          },
-        );
-
-        socketRef.current?.on(
-          "security:location_update",
-          (data: SocketSecurityData) => {
-            const status: SecurityStatus = {
-              id: `location-${Date.now()}`,
-              type: "LOCATION",
-              status: data.isSecure ? "SECURE" : "WARNING",
-              message: data.message || "Location security updated",
-              timestamp: new Date(),
-              details:
-                data.details || (data as unknown as Record<string, unknown>),
-              actionRequired: !data.isSecure,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
-            updateMetrics();
-          },
-        );
-
-        socketRef.current?.on(
-          "security:device_update",
-          (data: SocketSecurityData) => {
-            const status: SecurityStatus = {
-              id: `device-${Date.now()}`,
-              type: "DEVICE",
-              status: data.isSecure ? "SECURE" : "WARNING",
-              message: data.message || "Device security updated",
-              timestamp: new Date(),
-              details:
-                data.details || (data as unknown as Record<string, unknown>),
-              actionRequired: !data.isSecure,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
-            updateMetrics();
-          },
-        );
-
-        socketRef.current?.on(
-          "security:photo_update",
-          (data: SocketSecurityData) => {
-            const status: SecurityStatus = {
-              id: `photo-${Date.now()}`,
-              type: "PHOTO",
-              status: data.isSecure ? "SECURE" : "WARNING",
-              message: data.message || "Photo security updated",
-              timestamp: new Date(),
-              details:
-                data.details || (data as unknown as Record<string, unknown>),
-              actionRequired: !data.isSecure,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
-            updateMetrics();
-          },
-        );
-
-        socketRef.current?.on(
-          "security:network_update",
-          (data: SocketSecurityData) => {
-            const status: SecurityStatus = {
-              id: `network-${Date.now()}`,
-              type: "NETWORK",
-              status: data.isSecure ? "SECURE" : "WARNING",
-              message: data.message || "Network security updated",
-              timestamp: new Date(),
-              details:
-                data.details || (data as unknown as Record<string, unknown>),
-              actionRequired: !data.isSecure,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
-            updateMetrics();
-          },
-        );
-
-        // Fraud and risk events
-        socketRef.current?.on(
-          "security:fraud_alert",
-          (data: SocketFraudData) => {
-            const status: SecurityStatus = {
-              id: `fraud-${Date.now()}`,
-              type: "SESSION",
-              status: "DANGER",
-              message: `Fraud alert: ${data.description}`,
-              timestamp: new Date(),
-              details: data as unknown as Record<string, unknown>,
-              actionRequired: true,
-            };
-
-            setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
-            updateMetrics();
-          },
-        );
-
-        socketRef.current?.on("security:risk_high", (data: SocketFraudData) => {
+    // Initialize Supabase Realtime connection
+    const channel = supabase
+      .channel(`session:${sessionId}:security`)
+      .on(
+        'broadcast',
+        { event: 'security:status_update' },
+        (payload: { payload: SocketSecurityData }) => {
+          const data = payload.payload;
           const status: SecurityStatus = {
-            id: `risk-${Date.now()}`,
+            id: data.id || `status-${Date.now()}`,
+            type: data.type || "SESSION",
+            status: data.status || "UNKNOWN",
+            message: data.message || "Security status updated",
+            timestamp: new Date(data.timestamp || Date.now()),
+            details: data.details,
+            actionRequired: data.actionRequired || false,
+          };
+          setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
+          updateMetrics();
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'security:location_update' },
+        (payload: { payload: SocketSecurityData }) => {
+          const data = payload.payload;
+          const status: SecurityStatus = {
+            id: `location-${Date.now()}`,
+            type: "LOCATION",
+            status: data.isSecure ? "SECURE" : "WARNING",
+            message: data.message || "Location security updated",
+            timestamp: new Date(),
+            details: data.details,
+            actionRequired: !data.isSecure,
+          };
+          setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
+          updateMetrics();
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'security:device_update' },
+        (payload: { payload: SocketSecurityData }) => {
+          const data = payload.payload;
+          const status: SecurityStatus = {
+            id: `device-${Date.now()}`,
+            type: "DEVICE",
+            status: data.isSecure ? "SECURE" : "WARNING",
+            message: data.message || "Device security updated",
+            timestamp: new Date(),
+            details: data.details,
+            actionRequired: !data.isSecure,
+          };
+          setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
+          updateMetrics();
+        }
+      )
+      .on(
+        'broadcast',
+        { event: 'security:fraud_alert' },
+        (payload: { payload: SocketFraudData }) => {
+          const data = payload.payload;
+          const status: SecurityStatus = {
+            id: `fraud-${Date.now()}`,
             type: "SESSION",
             status: "DANGER",
-            message: "High-risk activity detected",
+            message: `Fraud alert: ${data.description}`,
             timestamp: new Date(),
             details: data as unknown as Record<string, unknown>,
             actionRequired: true,
           };
-
           setSecurityStatuses((prev) => [status, ...prev.slice(0, 49)]);
           updateMetrics();
-        });
-
-        // Health check
-        socketRef.current?.on(
-          "health_check",
-          (data: { status: string; timestamp: string }) => {
-            console.log("Security health check:", data);
-          },
-        );
-      }
-    };
-
-    initializeSocket();
+        }
+      )
+      .subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus("connected");
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          setConnectionStatus("disconnected");
+        }
+      });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      channel.unsubscribe();
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
       }
     };
-  }, [sessionId, updateMetrics]); // Added updateMetrics to dependencies
+  }, [sessionId, updateMetrics]);
+; // Added updateMetrics to dependencies
 
   useEffect(() => {
     // Auto-refresh metrics

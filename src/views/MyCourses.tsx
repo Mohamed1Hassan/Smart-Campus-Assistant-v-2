@@ -325,9 +325,9 @@ export default function MyCourses() {
                   <div className="h-40 relative group-hover:scale-105 transition-transform duration-500">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
                     <Image
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                       
                       src={
-                        (course as any).coverImage ||
+                        (course as { coverImage?: string }).coverImage ||
                         "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop"
                       }
                       alt={course.name}
