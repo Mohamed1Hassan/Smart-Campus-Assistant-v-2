@@ -17,9 +17,12 @@ const baseClient = (supabaseUrl && supabaseAnonKey)
  * This is used when Supabase environment variables are missing.
  */
 const createRecursiveDummy = (name: string): any => {
-  const dummy = (..._args: any[]) => createRecursiveDummy(`${name}()`);
+  const dummy = (..._args: any[]) => createRecursiveDummy(`${name}(...)`);
   
   return new Proxy(dummy, {
+    apply(target, thisArg, args) {
+      return createRecursiveDummy(`${name}(...)`);
+    },
     get(_target, prop) {
       // Common terminal methods
       if (prop === 'then') {
@@ -48,6 +51,7 @@ const createRecursiveDummy = (name: string): any => {
     }
   });
 };
+
 
 export const supabase = new Proxy({} as any, {
   get(_target, prop) {

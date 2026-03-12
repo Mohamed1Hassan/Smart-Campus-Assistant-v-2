@@ -289,6 +289,7 @@ export class NotificationService {
    */
   async getNotificationStats(userId: number): Promise<NotificationStats> {
     try {
+      console.log(`[NotificationService] Getting stats for user: ${userId}`);
       const [unread, categoryCounts, typeCounts] = await Promise.all([
         prisma.notification.count({
           where: { userId, isRead: false },
@@ -305,9 +306,11 @@ export class NotificationService {
         }),
       ]);
 
+      console.log(`[NotificationService] Stats fetched. Unread: ${unread}`);
+
       const byCategory = categoryCounts.reduce(
         (acc, item) => {
-          acc[item.category] = item._count.category;
+          acc[item.category as NotificationCategory] = item._count.category;
           return acc;
         },
         {} as { [key in NotificationCategory]: number },
@@ -315,7 +318,7 @@ export class NotificationService {
 
       const byType = typeCounts.reduce(
         (acc, item) => {
-          acc[item.type] = item._count.type;
+          acc[item.type as NotificationType] = item._count.type;
           return acc;
         },
         {} as { [key in NotificationType]: number },
@@ -335,9 +338,14 @@ export class NotificationService {
       };
     } catch (error) {
       console.error("Error getting notification stats:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
       throw new Error("Failed to get notification statistics");
     }
   }
+
 
   /**
    * Get or create notification settings for user

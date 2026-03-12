@@ -223,7 +223,7 @@ export default function ProfessorDashboard() {
   });
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   // Dialog states
   const [showQuickCreate, setShowQuickCreate] = useState(false);
@@ -241,9 +241,11 @@ export default function ProfessorDashboard() {
 
   // Update time every minute
   useEffect(() => {
+    setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
 
   const fetchDashboardData = useCallback(async () => {
     setIsRefreshing(true);
@@ -292,11 +294,13 @@ export default function ProfessorDashboard() {
 
   // Greeting
   const greeting = useMemo(() => {
+    if (!currentTime) return "Welcome";
     const hour = currentTime.getHours();
     if (hour < 12) return "Good Morning";
     if (hour < 18) return "Good Afternoon";
     return "Good Evening";
   }, [currentTime]);
+
 
   // Quick Create Handlers
   const handleQuickCreateSubmit = async (e: React.FormEvent) => {
@@ -426,12 +430,15 @@ export default function ProfessorDashboard() {
               >
                 <Calendar className="w-5 h-5" />
                 <span>
-                  {currentTime.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {currentTime 
+                    ? currentTime.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "Loading..."}
                 </span>
+
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
