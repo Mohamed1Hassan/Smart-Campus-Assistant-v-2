@@ -12,64 +12,55 @@ const baseClient = (supabaseUrl && supabaseAnonKey)
  * Robust Supabase client proxy that prevents crashes when environment variables are missing.
  * This is particularly important for Next.js build-time static analysis.
  */
-const DUMMY_OBJECT = {} as any;
+/**
+ * Creates a recursive dummy object that allows infinite method chaining.
+ * This is used when Supabase environment variables are missing.
+ */
+const createRecursiveDummy = (name: string): any => {
+  const dummy = (..._args: any[]) => createRecursiveDummy(`${name}()`);
+  
+  return new Proxy(dummy, {
+    get(_target, prop) {
+      // Common terminal methods
+      if (prop === 'then') {
+        return (cb: any) => Promise.resolve({ data: null, error: null }).then(cb);
+      }
+      if (prop === 'subscribe') {
+        return (cb?: (status: string) => void) => {
+          if (typeof cb === 'function') {
+            // Simulate async subscription status update
+            setTimeout(() => cb('SUBSCRIBED'), 0);
+          }
+          return { unsubscribe: () => {} };
+        };
+      }
+      
+      // Handle known properties for destructuring
+      if (prop === 'data') return null;
+      if (prop === 'error') return null;
+      if (prop === 'session') return null;
+      if (prop === 'user') return null;
+      if (prop === 'publicUrl') return '';
+      if (prop === 'subscription') return { unsubscribe: () => {} };
 
-export const supabase = new Proxy(DUMMY_OBJECT, {
-  get(target, prop) {
+      // Recursively return dummy for any other property access
+      return createRecursiveDummy(`${name}.${String(prop)}`);
+    }
+  });
+};
+
+export const supabase = new Proxy({} as any, {
+  get(_target, prop) {
     if (baseClient) {
       const value = (baseClient as any)[prop];
       return typeof value === 'function' ? value.bind(baseClient) : value;
     }
     
-    // Return safe defaults for common properties to prevent destructuring/calling errors
-    const commonProps: Record<string, any> = {
-      auth: {
-        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-        signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: null }),
-        signOut: () => Promise.resolve({ error: null }),
-      },
-      storage: {
-        from: () => ({
-          upload: () => Promise.resolve({ data: null, error: null }),
-          download: () => Promise.resolve({ data: null, error: null }),
-          getPublicUrl: () => ({ data: { publicUrl: '' } }),
-        }),
-      },
-      from: () => ({
-        select: () => ({
-          insert: () => Promise.resolve({ data: null, error: null }),
-          update: () => Promise.resolve({ data: null, error: null }),
-          delete: () => Promise.resolve({ data: null, error: null }),
-          single: () => Promise.resolve({ data: null, error: null }),
-          maybeSingle: () => Promise.resolve({ data: null, error: null }),
-          eq: () => ({ eq: () => ({}) } as any),
-          order: () => ({}) as any,
-          range: () => ({}) as any,
-          then: (cb: any) => Promise.resolve({ data: null, error: null }).then(cb),
-        }),
-        insert: () => Promise.resolve({ data: null, error: null }),
-        upsert: () => Promise.resolve({ data: null, error: null }),
-      }),
-      channel: () => ({
-        on: () => ({ on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }) }),
-        subscribe: () => ({ unsubscribe: () => {} }),
-        send: () => Promise.resolve('ok'),
-      }),
-    };
-
-    if (prop in commonProps) {
-      return commonProps[prop as string];
-    }
-
-    // Default: return a function that logs a warning and returns the proxy for chaining
-    return (...args: any[]) => {
-      console.warn(`[Supabase Proxy] Warning: Attempted to call "${String(prop)}" but Supabase is not initialized.`);
-      return supabase; 
-    };
+    // Return the recursive dummy starting from the property name
+    return createRecursiveDummy(String(prop));
   }
 });
+
 
 
 if (!baseClient) {
