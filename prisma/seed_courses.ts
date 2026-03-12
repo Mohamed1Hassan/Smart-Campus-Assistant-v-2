@@ -59,25 +59,13 @@ async function upsertProfessor(name: string) {
     });
 
     if (existingUser) {
-        // If user exists but has the old ID format (PROF-...), update them
-        if (existingUser.universityId.startsWith('PROF-')) {
-            const currentId = professorIdCounter.toString();
-            professorIdCounter++;
-            const newEmail = `professor.${currentId}@smartcampus.edu`;
-            const hashedPassword = await bcrypt.hash('123456', 10);
-
-            console.log(`🔄 Updating professor ${name} to new format: ${currentId}`);
-
-            return await prisma.user.update({
-                where: { id: existingUser.id },
-                data: {
-                    universityId: currentId,
-                    email: newEmail,
-                    password: hashedPassword,
-                    role: UserRole.PROFESSOR, // Ensure role is correct
-                },
-            });
-        }
+        // Force update password to '123456' and log the ID
+        const hashedPassword = await bcrypt.hash('123456', 10);
+        await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { password: hashedPassword }
+        });
+        console.log(`  - Professor verified: ${name} (ID: ${existingUser.universityId})`);
         return existingUser;
     }
 

@@ -11,12 +11,13 @@ async function main() {
   const admin = await prisma.user.upsert({
     where: { email: 'admin@smartcampus.edu' },
     update: {
-      universityId: '10101010',
+      universityId: '11000001',
+      password: adminPassword,
     },
     create: {
       email: 'admin@smartcampus.edu',
       name: 'System Admin',
-      universityId: '10101010',
+      universityId: '11000001',
       password: adminPassword,
       role: UserRole.ADMIN,
       firstName: 'System',
@@ -31,12 +32,13 @@ async function main() {
   const student = await prisma.user.upsert({
     where: { email: 'student@smartcampus.edu' },
     update: {
-      universityId: '20202020',
+      universityId: '20221245',
+      password: studentPassword,
     },
     create: {
       email: 'student@smartcampus.edu',
       name: 'Sample Student',
-      universityId: '20202020',
+      universityId: '20221245',
       password: studentPassword,
       role: UserRole.STUDENT,
       firstName: 'Sample',
