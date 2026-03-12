@@ -66,9 +66,13 @@ export async function POST(req: NextRequest) {
     console.error("[API/Auth/Login] Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Internal server error";
-    if (errorMessage === "Invalid university ID or password") {
+    if (
+      errorMessage === "Invalid university ID or password" ||
+      errorMessage.includes("must be 8 digits") ||
+      errorMessage.includes("7-10 digits")
+    ) {
       return NextResponse.json(
-        { success: false, message: "Invalid university ID or password" },
+        { success: false, message: errorMessage },
         { status: 401 },
       );
     }

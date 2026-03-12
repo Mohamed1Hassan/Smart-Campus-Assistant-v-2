@@ -10,11 +10,13 @@ async function main() {
   const adminPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
     where: { email: 'admin@smartcampus.edu' },
-    update: {},
+    update: {
+      universityId: '10101010',
+    },
     create: {
       email: 'admin@smartcampus.edu',
       name: 'System Admin',
-      universityId: 'ADMIN-001',
+      universityId: '10101010',
       password: adminPassword,
       role: UserRole.ADMIN,
       firstName: 'System',
@@ -28,11 +30,13 @@ async function main() {
   const studentPassword = await bcrypt.hash('student123', 10);
   const student = await prisma.user.upsert({
     where: { email: 'student@smartcampus.edu' },
-    update: {},
+    update: {
+      universityId: '20202020',
+    },
     create: {
       email: 'student@smartcampus.edu',
       name: 'Sample Student',
-      universityId: 'STUD-001',
+      universityId: '20202020',
       password: studentPassword,
       role: UserRole.STUDENT,
       firstName: 'Sample',
