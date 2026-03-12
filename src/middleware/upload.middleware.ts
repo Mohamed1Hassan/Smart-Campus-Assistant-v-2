@@ -8,10 +8,18 @@ import type { Request, Response, NextFunction } from "express";
  * Supports avatar uploads with image processing and storage
  */
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (Only in development/local environments)
 const uploadsDir = path.join(process.cwd(), "uploads", "avatars");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+
+// In Vercel and other serverless environments, the filesystem is read-only.
+// We should only attempt to create this directory if we are not in a serverless environment
+// or if we catch and ignore the expected ENOENT/EROFS errors.
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn("Could not create uploads directory (expected in Vercel):", error);
 }
 
 // Configure multer storage
