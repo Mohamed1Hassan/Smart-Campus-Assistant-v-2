@@ -115,9 +115,9 @@ export const ConnectionStatusIndicator: React.FC<
         (payload: { payload: { latency: number; serverStatus: string } }) => {
           setConnectionStatus((prev) => ({
             ...prev,
-            latency: payload.payload.latency || 0,
-            serverStatus: (payload.payload.serverStatus as ConnectionStatus["serverStatus"]) || "online",
-            connectionQuality: calculateConnectionQuality(payload.payload.latency || 0),
+            latency: payload?.payload?.latency || 0,
+            serverStatus: (payload?.payload?.serverStatus as ConnectionStatus["serverStatus"]) || "online",
+            connectionQuality: calculateConnectionQuality(payload?.payload?.latency || 0),
           }));
         }
       )

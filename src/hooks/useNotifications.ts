@@ -69,7 +69,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
             setState((prev) => ({
               ...prev,
               notifications: [
-                payload.payload as unknown as NotificationResponse,
+                payload?.payload as unknown as NotificationResponse,
                 ...prev.notifications,
               ],
             }));

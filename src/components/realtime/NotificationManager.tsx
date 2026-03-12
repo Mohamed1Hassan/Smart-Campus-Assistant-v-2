@@ -149,35 +149,35 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
         'broadcast',
         { event: 'notification' },
         (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload.payload, payload.payload.type || "SYSTEM");
+          handleNotification(payload?.payload, payload?.payload?.type || "SYSTEM");
         }
       )
       .on(
         'broadcast',
         { event: 'notification:security' },
         (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload.payload, "SECURITY");
+          handleNotification(payload?.payload, "SECURITY");
         }
       )
       .on(
         'broadcast',
         { event: 'notification:attendance' },
         (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload.payload, "ATTENDANCE");
+          handleNotification(payload?.payload, "ATTENDANCE");
         }
       )
       .on(
         'broadcast',
         { event: 'notification:system' },
         (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload.payload, "SYSTEM");
+          handleNotification(payload?.payload, "SYSTEM");
         }
       )
       .on(
         'broadcast',
         { event: 'notification:emergency' },
         (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload.payload, "EMERGENCY");
+          handleNotification(payload?.payload, "EMERGENCY");
         }
       )
       .subscribe();

@@ -145,7 +145,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:attendance:marked` },
         (payload: { payload: AttendanceRecord }) => {
-          const data = payload.payload;
+          const data = payload?.payload;
+          if (!data) return;
           setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
           addRecentActivity({
             type: "attendance",
@@ -160,7 +161,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:attendance:fraud_detected` },
         (payload: { payload: SocketFraudData }) => {
-          const data = payload.payload;
+          const data = payload?.payload;
+          if (!data) return;
           const alert = {
             type: "fraud",
             message: `Fraud detected for ${data.studentName}`,
@@ -175,7 +177,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:session:started` },
         (payload: { payload: SocketSessionData }) => {
-          const data = payload.payload;
+          const data = payload?.payload;
+          if (!data) return;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" started`,
@@ -187,7 +190,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:session:ended` },
         (payload: { payload: SocketSessionData }) => {
-          const data = payload.payload;
+          const data = payload?.payload;
+          if (!data) return;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" ended`,
