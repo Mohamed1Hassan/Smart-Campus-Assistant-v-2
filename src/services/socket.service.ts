@@ -53,7 +53,7 @@ export class SocketService {
   private channel = this.supabase.channel('smart-campus-realtime');
 
   constructor() {
-    this.channel.subscribe((status) => {
+    this.channel.subscribe((status: string) => {
       if (status === 'SUBSCRIBED') {
         console.log('[SocketService] Connected to Supabase Realtime');
       }

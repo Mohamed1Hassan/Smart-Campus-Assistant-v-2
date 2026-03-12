@@ -64,7 +64,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
         .on(
           'broadcast',
           { event: `user:${user.id}:notification` },
-          (payload) => {
+          (payload: any) => {
             console.log('[useNotifications] New notification:', payload);
             setState((prev) => ({
               ...prev,
@@ -75,7 +75,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
             }));
           }
         )
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (status === 'SUBSCRIBED') {
             setState((prev) => ({
               ...prev,
