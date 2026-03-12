@@ -33,7 +33,9 @@ export default async function DashboardRedirect() {
     redirect("/");
   }
 
-  if (role === "professor" || role === "admin") {
+  if (role === "admin") {
+    redirect("/dashboard/admin");
+  } else if (role === "professor") {
     redirect("/dashboard/professor");
   } else {
     redirect("/dashboard/student");
