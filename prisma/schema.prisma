@@ -90,11 +90,11 @@ model Course {
   academicYear       String              @default("2025-2026")
   isArchived         Boolean             @default(false)
   semester           SemesterType        @default(FALL)
+  capacity           Int                 @default(500)
+  coverImage         String?
   attendanceRecords  AttendanceRecord[]
   attendanceSessions AttendanceSession[]
   enrollments        CourseEnrollment[]
-  coverImage         String?
-  capacity           Int                 @default(500)
   materials          CourseMaterial[]
   professor          User                @relation("CourseCreator", fields: [professorId], references: [id], onDelete: Cascade)
   exams              Exam[]

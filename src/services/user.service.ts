@@ -30,6 +30,18 @@ export interface UserProfile {
   attendancePercent?: number;
   gpa?: number;
   faceDescriptor?: Prisma.JsonValue;
+  courses?: {
+    id: string;
+    courseCode: string;
+    courseName: string;
+    semester: string;
+    academicYear: string;
+    capacity: number;
+    studentCount: number;
+    isArchived: boolean;
+    coverImage?: string;
+    scheduleTime?: string;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -461,6 +473,27 @@ export class UserService {
           skip,
           take: limit,
           orderBy: { firstName: "asc" },
+          include: {
+            coursesCreated: {
+              select: {
+                id: true,
+                courseCode: true,
+                courseName: true,
+                semester: true,
+                academicYear: true,
+                capacity: true,
+                isArchived: true,
+                coverImage: true,
+                _count: {
+                  select: { enrollments: true },
+                },
+                schedules: {
+                  take: 1,
+                  where: { isActive: true },
+                },
+              },
+            },
+          },
         }),
         prisma.user.count({ where }),
       ]);
@@ -476,6 +509,23 @@ export class UserService {
           firstName: u.firstName,
           lastName: u.lastName,
           role: u.role as "STUDENT" | "PROFESSOR" | "ADMIN",
+          department: u.department ?? undefined,
+          major: u.major ?? undefined,
+          year: u.level ?? undefined,
+          courses: u.coursesCreated?.map((c) => ({
+            id: String(c.id),
+            courseCode: c.courseCode,
+            courseName: c.courseName,
+            semester: String(c.semester),
+            academicYear: c.academicYear,
+            capacity: c.capacity,
+            isArchived: c.isArchived,
+            studentCount: c._count.enrollments,
+            coverImage: c.coverImage ?? undefined,
+            scheduleTime: c.schedules?.[0]
+              ? `${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][c.schedules[0].dayOfWeek]} ${c.schedules[0].startTime}`
+              : undefined,
+          })) ?? undefined,
           faceDescriptor: u.faceDescriptor ?? undefined,
           isActive: u.isActive,
           createdAt: u.createdAt,
@@ -509,6 +559,27 @@ export class UserService {
           skip,
           take: limit,
           orderBy: { createdAt: "desc" },
+          include: {
+            coursesCreated: {
+              select: {
+                id: true,
+                courseCode: true,
+                courseName: true,
+                semester: true,
+                academicYear: true,
+                capacity: true,
+                isArchived: true,
+                coverImage: true,
+                _count: {
+                  select: { enrollments: true },
+                },
+                schedules: {
+                  take: 1,
+                  where: { isActive: true },
+                },
+              },
+            },
+          },
         }),
         prisma.user.count(),
       ]);
@@ -524,6 +595,23 @@ export class UserService {
           firstName: u.firstName,
           lastName: u.lastName,
           role: u.role as "STUDENT" | "PROFESSOR" | "ADMIN",
+          department: u.department ?? undefined,
+          major: u.major ?? undefined,
+          year: u.level ?? undefined,
+          courses: u.coursesCreated?.map((c) => ({
+            id: String(c.id),
+            courseCode: c.courseCode,
+            courseName: c.courseName,
+            semester: String(c.semester),
+            academicYear: c.academicYear,
+            capacity: c.capacity,
+            isArchived: c.isArchived,
+            studentCount: c._count.enrollments,
+            coverImage: c.coverImage ?? undefined,
+            scheduleTime: c.schedules?.[0]
+              ? `${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][c.schedules[0].dayOfWeek]} ${c.schedules[0].startTime}`
+              : undefined,
+          })) ?? undefined,
           faceDescriptor: u.faceDescriptor ?? undefined,
           isActive: u.isActive,
           createdAt: u.createdAt,

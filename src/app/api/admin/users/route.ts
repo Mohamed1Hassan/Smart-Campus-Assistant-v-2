@@ -158,6 +158,86 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
+
+    if (!token)
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      );
+
+    let payload;
+    try {
+      payload = JWTUtils.verifyAccessToken(token);
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Invalid token" },
+        { status: 401 },
+      );
+    }
+
+    if (payload.role.toUpperCase() !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, message: "Access denied" },
+        { status: 403 },
+      );
+    }
+
+    const { userId, firstName, lastName, universityId, password } = await req.json();
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "User ID required" },
+        { status: 400 },
+      );
+    }
+
+    // Update Profile
+    const updateData: any = { userId };
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (universityId) updateData.universityId = universityId;
+
+    await UserService.updateProfile(updateData);
+
+    // Update password if one is provided
+    if (password) {
+      // Bypass currentPassword check by directly working with user service or db. 
+      // UserService.changePassword requires current password, which admin wouldn't have.
+      // Doing direct Prisma update for admin password change
+      const { EncryptionUtils } = require("@/utils/encryption");
+      const prisma = require("@/lib/db").default;
+
+      const hashedPassword = await EncryptionUtils.hashPassword(password);
+      await prisma.user.update({
+        where: { id: parseInt(userId) },
+        data: {
+          password: hashedPassword,
+          tokenVersion: { increment: 1 },
+          updatedAt: new Date(),
+        },
+      });
+
+      // Clear refresh tokens to force re-login
+      if (prisma.refreshToken) {
+        await prisma.refreshToken.deleteMany({ where: { userId: parseInt(userId) } });
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "User updated successfully",
+    });
+  } catch (error: unknown) {
+    return handleApiError(error, "API/admin/users/put");
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");

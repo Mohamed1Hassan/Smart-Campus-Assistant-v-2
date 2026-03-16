@@ -11,6 +11,7 @@ export const createCourseSchema = z.object({
 
 export const updateCourseSchema = createCourseSchema.partial().extend({
   isActive: z.boolean().optional(),
+  professorId: z.number().int().positive().optional(),
 });
 
 export const enrollStudentSchema = z.object({
