@@ -16,6 +16,7 @@ import { MaterialsList } from "../components/common/MaterialsList";
 import { FileText, ArrowLeft, Clock, Image as ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { QuizDashboard } from "../components/quiz/QuizDashboard";
+import { getCourseImage } from "@/utils/courseImages";
 
 interface CourseDetails {
   id: number;
@@ -119,10 +120,11 @@ export default function StudentCourseDetails() {
                   <Image
                     src={
                       course.coverImage ||
-                      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop"
+                      getCourseImage(course.courseName, course.id)
                     }
                     alt={course.courseName}
                     fill
+                    unoptimized
                     className="object-cover"
                     onError={() => setImgError(true)}
                     referrerPolicy="no-referrer"

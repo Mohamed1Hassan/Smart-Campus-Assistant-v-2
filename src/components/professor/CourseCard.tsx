@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { getCourseImage } from "@/utils/courseImages";
 import {
   Edit,
   Copy,
@@ -167,10 +169,11 @@ export default function CourseCard({
       {course.coverImage ? (
         <div className="relative h-32 -mx-6 -mt-6 mb-4 overflow-hidden rounded-t-xl group">
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={course.coverImage || "/placeholder-course.jpg"}
+          <Image
+            src={course.coverImage || getCourseImage(course.name, course.id)}
             alt={course.name}
+            fill
+            unoptimized
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute bottom-3 left-6 z-20">

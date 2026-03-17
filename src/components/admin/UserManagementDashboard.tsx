@@ -19,6 +19,8 @@ import {
   Archive,
 } from "lucide-react";
 import { apiClient } from "@/services/api";
+import NextImage from "next/image";
+import { getCourseImage } from "@/utils/courseImages";
 
 interface User {
   id: string;
@@ -828,10 +830,15 @@ export default function UserManagementDashboard() {
                             {/* Card Header with Image */}
                             <div className="h-32 relative">
                               <div className={`absolute inset-0 z-10 ${course.isArchived ? 'bg-gradient-to-t from-amber-900/80 via-transparent to-transparent' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent'}`} />
-                              <img 
-                                src={course.coverImage || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop"} 
+                              <NextImage
+                                src={
+                                  course.coverImage ||
+                                  getCourseImage(course.courseName, course.id)
+                                }
                                 alt={course.courseName}
-                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                fill
+                                unoptimized
+                                className="absolute inset-0 object-cover group-hover:scale-110 transition-transform duration-700"
                               />
                               <div className="absolute inset-0 z-20 p-5 flex flex-col justify-between">
                                 <div className="flex justify-between items-start">

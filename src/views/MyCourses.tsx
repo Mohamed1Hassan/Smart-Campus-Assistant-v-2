@@ -22,6 +22,7 @@ import AddCourseModal from "../components/professor/AddCourseModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
+import { getCourseImage } from "@/utils/courseImages";
 
 interface Course {
   id: string;
@@ -328,7 +329,7 @@ export default function MyCourses() {
                        
                       src={
                         (course as { coverImage?: string }).coverImage ||
-                        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop"
+                        getCourseImage(course.name, course.id)
                       }
                       alt={course.name}
                       fill

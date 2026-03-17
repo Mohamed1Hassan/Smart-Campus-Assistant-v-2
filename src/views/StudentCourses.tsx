@@ -231,6 +231,7 @@ export default function StudentCourses() {
                         }
                         alt={course.name}
                         fill
+                        unoptimized
                         onError={() =>
                           setImgErrors((prev) => ({
                             ...prev,

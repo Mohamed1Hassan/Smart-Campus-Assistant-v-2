@@ -28,6 +28,7 @@ import { toast } from "react-hot-toast";
 import { QuizDashboard } from "../components/quiz/QuizDashboard";
 import StudentProfileModal from "../components/professor/StudentProfileModal";
 import DirectMessageModal from "../components/professor/DirectMessageModal";
+import { getCourseImage } from "@/utils/courseImages";
 
 interface Student {
   id: number;
@@ -168,17 +169,12 @@ export default function ProfessorCourseDetails() {
                 <Image
                   src={
                     course.coverImage ||
-                    "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop"
+                    getCourseImage(course.courseName, course.id)
                   }
                   alt={course.courseName}
                   fill
+                  unoptimized
                   className="object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop";
-                    target.srcset = "";
-                  }}
                 />
                 <div className="absolute inset-0 bg-black/10" />
               </div>

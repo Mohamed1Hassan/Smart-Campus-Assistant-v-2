@@ -31,7 +31,7 @@ export async function GET(
       success: true,
       data: {
         ...course,
-        coverImage: getCourseImage(course.courseName, course.id),
+        coverImage: course.coverImage || getCourseImage(course.courseName, course.id),
       },
     });
   } catch (error: unknown) {
