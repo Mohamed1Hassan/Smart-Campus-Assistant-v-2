@@ -3,6 +3,7 @@ import prisma from "../lib/db";
 import socketService from "./socket.service";
 import { calculateFraudScore } from "../utils/security";
 import { FaceService } from "./face.service";
+import { v4 as uuidv4 } from "uuid";
 
 // Types for Attendance Session
 export interface LocationData {
@@ -79,15 +80,75 @@ class AttendanceService {
           startTime: data.startTime,
           endTime: data.endTime,
           status: "SCHEDULED",
-          location: data.location,
-          securitySettings: data.security,
+          qrCode: `attendance-${uuidv4()}-${Date.now()}`,
+          location: data.location as unknown as Prisma.InputJsonValue,
+          securitySettings: data.security as unknown as Prisma.InputJsonValue,
         },
       });
 
-      // Emit real-time event
+      // Update name to reflect actual ID if needed, or just use the UUID
+      // Actually, the schema uses Int for User id but String (uuid) might be better for Session.
+      // Let's check the schema again.
+
+      // Emit real-time event (legacy)
       socketService.broadcastToSession(session.id, "session:created", {
         session,
       });
+
+      // --- New: Notify all enrolled students ---
+      // 1. Get course details including enrolled students
+      const courseWithStudents = await prisma.course.findUnique({
+        where: { id: data.courseId },
+        include: {
+          enrollments: {
+            where: { status: "ACTIVE" },
+            select: { studentId: true },
+          },
+        },
+      });
+
+      if (courseWithStudents) {
+        const studentIds = courseWithStudents.enrollments.map(
+          (e) => e.studentId,
+        );
+
+        if (studentIds.length > 0) {
+          // Create persistent recursive notifications for each student
+          // Note: Using Promise.all for database operations
+          await Promise.all(
+            studentIds.map((studentId) =>
+              prisma.notification.create({
+                data: {
+                  userId: studentId,
+                  title: "New Attendance Session",
+                  message: `A new attendance session "${data.title}" has been created for ${courseWithStudents.courseName}.`,
+                  type: "INFO",
+                  category: "ATTENDANCE",
+                  metadata: {
+                    sessionId: session.id,
+                    courseId: session.courseId,
+                    courseName: courseWithStudents.courseName,
+                  },
+                },
+              }),
+            ),
+          );
+
+          // Also broadcast to each student's personal socket channel
+          studentIds.forEach((studentId) => {
+            socketService.sendNotificationToUser(studentId, {
+              title: "New Attendance Session",
+              message: `A new attendance session "${data.title}" has been started for ${courseWithStudents.courseName}.`,
+              category: "ATTENDANCE",
+              type: "INFO",
+              metadata: {
+                sessionId: session.id,
+                courseId: session.courseId,
+              },
+            });
+          });
+        }
+      }
 
       return session;
     } catch (error) {

@@ -104,35 +104,29 @@ export async function GET(req: NextRequest) {
         filters.professorId = searchParams.get("professorId");
     } else if (payload.role.toLowerCase() === "student") {
       const studentId = parseInt(payload.userId);
-      const user = await prisma.user.findUnique({
-        where: { id: studentId },
-        select: { major: true, level: true },
-      });
 
-      if (!user) {
-        return NextResponse.json(
-          { success: false, message: "User not found" },
-          { status: 404 },
-        );
-      }
-
-      // Get courses matching major and level
-      const courses = await prisma.course.findMany({
+      // Get all active course enrollments for this student
+      const enrollments = await prisma.courseEnrollment.findMany({
         where: {
-          major: user.major,
-          level: user.level,
-          isActive: true,
-          isArchived: false,
-          semester: "SPRING", // Assuming we are in Spring for now, or fetch active semester
+          studentId: studentId,
+          status: "ACTIVE",
         },
-        select: { id: true },
+        select: { courseId: true },
       });
 
-      const relevantCourseIds = courses.map((c) => c.id);
+      const relevantCourseIds = enrollments.map((e) => e.courseId);
+
+      if (relevantCourseIds.length === 0) {
+        return NextResponse.json({ success: true, data: [] });
+      }
 
       if (courseId) {
         if (!relevantCourseIds.includes(courseId)) {
-          return NextResponse.json({ success: true, data: [] });
+          return NextResponse.json({
+            success: false,
+            message: "You are not enrolled in this course",
+            data: [],
+          });
         }
         filters.courseId = courseId;
       } else {

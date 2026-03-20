@@ -4,7 +4,10 @@ import { cookies } from "next/headers";
 import { JWTUtils } from "../utils/jwt";
 import prisma from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
-import AttendanceService from "../services/attendance.server";
+import AttendanceService, { 
+  SecuritySettings, 
+  LocationData 
+} from "../services/attendance.server";
 
 /**
  * Helper to get the local database User ID from local JWT session
@@ -63,26 +66,16 @@ export async function createAttendanceSessionAction(data: CreateSessionData) {
     if (startTime >= endTime)
       return { success: false, error: "Start time must be before end time" };
 
-    // Create session
-    const newSession = await prisma.attendanceSession.create({
-      data: {
-        courseId: data.courseId,
-        professorId: localUserId,
-        title: data.title,
-        description: data.description || "",
-        startTime,
-        endTime,
-        location: data.location
-          ? JSON.parse(JSON.stringify(data.location))
-          : undefined,
-        securitySettings: data.securitySettings
-          ? JSON.parse(JSON.stringify(data.securitySettings))
-          : undefined,
-        status: "SCHEDULED",
-        qrCode: generateQRCode(uuidv4()), // We need an initial QR
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+    // Create session via unified service to trigger notifications
+    const newSession = await AttendanceService.createSession({
+      courseId: data.courseId,
+      professorId: String(localUserId),
+      title: data.title,
+      description: data.description || "",
+      startTime,
+      endTime,
+      location: data.location as LocationData,
+      security: data.securitySettings as SecuritySettings,
     });
 
     return { success: true, data: JSON.parse(JSON.stringify(newSession)) };
