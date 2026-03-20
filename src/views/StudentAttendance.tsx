@@ -1051,6 +1051,18 @@ export default function StudentAttendance() {
     }
 
     try {
+      // Use BOTH result from scan AND currentSession to be safe
+      // But scanned ID is source of truth for WHICH session we are marking
+      let targetSessionId = currentSession.id;
+      
+      try {
+        const parsed = JSON.parse(scanResult);
+        if (parsed.sessionId) targetSessionId = parsed.sessionId;
+      } catch (e) {
+        // If it's just a string, it might be the session ID itself or a QR code
+        if (scanResult.length > 20) targetSessionId = scanResult; 
+      }
+
       const attendanceData: {
         sessionId: string;
         qrCode: string;
@@ -1059,7 +1071,7 @@ export default function StudentAttendance() {
         deviceInfo: string;
         photo?: string;
       } = {
-        sessionId: currentSession.id,
+        sessionId: targetSessionId,
         qrCode: scanResult,
         location: {
           latitude: locationData.latitude,
@@ -1084,71 +1096,45 @@ export default function StudentAttendance() {
       }>("/api/attendance/scan", attendanceData);
 
       if (response.success && response.data) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const attendanceRecord: AttendanceRecord = {
-          id: response.data.id || `att-${Date.now()}`,
-          sessionId: scanResult || "",
-          courseName: currentSession?.courseName || "Unknown Course",
-          timestamp: new Date(
-            response.data.attendedAt || response.data.createdAt || new Date(),
-          ),
-          location: locationData,
-          device: deviceFingerprint,
-          photo: photoData || undefined,
-          securityScore:
-            response.data.securityScore || calculateSecurityScore(),
-          fraudWarnings: response.data.fraudWarnings || [],
-          status:
-            response.data.status === "PRESENT" ||
-            response.data.status === "LATE"
-              ? "SUCCESS"
-              : "FAILED",
-        };
-
         setSuccessMessage({
           title: "Attendance Recorded!",
           subtitle: "You have successfully checked in for this session.",
         });
         setShowSuccess(true);
         updateVerificationStep(4, "COMPLETED");
-
-        try {
-          await refetchHistory();
-        } catch (e) {
-          console.error("Failed to refresh history", e);
-        }
+        await refetchHistory().catch(() => {});
       } else {
+        // 409 Conflict / Already Marked handling for non-thrown errors (ApiClient returns them)
+        const responseAny = response as any;
+        if (responseAny.code === "HTTP_409" || response.message?.includes("already marked")) {
+          setSuccessMessage({
+            title: "Attendance Already Marked!",
+            subtitle: "You have already checked in for this session.",
+          });
+          setShowSuccess(true);
+          updateVerificationStep(4, "COMPLETED");
+          await refetchHistory().catch(() => {});
+          return;
+        }
         throw new Error(response.message || "Failed to mark attendance");
       }
     } catch (error: unknown) {
       console.error("Failed to submit attendance:", error);
 
-       
-      const is409 =
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        (error as { response?: { status: number } }).response?.status === 409;
-
-      if (is409) {
+      // Handle re-thrown or unexpected errors
+      const errorMessage = error instanceof Error ? error.message : "Failed to mark attendance";
+      
+      if (errorMessage.includes("already marked")) {
         setSuccessMessage({
           title: "Attendance Already Marked!",
           subtitle: "You have already checked in for this session.",
         });
         setShowSuccess(true);
         updateVerificationStep(4, "COMPLETED");
-
-        try {
-          await refetchHistory();
-        } catch (e) {
-          console.error("Failed to refresh history", e);
-        }
         return;
       }
 
       updateVerificationStep(4, "FAILED");
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to mark attendance";
       alert(`Error: ${errorMessage}. Please try again.`);
     }
   }, [
