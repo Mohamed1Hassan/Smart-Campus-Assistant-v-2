@@ -341,12 +341,12 @@ export default function StudentNotifications() {
           return mockNotifications;
         }
       },
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      initialData: [],
+      staleTime: 10 * 1000, // 10 seconds (fresh enough for active use)
     });
 
   useEffect(() => {
-    if (fetchedNotifications.length > 0) {
+    // If we have data (even an empty array from a successful fetch), update the state
+    if (fetchedNotifications) {
       setNotifications(fetchedNotifications);
       setLastSync(new Date());
     }

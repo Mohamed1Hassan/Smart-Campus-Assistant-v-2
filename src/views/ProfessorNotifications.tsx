@@ -277,6 +277,8 @@ export default function ProfessorNotifications() {
 
   // Load notifications from API with fallback to localStorage/mock
   useEffect(() => {
+    if (!isAuthenticated) return;
+    
     const loadRawNotifications = async () => {
       try {
         const res = await apiClient.get(
@@ -327,7 +329,7 @@ export default function ProfessorNotifications() {
       setLastSync(new Date());
     };
     loadRawNotifications();
-  }, []);
+  }, [isAuthenticated]);
 
   // Save archived/pinned to localStorage
   useEffect(() => {
