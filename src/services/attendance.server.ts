@@ -145,7 +145,7 @@ class AttendanceService {
                 sessionId: session.id,
                 courseId: session.courseId,
               },
-            });
+            }, false); // Set saveToDb to false to avoid duplicates
           });
         }
       }
@@ -187,7 +187,7 @@ class AttendanceService {
         where.startTime = startTime;
       }
 
-      return await prisma.attendanceSession.findMany({
+      const sessions = await prisma.attendanceSession.findMany({
         where,
         include: {
           course: {
@@ -199,6 +199,14 @@ class AttendanceService {
         },
         orderBy: { startTime: "desc" },
       });
+
+      // Flatten for frontend
+      return sessions.map((s) => ({
+        ...s,
+        courseName: s.course.courseName,
+        courseCode: s.course.courseCode,
+        isActive: s.status === "ACTIVE",
+      }));
     } catch (error) {
       const err = error as Error;
       console.error("[AttendanceService] Error getting sessions:", {
