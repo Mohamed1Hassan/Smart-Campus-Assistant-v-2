@@ -193,6 +193,7 @@ model AttendanceRecord {
   @@index([sessionId])
   @@index([status])
   @@index([studentId, courseId])
+  @@unique([studentId, sessionId])
   @@map("attendance_records")
 }
 

@@ -36,7 +36,7 @@ import { StudentList } from "../components/professor/StudentList";
 
 export function ProfessorAttendanceSessionDetails() {
   // ... (rest of the component)
-  const { sessions, loadSessionById, setSelectedSession } = useAttendanceSessions();
+  const { sessions, loadSessionById, setSelectedSession, selectedSession } = useAttendanceSessions();
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
@@ -59,11 +59,14 @@ export function ProfessorAttendanceSessionDetails() {
 
   // Use selectedSession if it's the one we're looking for, otherwise find in sessions
   const session = useMemo(() => {
+    if (selectedSession && String(selectedSession.id) === id) {
+      return selectedSession;
+    }
     if (sessions.length > 0 && id) {
       return sessions.find((s) => String(s.id) === id) || null;
     }
     return null;
-  }, [sessions, id]);
+  }, [sessions, selectedSession, id]);
 
   if (!session) {
     return (
@@ -80,8 +83,8 @@ export function ProfessorAttendanceSessionDetails() {
   const presentCount = attendanceRecords.filter((r: any) => r.status === "PRESENT").length;
   const lateCount = attendanceRecords.filter((r: any) => r.status === "LATE").length;
   // Total count is the number of enrollments if available
-  const totalCount = session.course?._count?.enrollments || session.totalStudents || 50; 
-
+  const totalCount = session.course?._count?.enrollments || session.course?.enrollments?.length || session.totalStudents || 2;
+  const absentCount = Math.max(0, totalCount - presentCount);
   const attendanceRate =
     totalCount > 0 ? (presentCount / totalCount) * 100 : 0;
 
@@ -150,7 +153,7 @@ export function ProfessorAttendanceSessionDetails() {
                     <XCircle className="w-4 h-4 text-red-500" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {Math.max(0, totalCount - presentCount)}
+                    {absentCount}
                   </div>
                 </CardContent>
               </Card>
@@ -247,38 +250,45 @@ export function ProfessorAttendanceSessionDetails() {
                   <span className="text-sm">Location Check</span>
                   <Badge
                     variant={
-                      session.securitySettings?.requireLocation
+                      session.securitySettings?.isLocationRequired || (session as any).security?.isLocationRequired
                         ? "default"
                         : "secondary"
                     }
+                    className="rounded-full"
                   >
-                    {session.securitySettings?.requireLocation
+                    {session.securitySettings?.isLocationRequired || (session as any).security?.isLocationRequired
                       ? "Active"
                       : "Disabled"}
                   </Badge>
                 </div>
+
                 <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
                   <span className="text-sm">Photo Verification</span>
                   <Badge
                     variant={
-                      session.securitySettings?.requirePhoto
+                      session.securitySettings?.isPhotoRequired || (session as any).security?.isPhotoRequired
                         ? "default"
                         : "secondary"
                     }
+                    className="rounded-full"
                   >
-                    {session.securitySettings?.requirePhoto ? "Active" : "Disabled"}
+                    {session.securitySettings?.isPhotoRequired || (session as any).security?.isPhotoRequired
+                      ? "Active"
+                      : "Disabled"}
                   </Badge>
                 </div>
+
                 <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
                   <span className="text-sm">Device Check</span>
                   <Badge
                     variant={
-                      session.securitySettings?.requireDeviceCheck
+                      session.securitySettings?.isDeviceCheckRequired || (session as any).security?.isDeviceCheckRequired
                         ? "default"
                         : "secondary"
                     }
+                    className="rounded-full"
                   >
-                    {session.securitySettings?.requireDeviceCheck
+                    {session.securitySettings?.isDeviceCheckRequired || (session as any).security?.isDeviceCheckRequired
                       ? "Active"
                       : "Disabled"}
                   </Badge>

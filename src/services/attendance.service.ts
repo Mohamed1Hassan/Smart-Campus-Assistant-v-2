@@ -22,8 +22,9 @@ export interface Course {
   id: number;
   courseCode: string;
   courseName: string;
-  major: string;
-  level: number;
+  description?: string;
+  credits?: number;
+  enrollments?: any[];
   _count?: {
     enrollments: number;
   };

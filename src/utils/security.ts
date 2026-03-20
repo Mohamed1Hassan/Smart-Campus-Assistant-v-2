@@ -57,7 +57,8 @@ export const calculateFraudScore = (data: FraudScoreData): number => {
   const sessionStart = new Date(data.sessionStartTime);
   const sessionEnd = new Date(data.sessionEndTime);
 
-  if (now < sessionStart || now > sessionEnd) {
+  const GRACE_PERIOD_MS = 5 * 60 * 1000; // 5 minute grace period
+  if (now.getTime() < sessionStart.getTime() - GRACE_PERIOD_MS || now.getTime() > sessionEnd.getTime() + GRACE_PERIOD_MS) {
     score += 40;
   }
 
