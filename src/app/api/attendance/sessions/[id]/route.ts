@@ -78,12 +78,12 @@ export async function POST(
         data: session,
         message: "Session stopped",
       });
-    } else if (action === "pause") {
-      const session = await AttendanceService.pauseSession(id);
+    } else if (action === "rotate") {
+      const session = await AttendanceService.generateQRCode(id);
       return NextResponse.json({
         success: true,
         data: session,
-        message: "Session paused",
+        message: "QR code rotated",
       });
     }
 

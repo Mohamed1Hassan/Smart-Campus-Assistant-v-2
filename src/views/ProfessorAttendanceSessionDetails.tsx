@@ -36,7 +36,7 @@ import { StudentList } from "../components/professor/StudentList";
 
 export function ProfessorAttendanceSessionDetails() {
   // ... (rest of the component)
-  const { sessions, loadSessionById, setSelectedSession, selectedSession } = useAttendanceSessions();
+  const { sessions, loadSessionById, setSelectedSession, selectedSession, generateQRCode: rotateQRCode } = useAttendanceSessions();
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
@@ -210,7 +210,10 @@ export function ProfessorAttendanceSessionDetails() {
 
                 {/* QR Code */}
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <QRCodeGenerator session={session as any} />
+                <QRCodeGenerator 
+                  session={session as any} 
+                  onRefresh={() => rotateQRCode(session.id).then(() => {})}
+                />
               </TabsContent>
 
               <TabsContent value="students">

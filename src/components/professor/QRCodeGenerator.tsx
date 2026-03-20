@@ -101,6 +101,7 @@ export function QRCodeGenerator({
   session,
   onExport,
   onShare,
+  onRefresh,
   className = "",
 }: QRCodeGeneratorProps) {
   const [qrCodeData, setQrCodeData] = useState<string>("");
@@ -219,7 +220,7 @@ export function QRCodeGenerator({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id]);
 
-  // Auto-refresh QR code every 5 seconds for dynamic effect
+  // Auto-refresh QR code visual Every 5 seconds
   useEffect(() => {
     if (session.status === "ACTIVE") {
       const interval = setInterval(() => {
@@ -228,7 +229,17 @@ export function QRCodeGenerator({
       return () => clearInterval(interval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session.status, session.id]); // Re-run if status or ID changes
+  }, [session.status, session.id]);
+
+  // Handle REAL rotation every 30 seconds via onRefresh
+  useEffect(() => {
+    if (session.status === "ACTIVE" && onRefresh) {
+      const interval = setInterval(() => {
+        onRefresh();
+      }, 30000); // Rotate in DB every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [session.status, session.id, onRefresh]);
 
   // Update time remaining every second
   useEffect(() => {

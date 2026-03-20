@@ -150,9 +150,10 @@ class AttendanceService {
   /**
    * Generate QR code for a session
    */
-  async generateQRCode(id: string): Promise<ApiResponse<{ qrCode: string }>> {
-    return await apiClient.post<{ qrCode: string }>(
-      `/attendance/sessions/${id}/qr`,
+  async generateQRCode(id: string): Promise<ApiResponse<AttendanceSession>> {
+    return await apiClient.post<AttendanceSession>(
+      `/attendance/sessions/${id}`,
+      { action: "rotate" },
     );
   }
 

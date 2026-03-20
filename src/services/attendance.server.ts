@@ -342,6 +342,32 @@ class AttendanceService {
   }
 
   /**
+   * Generate a new QR code for a session (Rotation)
+   */
+  async generateQRCode(sessionId: string) {
+    try {
+      const session = await prisma.attendanceSession.update({
+        where: { id: sessionId },
+        data: {
+          qrCode: `attendance-${uuidv4()}-${Date.now()}`,
+        },
+      });
+
+      // Broadcast update so everyone knows the QR changed
+      socketService.broadcastToSession(sessionId, "session:updated", {
+        sessionId,
+        qrCode: session.qrCode,
+        session,
+      });
+
+      return session;
+    } catch (error) {
+      console.error("[AttendanceService] Error rotating QR code:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Delete a session
    */
   async deleteSession(id: string) {
@@ -484,7 +510,19 @@ class AttendanceService {
     if (!session) throw new Error("Session not found");
     if (!user) throw new Error("User not found");
     if (session.status !== "ACTIVE") throw new Error("Session is not active");
-    if (session.qrCode !== qrCode) throw new Error("Invalid QR code");
+    
+    // Validate QR code - handle both plain string and JSON string from student scan
+    let providedCode = qrCode;
+    try {
+      if (qrCode.startsWith("{")) {
+        const parsed = JSON.parse(qrCode);
+        if (parsed.qrCode) providedCode = parsed.qrCode;
+      }
+    } catch (e) {
+      // Not a JSON or invalid JSON, use as is
+    }
+
+    if (session.qrCode !== providedCode) throw new Error("Invalid QR code");
 
     // Check authorization: Major/Level match OR Active Enrollment
     const isEnrolled = await prisma.courseEnrollment.findFirst({
