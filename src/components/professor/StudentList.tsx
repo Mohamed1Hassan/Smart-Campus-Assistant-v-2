@@ -30,17 +30,27 @@ export function StudentList({ sessionId }: StudentListProps) {
     const fetchRecords = async () => {
       setIsLoading(true);
       try {
-        const data = (await getSessionRecords(sessionId)) as {
-          records: AttendanceRecordData[];
-        };
+        const data = (await getSessionRecords(sessionId)) as any;
         if (!isMounted) return;
 
-        const count = data?.records?.length || 0;
+        // Backend returns { data: records, meta: ... }
+        const rawRecords = data?.data || (Array.isArray(data) ? data : []);
+        const count = rawRecords.length || 0;
+        
         setDebugInfo(
           `Session: ${sessionId.substring(0, 8)}... | ${count} records`,
         );
-        if (data?.records) {
-          setRecords(data.records);
+
+        if (rawRecords) {
+          // Map backend student fields to frontend expected structure
+          const mappedRecords = rawRecords.map((r: any) => ({
+            ...r,
+            student: {
+              ...r.student,
+              name: r.student ? `${r.student.firstName} ${r.student.lastName}` : "Unknown Student"
+            }
+          }));
+          setRecords(mappedRecords);
         }
       } catch (e) {
         if (isMounted) setDebugInfo(`Error: ${e}`);

@@ -36,16 +36,28 @@ import { StudentList } from "../components/professor/StudentList";
 
 export function ProfessorAttendanceSessionDetails() {
   // ... (rest of the component)
+  const { sessions, loadSessionById, setSelectedSession } = useAttendanceSessions();
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { sessions, loadSessions } = useAttendanceSessions();
 
   useEffect(() => {
-    loadSessions();
-  }, [loadSessions]);
+    if (id) {
+      loadSessionById(id);
+      
+      // Add auto-refresh every 10 seconds for real-time attendance
+      const interval = setInterval(() => {
+        loadSessionById(id);
+      }, 10000);
+      
+      return () => {
+        clearInterval(interval);
+        setSelectedSession(null);
+      };
+    }
+  }, [id, loadSessionById, setSelectedSession]);
 
-  // Compute derived session state directly from sessions and ID
+  // Use selectedSession if it's the one we're looking for, otherwise find in sessions
   const session = useMemo(() => {
     if (sessions.length > 0 && id) {
       return sessions.find((s) => String(s.id) === id) || null;
@@ -62,11 +74,13 @@ export function ProfessorAttendanceSessionDetails() {
       </DashboardLayout>
     );
   }
-  // ... (keep existing code) ...
+
+  // Calculate stats from attendanceRecords if available
+  const presentCount = (session as any).attendanceRecords?.length || session.presentStudents || 0;
+  const totalCount = session.totalStudents || 50; // Fallback to 50 if unknown
+
   const attendanceRate =
-    (session.totalStudents || 0) > 0
-      ? ((session.presentStudents || 0) / (session.totalStudents || 1)) * 100
-      : 0;
+    totalCount > 0 ? (presentCount / totalCount) * 100 : 0;
 
   return (
     <DashboardLayout userType="professor">

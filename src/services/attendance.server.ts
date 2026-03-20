@@ -581,6 +581,25 @@ class AttendanceService {
         deviceFingerprint: deviceFingerprint || "unknown",
         fraudScore,
       },
+      include: {
+        student: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+
+    // 8. Emit real-time update
+    socketService.emitAttendanceMarked({
+      sessionId,
+      studentId: String(userId),
+      studentName: `${record.student.firstName} ${record.student.lastName}`,
+      timestamp: new Date(),
+      status: "PRESENT",
+      location: location as any,
+      fraudScore,
     });
 
     return record;
