@@ -585,7 +585,7 @@ class AttendanceService {
     // 7. Create attendance record
     const record = await prisma.attendanceRecord.create({
       data: {
-        sessionId,
+        sessionId: session.id,
         studentId: userId,
         courseId: session.courseId,
         status: "PRESENT",
