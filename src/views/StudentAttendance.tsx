@@ -1059,8 +1059,16 @@ export default function StudentAttendance() {
         const parsed = JSON.parse(scanResult);
         if (parsed.sessionId) targetSessionId = parsed.sessionId;
       } catch (e) {
-        // If it's just a string, it might be the session ID itself or a QR code
-        if (scanResult.length > 20) targetSessionId = scanResult; 
+        // If it's just a string, it might be the session ID or the qrCode string
+        // If it starts with 'attendance-', it's the qrCode string, but we need the sessionId.
+        // If we don't have it, we'll send it as sessionId and let the server handle it 
+        // OR we'll use the currentSession.id as a fallback.
+        if (scanResult.includes("-") && (scanResult.length > 30)) {
+           // Might be a UUID or the 'attendance-uuid-timestamp' string
+           targetSessionId = scanResult.startsWith("attendance-") 
+             ? scanResult.split("-")[1] 
+             : scanResult;
+        }
       }
 
       const attendanceData: {
@@ -1135,7 +1143,8 @@ export default function StudentAttendance() {
       }
 
       updateVerificationStep(4, "FAILED");
-      alert(`Error: ${errorMessage}. Please try again.`);
+      const validationDetails = (error as any).errors ? "\nDetails: " + JSON.stringify((error as any).errors, null, 2) : "";
+      alert(`Error: ${errorMessage}.${validationDetails} \n\nPlease try again.`);
     }
   }, [
     currentSession,

@@ -28,21 +28,21 @@ export const createSessionSchema = z.object({
 });
 
 export const scanQRCodeSchema = z.object({
-  sessionId: z.string().uuid(),
+  sessionId: z.string().min(1),
   qrCode: z.string().min(1),
   photo: z.string().optional(),
   location: z
     .object({
       latitude: z.number().min(-90).max(90),
       longitude: z.number().min(-180).max(180),
-      accuracy: z.number().positive(),
+      accuracy: z.number().nonnegative(),
     })
     .optional(),
   deviceFingerprint: z.string().optional(),
 });
 
 export const markAttendanceSchema = z.object({
-  sessionId: z.string().uuid(),
+  sessionId: z.string().min(1),
   studentId: z.string().optional(),
   status: z.enum(["PRESENT", "ABSENT", "LATE", "EXCUSED"]),
   notes: z.string().optional(),
