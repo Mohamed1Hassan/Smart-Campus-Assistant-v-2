@@ -226,7 +226,13 @@ class AttendanceService {
       return await prisma.attendanceSession.findUnique({
         where: { id },
         include: {
-          course: true,
+          course: {
+            include: {
+              _count: {
+                select: { enrollments: true },
+              },
+            },
+          },
           attendanceRecords: {
             include: {
               student: {

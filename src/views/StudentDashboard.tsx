@@ -299,8 +299,9 @@ export default function StudentDashboard() {
           // Calculate status dynamically
           let status: "upcoming" | "ongoing" | "completed" = "upcoming";
           const now = new Date();
+          const isSessionActive = session.isActive || session.status === "ACTIVE";
 
-          if (session.isActive && now >= startTime && now <= endTime) {
+          if (isSessionActive && now <= endTime) {
             status = "ongoing";
           } else if (now > endTime) {
             status = "completed";
@@ -346,7 +347,8 @@ export default function StudentDashboard() {
       return mergedSchedule;
     },
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 30 * 1000, // Refresh every 30 seconds
   });
 
   // 3. Announcements (Derived from notifications)

@@ -75,9 +75,12 @@ export function ProfessorAttendanceSessionDetails() {
     );
   }
 
-  // Calculate stats from attendanceRecords if available
-  const presentCount = (session as any).attendanceRecords?.length || session.presentStudents || 0;
-  const totalCount = session.totalStudents || 50; // Fallback to 50 if unknown
+  // Calculate stats from attendanceRecords
+  const attendanceRecords = (session as any).attendanceRecords || [];
+  const presentCount = attendanceRecords.filter((r: any) => r.status === "PRESENT").length;
+  const lateCount = attendanceRecords.filter((r: any) => r.status === "LATE").length;
+  // Total count is the number of enrollments if available
+  const totalCount = session.course?._count?.enrollments || session.totalStudents || 50; 
 
   const attendanceRate =
     totalCount > 0 ? (presentCount / totalCount) * 100 : 0;
@@ -101,7 +104,10 @@ export function ProfessorAttendanceSessionDetails() {
               {session.title}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              {session.courseName} •{" "}
+              <span className="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs">
+                {session.course?.courseCode || "N/A"}
+              </span>
+              {session.course?.courseName || session.courseName} •{" "}
               {new Date(session.startTime).toLocaleDateString()}
             </p>
           </div>
@@ -132,7 +138,7 @@ export function ProfessorAttendanceSessionDetails() {
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {session.presentStudents || 0}
+                    {presentCount}
                   </div>
                   <Progress value={attendanceRate} className="h-1 mt-2" />
                 </CardContent>
@@ -144,7 +150,7 @@ export function ProfessorAttendanceSessionDetails() {
                     <XCircle className="w-4 h-4 text-red-500" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {session.absentStudents || 0}
+                    {Math.max(0, totalCount - presentCount)}
                   </div>
                 </CardContent>
               </Card>
@@ -155,7 +161,7 @@ export function ProfessorAttendanceSessionDetails() {
                     <Clock className="w-4 h-4 text-yellow-500" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {session.lateStudents || 0}
+                    {lateCount}
                   </div>
                 </CardContent>
               </Card>
@@ -241,12 +247,12 @@ export function ProfessorAttendanceSessionDetails() {
                   <span className="text-sm">Location Check</span>
                   <Badge
                     variant={
-                      session.security?.isLocationRequired
+                      session.securitySettings?.requireLocation
                         ? "default"
                         : "secondary"
                     }
                   >
-                    {session.security?.isLocationRequired
+                    {session.securitySettings?.requireLocation
                       ? "Active"
                       : "Disabled"}
                   </Badge>
@@ -255,24 +261,24 @@ export function ProfessorAttendanceSessionDetails() {
                   <span className="text-sm">Photo Verification</span>
                   <Badge
                     variant={
-                      session.security?.isPhotoRequired
+                      session.securitySettings?.requirePhoto
                         ? "default"
                         : "secondary"
                     }
                   >
-                    {session.security?.isPhotoRequired ? "Active" : "Disabled"}
+                    {session.securitySettings?.requirePhoto ? "Active" : "Disabled"}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
                   <span className="text-sm">Device Check</span>
                   <Badge
                     variant={
-                      session.security?.isDeviceCheckRequired
+                      session.securitySettings?.requireDeviceCheck
                         ? "default"
                         : "secondary"
                     }
                   >
-                    {session.security?.isDeviceCheckRequired
+                    {session.securitySettings?.requireDeviceCheck
                       ? "Active"
                       : "Disabled"}
                   </Badge>

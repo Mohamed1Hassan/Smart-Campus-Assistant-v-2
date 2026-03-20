@@ -64,10 +64,16 @@ export class SocketService {
   // Helper to send a broadcast
   private async broadcast(target: string, event: string, payload: Record<string, unknown>) {
     try {
-      await this.channel.send({
+      // Create or get a channel for the specific target
+      const channel = this.supabase.channel(target);
+      
+      // We don't necessarily need to subscribe to send, 
+      // but some Supabase versions require it to be initialized.
+      // We'll use the send method directly.
+      await channel.send({
         type: 'broadcast',
         event: `${target}:${event}`,
-        payload: payload,
+        payload: { payload }, // Wrap in payload property as expected by components
       });
     } catch (error) {
       console.error(`[SocketService] Broadcast error (${target}:${event}):`, error);

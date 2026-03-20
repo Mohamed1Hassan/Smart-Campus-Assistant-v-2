@@ -153,7 +153,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:status_update' },
-        (payload: { payload: SocketSecurityData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -172,7 +172,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:location_update' },
-        (payload: { payload: SocketSecurityData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -191,7 +191,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:device_update' },
-        (payload: { payload: SocketSecurityData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -210,7 +210,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:fraud_alert' },
-        (payload: { payload: SocketFraudData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           const status: SecurityStatus = {

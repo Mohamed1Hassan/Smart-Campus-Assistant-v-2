@@ -18,6 +18,17 @@ export interface SessionSecurity {
   riskThreshold: number;
 }
 
+export interface Course {
+  id: number;
+  courseCode: string;
+  courseName: string;
+  major: string;
+  level: number;
+  _count?: {
+    enrollments: number;
+  };
+}
+
 export interface AttendanceSession {
   id: string;
   professorId: string;
@@ -33,6 +44,9 @@ export interface AttendanceSession {
   updatedAt: Date;
   location?: SessionLocation;
   security?: SessionSecurity;
+  securitySettings?: any;
+  course?: Course;
+  attendanceRecords?: any[];
   totalStudents?: number;
   presentStudents?: number;
   absentStudents?: number;

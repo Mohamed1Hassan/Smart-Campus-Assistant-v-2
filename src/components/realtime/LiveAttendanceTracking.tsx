@@ -144,7 +144,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:marked` },
-        (payload: { payload: AttendanceRecord }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
@@ -160,7 +160,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:fraud_detected` },
-        (payload: { payload: SocketFraudData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           const alert = {
@@ -176,7 +176,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:started` },
-        (payload: { payload: SocketSessionData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           addRecentActivity({
@@ -189,7 +189,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:ended` },
-        (payload: { payload: SocketSessionData }) => {
+        (payload: any) => {
           const data = payload?.payload;
           if (!data) return;
           addRecentActivity({

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
@@ -60,6 +60,9 @@ interface QRCodeGeneratorProps {
     lateStudents?: number;
     fraudAlerts?: number;
     qrCode?: string;
+    course?: any;
+    attendanceRecords?: any[];
+    securitySettings?: any;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -123,10 +126,10 @@ export function QRCodeGenerator({
         radius: 0,
         name: "N/A",
       },
-      security: session.security || {
-        isLocationRequired: false,
-        isPhotoRequired: false,
-        isDeviceCheckRequired: false,
+      security: session.security || (session as any).securitySettings || {
+        isLocationRequired: (session as any).securitySettings?.requireLocation || false,
+        isPhotoRequired: (session as any).securitySettings?.requirePhoto || false,
+        isDeviceCheckRequired: (session as any).securitySettings?.requireDeviceCheck || false,
         fraudDetectionEnabled: false,
         gracePeriod: 0,
         maxAttempts: 0,
@@ -197,10 +200,12 @@ export function QRCodeGenerator({
 
   // Update attendance rate
   const updateAttendanceRate = () => {
-    if ((session.totalStudents || 0) > 0) {
-      setAttendanceRate(
-        ((session.presentStudents || 0) / (session.totalStudents || 1)) * 100,
-      );
+    const records = (session as any).attendanceRecords || [];
+    const present = records.length > 0 ? records.filter((r: any) => r.status === "PRESENT").length : (session.presentStudents || 0);
+    const total = session.course?._count?.enrollments || session.totalStudents || 1;
+    
+    if (total > 0) {
+      setAttendanceRate((present / total) * 100);
     } else {
       setAttendanceRate(0);
     }
@@ -604,7 +609,7 @@ export function QRCodeGenerator({
                       Present
                     </p>
                     <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                      {session.presentStudents}
+                      {(session as any).attendanceRecords?.length || session.presentStudents || 0}
                     </p>
                   </div>
                   <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
@@ -612,7 +617,7 @@ export function QRCodeGenerator({
                       Total
                     </p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
-                      {session.totalStudents}
+                      {session.course?._count?.enrollments || session.totalStudents || 0}
                     </p>
                   </div>
                 </div>
@@ -645,19 +650,19 @@ export function QRCodeGenerator({
               Security Features Active
             </h4>
             <div className="flex flex-wrap gap-2">
-              {session.security?.isLocationRequired && (
+              {(session.security?.isLocationRequired || (session as any).securitySettings?.requireLocation) && (
                 <div className="px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg text-xs font-medium border border-green-200 dark:border-green-800 flex items-center gap-1.5">
                   <MapPin className="h-3.5 w-3.5" />
                   Location Verified
                 </div>
               )}
-              {session.security?.isPhotoRequired && (
+              {(session.security?.isPhotoRequired || (session as any).securitySettings?.requirePhoto) && (
                 <div className="px-3 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-medium border border-purple-200 dark:border-purple-800 flex items-center gap-1.5">
                   <Camera className="h-3.5 w-3.5" />
                   Photo Required
                 </div>
               )}
-              {session.security?.isDeviceCheckRequired && (
+              {(session.security?.isDeviceCheckRequired || (session as any).securitySettings?.requireDeviceCheck) && (
                 <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
                   <Smartphone className="h-3.5 w-3.5" />
                   Device Check
