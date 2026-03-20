@@ -1064,10 +1064,17 @@ export default function StudentAttendance() {
         // If we don't have it, we'll send it as sessionId and let the server handle it 
         // OR we'll use the currentSession.id as a fallback.
         if (scanResult.includes("-") && (scanResult.length > 30)) {
-           // Might be a UUID or the 'attendance-uuid-timestamp' string
-           targetSessionId = scanResult.startsWith("attendance-") 
-             ? scanResult.split("-")[1] 
-             : scanResult;
+           if (scanResult.startsWith("attendance-")) {
+             // Format: attendance-UUID-timestamp
+             // UUID contains hyphens, so we need to join it back or slice it
+             const parts = scanResult.split("-");
+             // First part is 'attendance', last is timestamp
+             if (parts.length >= 6) {
+               targetSessionId = parts.slice(1, -1).join("-");
+             }
+           } else {
+             targetSessionId = scanResult;
+           }
         }
       }
 

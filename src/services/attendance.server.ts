@@ -463,16 +463,23 @@ class AttendanceService {
       data;
 
     // 1. Fetch Session & User
-    const [session, user] = await Promise.all([
-      prisma.attendanceSession.findUnique({
-        where: { id: sessionId },
+    let session = await prisma.attendanceSession.findUnique({
+      where: { id: sessionId },
+      include: { course: true },
+    });
+
+    // Fallback: If sessionId didn't work, try searching by qrCode field
+    if (!session && qrCode) {
+      session = await prisma.attendanceSession.findFirst({
+        where: { qrCode: qrCode },
         include: { course: true },
-      }),
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { major: true, level: true },
-      }),
-    ]);
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { major: true, level: true },
+    });
 
     if (!session) throw new Error("Session not found");
     if (!user) throw new Error("User not found");
