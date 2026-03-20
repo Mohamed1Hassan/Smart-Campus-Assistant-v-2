@@ -220,15 +220,15 @@ export default function StudentAttendance() {
       if (!user?.id) return null;
       try {
         const sessionId = searchParams?.get("session");
-        const response = await apiClient.get<{ data: unknown[] }>(
+        const response = await apiClient.get<RawAttendanceRecord[]>(
           "/api/attendance/sessions",
           {
             params: sessionId ? { sessionId } : { status: "ACTIVE" },
           },
         );
 
-        if (response.success && response.data?.data) {
-          const activeSessions = response.data.data as RawAttendanceRecord[];
+        if (response.success && response.data) {
+          const activeSessions = response.data;
           if (activeSessions.length > 0) {
             const session = activeSessions[0];
             return {

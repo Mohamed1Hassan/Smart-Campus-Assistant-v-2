@@ -105,7 +105,13 @@ export async function GET(req: NextRequest) {
     } else if (payload.role.toLowerCase() === "student") {
       const studentId = parseInt(payload.userId);
 
-      // Get all active course enrollments for this student
+      // Get student's major and level
+      const student = await prisma.user.findUnique({
+        where: { id: studentId },
+        select: { major: true, level: true },
+      });
+
+      // Get explicit course enrollments
       const enrollments = await prisma.courseEnrollment.findMany({
         where: {
           studentId: studentId,
@@ -114,24 +120,39 @@ export async function GET(req: NextRequest) {
         select: { courseId: true },
       });
 
-      const relevantCourseIds = enrollments.map((e) => e.courseId);
+      let relevantCourseIds = enrollments.map((e) => e.courseId);
+
+      // Fallback: If no explicit enrollments, find courses matching major and level
+      if (relevantCourseIds.length === 0 && student?.major && student.level) {
+        const matchingCourses = await prisma.course.findMany({
+          where: {
+            major: student.major,
+            level: student.level,
+            isActive: true,
+            isArchived: false,
+          },
+          select: { id: true },
+        });
+        relevantCourseIds = matchingCourses.map((c) => c.id);
+      }
 
       if (relevantCourseIds.length === 0) {
         return NextResponse.json({ success: true, data: [] });
       }
 
-      if (courseId) {
-        if (!relevantCourseIds.includes(courseId)) {
-          return NextResponse.json({
-            success: false,
-            message: "You are not enrolled in this course",
-            data: [],
-          });
-        }
-        filters.courseId = courseId;
-      } else {
-        filters.courseId = { in: relevantCourseIds };
+      // If a specific courseId was requested, ensure the student has access to it
+      if (courseId && !relevantCourseIds.includes(courseId)) {
+        return NextResponse.json({
+          success: false,
+          message: "You are not enrolled in this course or it doesn't match your level/major",
+          data: [],
+        });
       }
+
+      // Filter by the allowed courses
+      filters.courseId = { in: relevantCourseIds };
+      if (courseId) filters.courseId = courseId;
+
     }
 
     const sessions = await AttendanceService.getSessions(filters);

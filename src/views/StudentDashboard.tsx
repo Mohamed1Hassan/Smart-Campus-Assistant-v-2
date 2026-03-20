@@ -227,7 +227,7 @@ export default function StudentDashboard() {
         apiClient.get<RawScheduleItem[]>("/api/schedule/today", {
           params: { dayOfWeek: currentDayOfWeek },
         }),
-        apiClient.get<{ data: RawAttendanceSession[] }>(
+        apiClient.get<RawAttendanceSession[]>(
           "/api/attendance/sessions",
           {
             params: {
@@ -243,8 +243,8 @@ export default function StudentDashboard() {
           ? scheduleRes.data
           : [];
       const activeSessions =
-        sessionsRes?.success && Array.isArray(sessionsRes.data?.data)
-          ? sessionsRes.data.data
+        sessionsRes?.success && Array.isArray(sessionsRes.data)
+          ? sessionsRes.data
           : [];
 
       // Transform static schedule

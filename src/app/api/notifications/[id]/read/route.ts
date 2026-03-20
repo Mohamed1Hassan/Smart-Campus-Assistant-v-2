@@ -5,7 +5,7 @@ import { handleApiError } from "@/utils/apiResponse";
 
 const notificationService = getNotificationService();
 
-export async function POST(
+export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
