@@ -474,7 +474,7 @@ export default function ProfessorExams() {
                   return (
                     <motion.div
                       key={exam.id}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all group"
                     >

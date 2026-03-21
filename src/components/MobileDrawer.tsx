@@ -187,17 +187,15 @@ export default function MobileDrawer({
     closed: {
       x: "-100%",
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
+        duration: 0.2,
+        ease: "easeInOut",
       },
     },
     open: {
       x: 0,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
+        duration: 0.3,
+        ease: "easeOut",
       },
     },
   };
@@ -218,7 +216,7 @@ export default function MobileDrawer({
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/40 z-50"
               onClick={handleBackdropClick}
               aria-hidden="true"
             />
@@ -230,7 +228,8 @@ export default function MobileDrawer({
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed inset-y-0 left-0 w-[280px] bg-white/90 dark:bg-cardDark/90 backdrop-blur-xl border-r border-white/20 dark:border-gray-700/50 shadow-2xl z-50 flex flex-col focus:outline-none"
+              className="fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-cardDark border-r border-gray-100 dark:border-gray-800 shadow-2xl z-50 flex flex-col focus:outline-none"
+              style={{ willChange: "transform" }}
               role="dialog"
               aria-modal="true"
               aria-label="Navigation menu"
@@ -283,11 +282,8 @@ export default function MobileDrawer({
                     const isSubmenuOpen = openSubmenu === item.path;
 
                     return (
-                      <motion.li
+                      <li
                         key={item.path}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
                         className="list-none"
                       >
                         {item.hasSubmenu ? (
@@ -373,7 +369,7 @@ export default function MobileDrawer({
                             {item.Tag}
                           </Link>
                         )}
-                      </motion.li>
+                      </li>
                     );
                   })}
                 </ul>
@@ -381,16 +377,13 @@ export default function MobileDrawer({
 
               {/* Bottom Menu (Logout) */}
               <div className="p-4 border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-900/20">
-                <motion.button
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: menuItems.length * 0.05 }}
+                <button
                   onClick={handleLogoutClick}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
                 >
                   <LogOut className="w-5 h-5" />
                   Logout
-                </motion.button>
+                </button>
               </div>
             </motion.div>
           </>
