@@ -424,8 +424,8 @@ export default function ProfessorDashboard() {
           <div className="relative z-10 p-6 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="flex items-center gap-3 mb-2 text-indigo-100"
               >
                 <Calendar className="w-5 h-5" />
@@ -441,17 +441,15 @@ export default function ProfessorDashboard() {
 
               </motion.div>
               <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="text-3xl md:text-5xl font-bold mb-4"
               >
                 {greeting}, Dr. {user?.firstName}
               </motion.h1>
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="text-indigo-100 text-lg max-w-xl"
               >
                 You have{" "}
@@ -525,11 +523,8 @@ export default function ProfessorDashboard() {
               bg: "bg-orange-500/10",
             },
           ].map((stat) => (
-            <motion.div
+            <div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
               className="bg-white dark:bg-cardDark p-4 md:p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
             >
               <div className="flex justify-between items-start mb-3 md:mb-4">
@@ -545,7 +540,7 @@ export default function ProfessorDashboard() {
               <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
                 {stat.label}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -554,9 +549,7 @@ export default function ProfessorDashboard() {
           <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Live Now Section */}
             {attendanceSessions.some((s) => s.status === "ACTIVE") && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <div
                 className="bg-white dark:bg-cardDark rounded-3xl border border-gray-100 dark:border-gray-700 shadow-lg overflow-hidden relative"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500" />
@@ -685,7 +678,7 @@ export default function ProfessorDashboard() {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Today's Schedule */}

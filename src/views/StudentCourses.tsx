@@ -217,7 +217,8 @@ export default function StudentCourses() {
                 onClick={() =>
                   router.push(`/dashboard/student/courses/${course.id}`)
                 }
-                className={`group bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/20 transition-all duration-300 cursor-pointer ${viewMode === "list" ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6" : ""}`}
+                className={`group bg-white/80 dark:bg-cardDark/80 rounded-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/20 transition-all duration-300 cursor-pointer ${viewMode === "list" ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6" : ""}`}
+                style={{ willChange: "transform, opacity" }}
               >
                 {/* Card Header (Grid Mode) */}
                 {viewMode === "grid" && (

@@ -54,22 +54,25 @@ const GlassCard = ({
   children,
   className = "",
   variant = "default",
+  noBlur = false,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: "default" | "danger" | "warning";
+  noBlur?: boolean;
 }) => {
   const variants = {
     default:
-      "bg-white/90 dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/50",
+      "bg-white/95 dark:bg-gray-800/95 border border-gray-100 dark:border-gray-700/50",
     danger:
-      "bg-red-50/90 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50",
+      "bg-red-50/95 dark:bg-red-900/40 border border-red-100 dark:border-red-800/50",
     warning:
-      "bg-amber-50/90 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50",
+      "bg-amber-50/95 dark:bg-amber-900/40 border border-amber-100 dark:border-amber-800/50",
   };
   return (
     <div
-      className={`backdrop-blur-xl rounded-3xl shadow-sm hover:shadow-xl transition-all ${variants[variant]} ${className}`}
+      className={`${noBlur ? "" : "backdrop-blur-xl"} rounded-3xl shadow-sm hover:shadow-xl transition-all ${variants[variant]} ${className}`}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </div>
@@ -385,9 +388,8 @@ export default function ProfessorExams() {
                       localAlerts.map((alert) => (
                         <motion.div
                           key={alert.id}
-                          layout
-                          initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.95 }}
                           className={`p-5 sm:p-6 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm transition-colors ${
                             alert.status === "OPEN"
@@ -472,7 +474,8 @@ export default function ProfessorExams() {
                   return (
                     <motion.div
                       key={exam.id}
-                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
                       className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all group"
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-6">

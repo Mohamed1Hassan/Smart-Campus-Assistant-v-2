@@ -442,6 +442,7 @@ export default function StudentDashboard() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        style={{ willChange: "transform, opacity" }}
         className="space-y-6 sm:space-y-8 pb-32 sm:pb-24"
       >
         {/* Header Section */}

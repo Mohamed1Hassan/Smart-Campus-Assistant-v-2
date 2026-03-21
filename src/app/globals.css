@@ -312,3 +312,25 @@ html.dark body::-webkit-scrollbar-thumb:hover,
 [cmdk-list] {
   @apply px-2 py-2;
 }
+
+/* Performance Optimization for Mobile */
+@media (max-width: 768px) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Use slightly more opaque backgrounds when blur is disabled */
+  .bg-white\/70, .bg-white\/80 {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  .dark .bg-gray-800\/60, .dark .bg-gray-800\/70, .dark .bg-cardDark\/80 {
+    background-color: rgba(30, 41, 59, 0.95) !important;
+  }
+}

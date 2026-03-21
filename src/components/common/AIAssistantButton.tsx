@@ -272,6 +272,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
       >
         {/* Global Float Animation Wrapper */}
         <motion.div
+          style={{ willChange: "transform" }}
           animate={{
             y: isHovered ? [0, -10, 0] : [0, -5, 0],
           }}

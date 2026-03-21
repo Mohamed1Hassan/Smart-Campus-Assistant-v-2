@@ -49,12 +49,14 @@ interface Grade {
 const GlassCard = ({
   children,
   className = "",
+  noBlur = false,
 }: {
   children: React.ReactNode;
   className?: string;
+  noBlur?: boolean;
 }) => (
   <div
-    className={`backdrop-blur-md bg-white/70 dark:bg-gray-800/60 border border-white/20 dark:border-gray-700/50 rounded-3xl shadow-xl ${className}`}
+    className={`${noBlur ? "" : "backdrop-blur-md"} bg-white/80 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 rounded-3xl shadow-xl ${className}`}
   >
     {children}
   </div>
@@ -406,10 +408,9 @@ export default function Grades() {
             {filteredGrades.map((grade: any, index: number) => (
               <motion.div
                 key={grade.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
+                transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3) }}
               >
                 <GlassCard className="p-6 h-full hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 group cursor-default">
                   <div className="flex items-start justify-between mb-6">

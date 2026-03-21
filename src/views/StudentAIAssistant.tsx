@@ -448,7 +448,8 @@ export default function StudentAIAssistant() {
                   animate={{ width: 320, opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
                   transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  className={`flex-shrink-0 flex flex-col bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-r-2xl lg:rounded-2xl shadow-xl lg:shadow-sm border-r lg:border border-white/20 dark:border-gray-700/50 overflow-hidden ${isMobile ? "fixed inset-y-0 left-0 z-50" : ""}`}
+                  className={`flex-shrink-0 flex flex-col bg-white/80 dark:bg-gray-800/80 rounded-r-2xl lg:rounded-2xl shadow-xl lg:shadow-sm border-r lg:border border-white/20 dark:border-gray-700/50 overflow-hidden ${isMobile ? "fixed inset-y-0 left-0 z-50" : ""}`}
+                  style={{ willChange: "width, opacity" }}
                 >
                   <div className="w-80 h-full flex flex-col">
                     <div className="p-4 border-b border-gray-100 dark:border-gray-700/50 flex items-center justify-between bg-white/50 dark:bg-gray-800/50">
@@ -567,7 +568,10 @@ export default function StudentAIAssistant() {
             )}
           </AnimatePresence>
 
-          <div className="flex-1 flex flex-col bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl lg:rounded-2xl shadow-sm border-x lg:border border-white/20 dark:border-gray-700/50 overflow-hidden relative h-full">
+          <div 
+            className="flex-1 flex flex-col bg-white/80 dark:bg-gray-800/80 lg:rounded-2xl shadow-sm border-x lg:border border-white/20 dark:border-gray-700/50 overflow-hidden relative h-full"
+            style={{ willChange: "transform" }}
+          >
             <div className="h-16 px-4 lg:px-6 border-b border-gray-100 dark:border-gray-700/50 flex items-center justify-between bg-white/50 dark:bg-gray-800/50 backdrop-blur-md z-10">
               <div className="flex items-center gap-4">
                 <button
