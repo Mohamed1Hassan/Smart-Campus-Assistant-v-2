@@ -416,12 +416,11 @@ export default function StudentDashboard() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3, // Faster (was 0.5)
-        ease: "easeOut",
+        duration: 0.3,
+        ease: "easeOut" as const,
       },
     },
   };
-创新
 
   if (statsLoading && !stats) {
     return (
