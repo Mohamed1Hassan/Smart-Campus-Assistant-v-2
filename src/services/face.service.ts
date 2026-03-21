@@ -52,7 +52,7 @@ export class FaceService {
       }
 
       const requiredModels = [
-        "ssd_mobilenet_v1_model-weights_manifest.json",
+        "ssd_mobilenetv1_model-weights_manifest.json",
         "face_landmark_68_model-weights_manifest.json",
         "face_recognition_model-weights_manifest.json",
       ];

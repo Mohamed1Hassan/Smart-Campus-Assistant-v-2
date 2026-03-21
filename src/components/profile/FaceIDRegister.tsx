@@ -35,8 +35,7 @@ export default function FaceIDRegister({
   const videoRef = useRef<HTMLVideoElement>(null);
   const { success, error: toastError } = useToast();
 
-  const MODELS_URL =
-    "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights";
+  const MODELS_URL = "/models";
 
   const [stream, setStream] = useState<MediaStream | null>(null);
 

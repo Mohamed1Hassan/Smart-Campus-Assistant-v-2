@@ -242,78 +242,60 @@ export default function AttendanceChart({
 
     const courseDataMap: { [key: string]: WeeklyAttendance[] } = {};
 
-    // Remove duplicates by courseName before processing
-    const uniqueCourses = Array.from(
-      new Map(courses.map((c) => [c.courseName, c])).values(),
-    );
+    // 1. Create a helper to normalize strings
+    const normalize = (str: string) => str?.trim().toLowerCase() || "";
+    
+    // 2. Map course names/codes to their display names for quick lookup
+    const courseLookup = new Map<string, string>();
+    courses.forEach(c => {
+      courseLookup.set(normalize(c.courseName), c.courseName);
+      courseLookup.set(normalize(c.courseCode), c.courseName);
+    });
 
-    // Process each unique course
-    uniqueCourses.forEach((course) => {
-      // Filter records for this course (check both courseName and courseCode)
-      // Normalize strings for comparison (trim, lowercase)
-      const normalize = (str: string) => str?.trim().toLowerCase() || "";
-      const courseNameNormalized = normalize(course.courseName);
-      const courseCodeNormalized = normalize(course.courseCode);
-
-      const courseRecords = records.filter((record) => {
-        interface CourseObj {
-          courseName?: string;
-          name?: string;
-          code?: string;
-        }
-
-        const recCourse = record.course as unknown as CourseObj;
-        // Get course name from record (could be string or object)
-        const recordCourseName =
-          typeof record.course === "string"
-            ? record.course
-            : recCourse?.courseName || recCourse?.name || recCourse?.code || "";
-
-        const recordCourseNameNormalized = normalize(recordCourseName);
-
-        // Try multiple matching strategies
-        const exactMatch = recordCourseNameNormalized === courseNameNormalized;
-        const codeMatch = recordCourseNameNormalized === courseCodeNormalized;
-        const includesMatch =
-          recordCourseNameNormalized.includes(courseNameNormalized) ||
-          courseNameNormalized.includes(recordCourseNameNormalized);
-
-        return exactMatch || codeMatch || includesMatch;
-      });
-
-      // Debug logging (only in development)
-      if (
-        process.env.NODE_ENV === "development" &&
-        courses.length > 0 &&
-        records.length > 0
-      ) {
-        console.log(
-          `📊 Course: ${course.courseName} (${course.courseCode}) - Found ${courseRecords.length} matching records out of ${records.length} total`,
-        );
-        if (courseRecords.length === 0) {
-          interface CourseObj {
-            courseName?: string;
-            name?: string;
+    // 3. Group records by course name in a single pass O(N)
+    const recordsByCourse = new Map<string, AttendanceRecord[]>();
+    records.forEach(record => {
+      interface CourseObj {
+        courseName?: string;
+        name?: string;
+        code?: string;
+      }
+      const recCourse = record.course as unknown as CourseObj;
+      const recordCourseName = typeof record.course === "string" 
+        ? record.course 
+        : recCourse?.courseName || recCourse?.name || recCourse?.code || "";
+      
+      const normalizedName = normalize(recordCourseName);
+      
+      // Find which course this record belongs to
+      let matchedCourseName: string | undefined;
+      
+      // Direct match
+      matchedCourseName = courseLookup.get(normalizedName);
+      
+      // If no direct match, try partial match (fallback)
+      if (!matchedCourseName) {
+        for (const [key, displayName] of courseLookup.entries()) {
+          if (normalizedName.includes(key) || key.includes(normalizedName)) {
+            matchedCourseName = displayName;
+            break;
           }
-          console.warn(
-            `⚠️ No records found for course: ${course.courseName}. Available record courses:`,
-            Array.from(
-              new Set(
-                records.map((r) =>
-                  typeof r.course === "string"
-                    ? r.course
-                    : (r.course as unknown as CourseObj)?.courseName ||
-                      (r.course as unknown as CourseObj)?.name ||
-                      "",
-                ),
-              ),
-            ),
-          );
         }
       }
 
+      if (matchedCourseName) {
+        if (!recordsByCourse.has(matchedCourseName)) {
+          recordsByCourse.set(matchedCourseName, []);
+        }
+        recordsByCourse.get(matchedCourseName)!.push(record);
+      }
+    });
+
+    // 4. Process each course that we have records for (or all courses)
+    courses.forEach((course) => {
+      const courseRecords = recordsByCourse.get(course.courseName) || [];
+
       if (courseRecords.length === 0) {
-        // If no records, return all zeros (no data = 0% for all weeks)
         const weeks: WeeklyAttendance[] = [];
         for (let i = 1; i <= 8; i++) {
           weeks.push({
@@ -326,7 +308,7 @@ export default function AttendanceChart({
         return;
       }
 
-      // Find earliest date for this course to use as start date
+      // Find earliest date for this course
       let courseMinDate = new Date();
       if (courseRecords.length > 0) {
         const dates = courseRecords
@@ -339,12 +321,9 @@ export default function AttendanceChart({
         }
       }
 
-      // Group records by week for this course
       const weekMap = new Map<string, { present: number; total: number }>();
-
       courseRecords.forEach((record) => {
         const date = new Date(record.date);
-        // Use relative week number
         const weekNumber = getWeekNumber(date, courseMinDate);
         const weekKey = `Week ${weekNumber}`;
 
@@ -356,44 +335,16 @@ export default function AttendanceChart({
         weekMap.set(weekKey, weekData);
       });
 
-      // Convert to array and calculate percentages (only for weeks with actual data)
       const weeklyDataMap = new Map<string, number>();
       Array.from(weekMap.entries())
-        .sort(
-          (a, b) => parseInt(a[0].split(" ")[1]) - parseInt(b[0].split(" ")[1]),
-        )
-        .slice(-8) // Last 8 weeks
+        .sort((a, b) => parseInt(a[0].split(" ")[1]) - parseInt(b[0].split(" ")[1]))
+        .slice(-8)
         .forEach(([week, data]) => {
-          weeklyDataMap.set(
-            week,
-            data.total > 0 ? Math.round((data.present / data.total) * 100) : 0,
-          );
+          weeklyDataMap.set(week, data.total > 0 ? Math.round((data.present / data.total) * 100) : 0);
         });
 
-      // Create complete 8 weeks array - fill missing weeks with 0%
-      // Get all week numbers from the data
-      const weekNumbers = Array.from(weeklyDataMap.keys()).map(
-        (w) => parseInt(w.split(" ")[1]) || 0,
-      );
-
-      if (weekNumbers.length === 0) {
-        // No data at all - return all zeros
-        const emptyWeeks: WeeklyAttendance[] = [];
-        for (let i = 1; i <= 8; i++) {
-          emptyWeeks.push({
-            week: `Week ${i}`,
-            percentage: 0,
-            course: course.courseName,
-          });
-        }
-        courseDataMap[course.courseName] = emptyWeeks;
-        return;
-      }
-
-      const maxWeek = Math.max(...weekNumbers);
-
-      // Create array from 1 to maxWeek (we don't need minWeek), but limit to 8 weeks
-      // If we have more than 8 weeks, take the last 8
+      const weekNumbers = Array.from(weeklyDataMap.keys()).map(w => parseInt(w.split(" ")[1]) || 0);
+      const maxWeek = weekNumbers.length > 0 ? Math.max(...weekNumbers) : 1;
       const startWeek = Math.max(1, maxWeek - 7);
       const weeklyData: WeeklyAttendance[] = [];
 
@@ -401,17 +352,13 @@ export default function AttendanceChart({
         const weekKey = `Week ${i}`;
         weeklyData.push({
           week: weekKey,
-          percentage: weeklyDataMap.get(weekKey) || 0, // Use 0% for weeks without data
+          percentage: weeklyDataMap.get(weekKey) || 0,
           course: course.courseName,
         });
       }
 
-      // Ensure we have exactly 8 weeks (fill with zeros if needed)
       while (weeklyData.length < 8) {
-        const firstWeekNum =
-          weeklyData.length > 0
-            ? parseInt(weeklyData[0].week.split(" ")[1]) || 1
-            : 1;
+        const firstWeekNum = weeklyData.length > 0 ? parseInt(weeklyData[0].week.split(" ")[1]) || 1 : 1;
         const newWeekNum = Math.max(1, firstWeekNum - 1);
         weeklyData.unshift({
           week: `Week ${newWeekNum}`,
@@ -420,7 +367,6 @@ export default function AttendanceChart({
         });
       }
 
-      // Trim to exactly 8 weeks if we have more
       if (weeklyData.length > 8) {
         weeklyData.splice(0, weeklyData.length - 8);
       }

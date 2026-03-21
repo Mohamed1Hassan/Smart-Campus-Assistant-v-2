@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import {
   User,
   Camera,
@@ -20,7 +21,10 @@ import DashboardLayout from "../components/common/DashboardLayout";
 import ProfileForm from "../components/ProfileForm";
 import AccountSettings from "../components/AccountSettings";
 import AcademicSummary from "../components/AcademicSummary";
-import FaceIDRegister from "../components/profile/FaceIDRegister";
+const FaceIDRegister = dynamic(() => import("../components/profile/FaceIDRegister"), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+});
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";

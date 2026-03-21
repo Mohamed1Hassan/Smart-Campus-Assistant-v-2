@@ -13,37 +13,40 @@ import {
 } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import {
-  QrCode,
-  MapPin,
-  Smartphone,
-  Camera,
-  CheckCircle,
-  XCircle,
-  Shield,
   RefreshCw,
-  Settings,
-  History,
-  HelpCircle,
   Clock,
-  ChevronRight,
   AlertCircle,
-  AlertTriangle,
   Activity,
+  QrCode,
 } from "lucide-react";
 import { SuccessAnimation } from "@/components/common/SuccessAnimation";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-import { SecuritySettingsModal } from "@/components/student/attendance/SecuritySettingsModal";
+// Sub-components
+import ScannerSection from "@/components/student/attendance/ScannerSection";
+import VerificationSteps from "@/components/student/attendance/VerificationSteps";
+import StatusCard from "@/components/student/attendance/StatusCard";
+import QuickActions from "@/components/student/attendance/QuickActions";
+
+// Lazy loaded modals
+const SecuritySettingsModal = dynamic(() => import("@/components/student/attendance/SecuritySettingsModal").then(m => m.SecuritySettingsModal), { ssr: false });
+const AttendanceHistoryModal = dynamic(() => import("@/components/student/attendance/AttendanceHistoryModal").then(m => m.AttendanceHistoryModal), { ssr: false });
+const HelpSupportModal = dynamic(() => import("@/components/student/attendance/HelpSupportModal").then(m => m.HelpSupportModal), { ssr: false });
+
 import type { AttendanceSecuritySettings } from "@/components/student/attendance/SecuritySettingsModal";
-import { AttendanceHistoryModal } from "@/components/student/attendance/AttendanceHistoryModal";
-import { HelpSupportModal } from "@/components/student/attendance/HelpSupportModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/common/ToastProvider";
 import { apiClient } from "@/services/api";
-import AttendanceChart from "@/components/student/attendance/AttendanceChart";
+import StatsOverview from "@/components/student/attendance/StatsOverview";
+
+// Lazy loaded components
+const AttendanceChart = dynamic(() => import("@/components/student/attendance/AttendanceChart"), { 
+  ssr: false,
+  loading: () => <div className="h-80 w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />
+});
 import { getDeviceFingerprint } from "@/utils/fingerprint";
 
 interface SecurityVerification {
@@ -208,6 +211,15 @@ export default function StudentAttendance() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const lastScanTimeRef = useRef<number>(0);
+  const jsQRRef = useRef<any>(null);
+
+  // Pre-load jsQR
+  useEffect(() => {
+    import("jsqr").then((module) => {
+      jsQRRef.current = module.default || module;
+    }).catch(err => console.error("Failed to load jsQR library:", err));
+  }, []);
 
   const searchParams = useNextSearchParams();
   const router = useRouter();
@@ -529,66 +541,60 @@ export default function StudentAttendance() {
         const canvas = canvasRef.current;
         const video = videoRef.current;
 
+        // Throttle scanning to every 250ms for performance
+        const now = Date.now();
+        if (now - lastScanTimeRef.current < 250) {
+          animationFrameRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        lastScanTimeRef.current = now;
+
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         if (ctx) {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-          // Dynamic import to avoid issues if jsQR isn't loaded yet
-          import("jsqr")
-            .then((jsQRModule) => {
-              const jsQR = jsQRModule.default || jsQRModule;
-              const code = jsQR(
-                imageData.data,
-                imageData.width,
-                imageData.height,
-                {
-                  inversionAttempts: "dontInvert",
-                },
-              );
+          // Use the pre-loaded jsQR library
+          const jsQR = jsQRRef.current;
+          if (jsQR) {
+            const code = jsQR(
+              imageData.data,
+              imageData.width,
+              imageData.height,
+              { inversionAttempts: "dontInvert" }
+            );
 
-              if (code) {
-                console.log("Found QR code", code.data);
-                let scannedQRCode = code.data;
-                let scannedSessionId = "";
+            if (code) {
+              console.log("Found QR code", code.data);
+              let scannedQRCode = code.data;
+              let scannedSessionId = "";
 
-                // Try to parse as JSON first (as generated by Professor view)
-                try {
-                  const parsed = JSON.parse(code.data);
-                  if (parsed && typeof parsed === "object") {
-                    scannedQRCode = parsed.qrCode || code.data;
-                    scannedSessionId = parsed.sessionId || "";
-                  }
-                } catch (e) {
-                  // Not a JSON string
+              try {
+                const parsed = JSON.parse(code.data);
+                if (parsed && typeof parsed === "object") {
+                  scannedQRCode = parsed.qrCode || code.data;
+                  scannedSessionId = parsed.sessionId || "";
                 }
+              } catch (e) {}
 
-                // Validate scanned code against session
-                if (
-                  currentSession &&
-                  (scannedQRCode === currentSession.id ||
-                    scannedQRCode.includes(currentSession.id) ||
-                    code.data.includes(currentSession.id) ||
-                    scannedSessionId === currentSession.id)
-                ) {
-                  setScanResult(scannedQRCode);
-                  updateVerificationStep(0, "COMPLETED");
-                  stopScanner();
-                  if (navigator.vibrate) navigator.vibrate(200);
-                }
-              } else {
-                animationFrameRef.current = requestAnimationFrame(tick);
+              if (
+                currentSession &&
+                (scannedQRCode === currentSession.id ||
+                  scannedQRCode.includes(currentSession.id) ||
+                  code.data.includes(currentSession.id) ||
+                  scannedSessionId === currentSession.id)
+              ) {
+                setScanResult(scannedQRCode);
+                updateVerificationStep(0, "COMPLETED");
+                stopScanner();
+                if (navigator.vibrate) navigator.vibrate(200);
+                return; // Exit loop
               }
-            })
-            .catch((err) => {
-              console.error("Failed to load jsQR", err);
-              animationFrameRef.current = requestAnimationFrame(tick);
-            });
-          return;
+            }
+          }
         }
       }
     }
@@ -1161,22 +1167,7 @@ export default function StudentAttendance() {
     setShowSuccess,
   ]);
 
-  const getStepIcon = (step: string) => {
-    switch (step) {
-      case "QR_CODE_SCAN":
-        return <QrCode className="h-5 w-5" />;
-      case "LOCATION_VERIFICATION":
-        return <MapPin className="h-5 w-5" />;
-      case "DEVICE_VERIFICATION":
-        return <Smartphone className="h-5 w-5" />;
-      case "PHOTO_CAPTURE":
-        return <Camera className="h-5 w-5" />;
-      case "FINAL_CONFIRMATION":
-        return <CheckCircle className="h-5 w-5" />;
-      default:
-        return <Shield className="h-5 w-5" />;
-    }
-  };
+  // Step icons are now handled inside VerificationSteps.tsx
 
   // Real-time status updates
   useEffect(() => {
@@ -1361,67 +1352,7 @@ export default function StudentAttendance() {
       </motion.div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
-        {[
-          {
-            label: "Overall Attendance",
-            value: `${attendanceStats.overallAttendance}%`,
-            icon: CheckCircle,
-            color: "text-emerald-600 dark:text-emerald-400",
-            bg: "bg-emerald-50/50 dark:bg-emerald-900/20",
-            border: "border-emerald-100 dark:border-emerald-900/30",
-          },
-          {
-            label: "Total Classes",
-            value: attendanceStats.totalClasses,
-            icon: Clock,
-            color: "text-blue-600 dark:text-blue-400",
-            bg: "bg-blue-50/50 dark:bg-blue-900/20",
-            border: "border-blue-100 dark:border-blue-900/30",
-          },
-          {
-            label: "Missed Classes",
-            value: attendanceStats.missedClasses,
-            icon: XCircle,
-            color: "text-red-600 dark:text-red-400",
-            bg: "bg-red-50/50 dark:bg-red-900/20",
-            border: "border-red-100 dark:border-red-900/30",
-          },
-          {
-            label: "Late Classes",
-            value: attendanceStats.lateClasses,
-            icon: AlertCircle,
-            color: "text-amber-600 dark:text-amber-400",
-            bg: "bg-amber-50/50 dark:bg-amber-900/20",
-            border: "border-amber-100 dark:border-amber-900/30",
-          },
-        ].map((stat, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -5 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            className={`relative overflow-hidden rounded-2xl p-4 md:p-5 shadow-sm border ${stat.border} bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl`}
-          >
-            <div className="flex flex-col h-full justify-between relative z-10">
-              <div className="flex justify-between items-start mb-3">
-                <div className={`p-2.5 rounded-xl ${stat.bg}`}>
-                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                </div>
-              </div>
-              <div>
-                <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  {stat.label}
-                </p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                  {String(stat.value)}
-                </h3>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      <StatsOverview stats={attendanceStats} />
 
       {/* Permission Advisor Banner */}
       {(permissions.camera === "denied" ||
@@ -1495,224 +1426,16 @@ export default function StudentAttendance() {
         <div className="lg:col-span-2 space-y-8">
           {currentSession ? (
             <>
-              {/* QR Scanner Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
-              >
-                <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700/50 flex items-center justify-between bg-white/50 dark:bg-gray-800/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
-                      <QrCode className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                        QR Scanner
-                      </h2>
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                        Verify attendance for {currentSession.courseName}
-                      </p>
-                    </div>
-                  </div>
-                  {isScanning && (
-                    <span className="flex items-center gap-2 text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1 rounded-full animate-pulse">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      Scanning...
-                    </span>
-                  )}
-                </div>
-
-                <div className="p-6 sm:p-8">
-                  <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-square bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 ring-1 ring-gray-200 dark:ring-gray-800">
-                    {isScanning ? (
-                      <>
-                        <video
-                          ref={videoRef}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          muted
-                        />
-                        <canvas ref={canvasRef} className="hidden" />
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="w-56 h-56 sm:w-64 sm:h-64 border-2 border-white/30 rounded-2xl relative">
-                            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-indigo-500 rounded-tl-xl"></div>
-                            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-indigo-500 rounded-tr-xl"></div>
-                            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-indigo-500 rounded-bl-xl"></div>
-                            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-indigo-500 rounded-br-xl"></div>
-                            <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/20 to-transparent animate-scan"></div>
-                          </div>
-                        </div>
-                        <div className="absolute bottom-6 left-0 right-0 text-center px-4 pointer-events-none">
-                          <p className="text-white/90 text-sm font-medium bg-black/50 backdrop-blur-sm py-2 px-4 rounded-full inline-block">
-                            Align QR code within frame
-                          </p>
-                        </div>
-                        <button
-                          onClick={stopScanner}
-                          className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
-                        >
-                          <XCircle className="w-6 h-6" />
-                        </button>
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-6 text-center bg-gray-50 dark:bg-gray-800/50">
-                        <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                          <QrCode className="w-10 h-10 opacity-50" />
-                        </div>
-                        <p className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-300">
-                          {permissions.camera === "denied"
-                            ? "Camera access is blocked"
-                            : "Camera is currently off"}
-                        </p>
-                        {permissions.camera === "denied" && (
-                          <div className="text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-xl max-w-xs border border-red-100 dark:border-red-900/30">
-                            <p className="font-bold mb-1">To enable camera:</p>
-                            <ol className="list-decimal text-left pl-4 space-y-1">
-                              <li>
-                                Tap the{" "}
-                                <span className="font-bold">lock icon 🔒</span>{" "}
-                                in address bar
-                              </li>
-                              <li>
-                                Set Camera to{" "}
-                                <span className="font-bold">Allow</span>
-                              </li>
-                              <li>Refresh page</li>
-                            </ol>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-8 flex justify-center">
-                    <Button
-                      onClick={handleQRScan}
-                      disabled={isScanning}
-                      className={`
-                        px-8 py-6 rounded-2xl text-base sm:text-lg font-bold shadow-xl transition-all hover:scale-105 active:scale-95 w-full sm:w-auto
-                        ${
-                          permissions.camera === "denied"
-                            ? "bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/20"
-                            : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/25"
-                        }
-                      `}
-                    >
-                      {isScanning ? (
-                        <span className="flex items-center gap-2">
-                          <RefreshCw className="w-5 h-5 animate-spin" />
-                          Scanning...
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Camera className="w-5 h-5" />
-                          {permissions.camera === "denied"
-                            ? "Retry Access"
-                            : "Start Scanner"}
-                        </span>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Verification Steps */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
-              >
-                <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
-                      <Shield className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                        Verification
-                      </h2>
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                        Security checks
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-5 sm:p-6">
-                  <div className="space-y-6">
-                    {verificationSteps.map((step, index) => (
-                      <div key={index} className="relative flex gap-4">
-                        {/* Connector Line */}
-                        {index !== verificationSteps.length - 1 && (
-                          <div
-                            className={`absolute left-[19px] top-10 bottom-[-24px] w-0.5 ${
-                              step.status === "COMPLETED"
-                                ? "bg-emerald-200 dark:bg-emerald-900"
-                                : "bg-gray-100 dark:bg-gray-700"
-                            }`}
-                          />
-                        )}
-
-                        {/* Status Icon */}
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300 shadow-sm ${
-                            step.status === "COMPLETED"
-                              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 ring-4 ring-emerald-50 dark:ring-emerald-900/10"
-                              : step.status === "IN_PROGRESS"
-                                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 ring-4 ring-blue-50 dark:ring-blue-900/10"
-                                : step.status === "FAILED"
-                                  ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-4 ring-red-50 dark:ring-red-900/10"
-                                  : "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
-                          }`}
-                        >
-                          {step.status === "COMPLETED" ? (
-                            <CheckCircle className="w-5 h-5" />
-                          ) : step.status === "FAILED" ? (
-                            <XCircle className="w-5 h-5" />
-                          ) : (
-                            getStepIcon(step.currentStep)
-                          )}
-                        </div>
-
-                        <div className="flex-1 pt-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3
-                              className={`font-bold text-sm sm:text-base ${
-                                step.status === "COMPLETED"
-                                  ? "text-emerald-700 dark:text-emerald-400"
-                                  : step.status === "IN_PROGRESS"
-                                    ? "text-blue-700 dark:text-blue-400"
-                                    : "text-gray-900 dark:text-gray-100"
-                              }`}
-                            >
-                              {step.currentStep.replace(/_/g, " ")}
-                            </h3>
-                            <Badge
-                              variant={
-                                step.status === "COMPLETED"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                              className={
-                                step.status === "COMPLETED"
-                                  ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50"
-                                  : ""
-                              }
-                            >
-                              {step.status}
-                            </Badge>
-                          </div>
-                          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            {step.isRequired ? "Required" : "Optional"}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
+              <ScannerSection
+                isScanning={isScanning}
+                videoRef={videoRef}
+                canvasRef={canvasRef}
+                onStartScan={handleQRScan}
+                onStopScan={stopScanner}
+                permissions={permissions}
+                courseName={currentSession.courseName}
+              />
+              <VerificationSteps steps={verificationSteps} />
             </>
           ) : (
             <>
@@ -1769,118 +1492,18 @@ export default function StudentAttendance() {
         {/* Right Column - Status & Actions */}
         <div className="space-y-6 lg:space-y-8">
           {/* Current Status Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
-          >
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Activity className="w-5 h-5 text-indigo-600" />
-                Live Status
-              </h2>
-            </div>
-            <div className="p-4 space-y-2">
-              {[
-                {
-                  label: "Location",
-                  value: locationData ? `${locationData.accuracy}m` : "N/A",
-                  icon: MapPin,
-                  color: "text-blue-500",
-                  bg: "bg-blue-50 dark:bg-blue-900/20",
-                },
-                {
-                  label: "Device",
-                  value: deviceFingerprint ? "Verified" : "Pending",
-                  icon: Smartphone,
-                  color: "text-emerald-500",
-                  bg: "bg-emerald-50 dark:bg-emerald-900/20",
-                },
-                {
-                  label: "Photo",
-                  value: photoData ? "Captured" : "Pending",
-                  icon: Camera,
-                  color: "text-purple-500",
-                  bg: "bg-purple-50 dark:bg-purple-900/20",
-                },
-                {
-                  label: "Score",
-                  value: `${calculateSecurityScore()}%`,
-                  icon: Shield,
-                  color: "text-amber-500",
-                  bg: "bg-amber-50 dark:bg-amber-900/20",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${item.bg}`}>
-                      <item.icon className={`w-4 h-4 ${item.color}`} />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {item.label}
-                    </span>
-                  </div>
-                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
-                    {item.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          <StatusCard
+            locationData={locationData}
+            deviceFingerprint={deviceFingerprint}
+            photoData={photoData}
+            securityScore={calculateSecurityScore()}
+          />
 
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
-          >
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Settings className="w-5 h-5 text-gray-600" />
-                Quick Actions
-              </h2>
-            </div>
-            <div className="p-4 space-y-3">
-              {[
-                {
-                  icon: Settings,
-                  label: "Settings",
-                  onClick: () => setShowSettings(true),
-                },
-                {
-                  icon: History,
-                  label: "History",
-                  onClick: () => setShowHistory(true),
-                },
-                {
-                  icon: HelpCircle,
-                  label: "Help & Support",
-                  onClick: () => setShowHelp(true),
-                },
-              ].map((action, i) => (
-                <button
-                  key={i}
-                  onClick={action.onClick}
-                  className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-700/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
-                      <action.icon className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-indigo-600" />
-                    </div>
-                    <span className="font-medium text-gray-700 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300">
-                      {action.label}
-                    </span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-400" />
-                </button>
-              ))}
-            </div>
-          </motion.div>
+          <QuickActions
+            onShowSettings={() => setShowSettings(true)}
+            onShowHistory={() => setShowHistory(true)}
+            onShowHelp={() => setShowHelp(true)}
+          />
         </div>
       </div>
 
