@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Activity,
   QrCode,
+  AlertTriangle,
 } from "lucide-react";
 import { SuccessAnimation } from "@/components/common/SuccessAnimation";
 import DashboardLayout from "@/components/common/DashboardLayout";

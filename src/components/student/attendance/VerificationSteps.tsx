@@ -11,7 +11,9 @@ interface SecurityVerification {
   currentStep: string;
   isCompleted: boolean;
   isRequired: boolean;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "FAILED";
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "FAILED" | "SKIPPED";
+  data?: Record<string, unknown>;
+  error?: string;
 }
 
 interface VerificationStepsProps {
@@ -83,7 +85,9 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
                       ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 ring-4 ring-blue-50 dark:ring-blue-900/10"
                       : step.status === "FAILED"
                         ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-4 ring-red-50 dark:ring-red-900/10"
-                        : "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
+                        : step.status === "SKIPPED"
+                          ? "bg-gray-100 text-gray-400 dark:bg-gray-700/50 dark:text-gray-500 line-through opacity-60"
+                          : "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
                 }`}
               >
                 {step.status === "COMPLETED" ? (
