@@ -32,7 +32,7 @@ export default function DashboardLayout({
 
   return (
     <div
-      className="flex min-h-screen flex-col bg-gray-50 dark:bg-darkBg overflow-x-hidden relative w-full max-w-[100vw]"
+      className="flex min-h-screen flex-col bg-gray-50 dark:bg-darkBg relative w-full"
       role="application"
     >
       <div className="flex-1 flex flex-col min-w-0">
