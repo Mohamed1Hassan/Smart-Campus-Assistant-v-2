@@ -8,7 +8,7 @@ async function main() {
 
   // 1. Create Admin User
   const adminPassword = await bcrypt.hash('admin123', 10);
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@smartcampus.edu' },
     update: {
       universityId: '11000001',
@@ -29,7 +29,7 @@ async function main() {
 
   // 2. Create Sample Student User
   const studentPassword = await bcrypt.hash('student123', 10);
-  const student = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'student@smartcampus.edu' },
     update: {
       universityId: '20221245',

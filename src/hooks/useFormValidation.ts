@@ -1,6 +1,7 @@
 /**
  * Hook for form validation and state management
  */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ValidationRule,

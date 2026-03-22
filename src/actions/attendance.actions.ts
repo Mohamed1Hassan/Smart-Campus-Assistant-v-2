@@ -3,7 +3,6 @@
 import { cookies } from "next/headers";
 import { JWTUtils } from "../utils/jwt";
 import prisma from "@/lib/db";
-import { v4 as uuidv4 } from "uuid";
 import AttendanceService, { 
   SecuritySettings, 
   LocationData 
@@ -27,10 +26,6 @@ async function getLocalUserId(): Promise<number> {
     throw new Error("Unauthorized: Session expired or invalid");
   }
 }
-
-const generateQRCode = (sessionId: string): string => {
-  return `attendance-${sessionId}-${Date.now()}`;
-};
 
 // --- Server Actions ---
 

@@ -58,6 +58,7 @@ export default function UserManagementDashboard() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [allCourses, setAllCourses] = useState<any[]>([]);
   const [isAssigningCourse, setIsAssigningCourse] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
@@ -120,6 +121,7 @@ export default function UserManagementDashboard() {
 
   const fetchAvailableCourses = async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response = await apiClient.get<any[]>("/api/courses");
       if (response.success && response.data) {
         setAllCourses(response.data);
@@ -187,6 +189,7 @@ export default function UserManagementDashboard() {
 
   useEffect(() => {
     fetchUsers(pagination.page, searchTerm, filterRole);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page]); // Only trigger when page changes (search/filter handled by debounce)
 
   // Debounced search and filter effect
@@ -202,6 +205,7 @@ export default function UserManagementDashboard() {
     return () => {
       clearTimeout(handler);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, filterRole]); // Do not depend on fetchUsers or pagination.page
 
   const handlePageChange = (newPage: number) => {
@@ -279,6 +283,7 @@ export default function UserManagementDashboard() {
     if (!editingUser) return;
     setIsSubmitting(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         userId: parseInt(editingUser.id),
         firstName: editingUser.firstName,

@@ -271,7 +271,7 @@ export default function MobileDrawer({
                 aria-label="Main navigation"
               >
                 <ul className="space-y-1.5 list-none">
-                  {menuItems.map((item, index) => {
+                  {menuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive =
                       pathname === item.path ||

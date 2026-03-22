@@ -98,10 +98,10 @@ export async function GET(req: NextRequest) {
     ) {
       if (payload.role.toLowerCase() === "professor") {
         filters.professorId = payload.userId;
+      } else if (payload.role.toLowerCase() === "admin" && searchParams.get("professorId")) {
+        filters.professorId = searchParams.get("professorId");
       }
       if (courseId) filters.courseId = courseId;
-      if (searchParams.get("professorId"))
-        filters.professorId = searchParams.get("professorId");
     } else if (payload.role.toLowerCase() === "student") {
       const studentId = parseInt(payload.userId);
 

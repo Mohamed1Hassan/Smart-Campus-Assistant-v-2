@@ -301,7 +301,7 @@ export default function StudentNotifications() {
 
   const queryClient = useQueryClient();
 
-  const { data: fetchedNotifications = [], refetch: refetchNotifications } =
+  const { data: fetchedNotifications, refetch: refetchNotifications } =
     useQuery({
       queryKey: ["student-notifications"],
       queryFn: async () => {

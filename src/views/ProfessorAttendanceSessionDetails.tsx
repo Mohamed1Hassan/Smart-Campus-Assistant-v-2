@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -209,7 +210,6 @@ export function ProfessorAttendanceSessionDetails() {
                 </Card>
 
                 {/* QR Code */}
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <QRCodeGenerator 
                   session={session as any} 
                   onRefresh={() => rotateQRCode(session.id).then(() => {})}

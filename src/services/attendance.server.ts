@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Prisma } from "@prisma/client";
 import prisma from "../lib/db";
 import socketService from "./socket.service";
@@ -168,6 +170,42 @@ class AttendanceService {
     endDate?: Date;
   }) {
     try {
+      // Auto-close expired sessions dynamically on fetch
+      const now = new Date();
+      const expiredSessionsCount = await prisma.attendanceSession.count({
+        where: {
+          status: "ACTIVE",
+          endTime: { lt: now },
+        },
+      });
+
+      if (expiredSessionsCount > 0) {
+        // Find which exact sessions will be closed to broadcast socket event
+        const expiredSessions = await prisma.attendanceSession.findMany({
+          where: {
+            status: "ACTIVE",
+            endTime: { lt: now },
+          },
+          select: { id: true, title: true, courseId: true, professorId: true },
+        });
+
+        await prisma.attendanceSession.updateMany({
+          where: {
+            status: "ACTIVE",
+            endTime: { lt: now },
+          },
+          data: { status: "ENDED" },
+        });
+
+        // Broadcast to clients listening to these sessions
+        expiredSessions.forEach(session => {
+          socketService.broadcastToSession(session.id, "session:ended", {
+            sessionId: session.id,
+            session: { ...session, status: "ENDED" },
+          });
+        });
+      }
+
       const where: Prisma.AttendanceSessionWhereInput = {
         status: filters.status || undefined,
       };
@@ -177,7 +215,7 @@ class AttendanceService {
       }
 
       if (filters.professorId) {
-        where.professorId = parseInt(filters.professorId);
+        where.professorId = typeof filters.professorId === "string" ? parseInt(filters.professorId) : filters.professorId;
       }
 
       if (filters.startDate || filters.endDate) {
@@ -223,6 +261,23 @@ class AttendanceService {
    */
   async getSessionById(id: string) {
     try {
+      // Auto-close if expired
+      const sessionToCheck = await prisma.attendanceSession.findUnique({
+        where: { id },
+        select: { status: true, endTime: true, courseId: true, professorId: true, title: true },
+      });
+
+      if (sessionToCheck && sessionToCheck.status === "ACTIVE" && new Date(sessionToCheck.endTime) < new Date()) {
+        await prisma.attendanceSession.update({
+          where: { id },
+          data: { status: "ENDED" },
+        });
+        socketService.broadcastToSession(id, "session:ended", {
+          sessionId: id,
+          session: { ...sessionToCheck, id, status: "ENDED" },
+        });
+      }
+
       return await prisma.attendanceSession.findUnique({
         where: { id },
         include: {

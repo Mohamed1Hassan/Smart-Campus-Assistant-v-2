@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserService } from "@/services/user.service";
 import { JWTUtils } from "@/utils/jwt";
 import { handleApiError } from "@/utils/apiResponse";
+import { EncryptionUtils } from "@/utils/encryption";
+import prisma from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -198,7 +200,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Update Profile
-    const updateData: any = { userId };
+    const updateData: Parameters<typeof UserService.updateProfile>[0] = { userId };
     if (firstName) updateData.firstName = firstName;
     if (lastName) updateData.lastName = lastName;
     if (universityId) updateData.universityId = universityId;
@@ -210,8 +212,6 @@ export async function PUT(req: NextRequest) {
       // Bypass currentPassword check by directly working with user service or db. 
       // UserService.changePassword requires current password, which admin wouldn't have.
       // Doing direct Prisma update for admin password change
-      const { EncryptionUtils } = require("@/utils/encryption");
-      const prisma = require("@/lib/db").default;
 
       const hashedPassword = await EncryptionUtils.hashPassword(password);
       await prisma.user.update({

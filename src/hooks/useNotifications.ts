@@ -1,3 +1,5 @@
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Notifications Hook
  * Manages notification state and real-time updates via WebSocket
