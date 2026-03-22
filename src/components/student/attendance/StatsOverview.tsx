@@ -59,21 +59,25 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
           key={index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
-          className={`relative overflow-hidden rounded-2xl p-4 md:p-5 shadow-sm border ${stat.border} bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl`}
+          className={`group relative overflow-hidden rounded-3xl p-5 md:p-6 shadow-lg hover:shadow-xl border ${stat.border} bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl transition-all duration-300`}
         >
+          {/* Subtle Glow Effect */}
+          <div
+            className={`absolute top-0 right-0 w-32 h-32 ${stat.bg.split(' ')[0]} rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-125 opacity-60 dark:opacity-30`}
+          />
           <div className="flex flex-col h-full justify-between relative z-10">
-            <div className="flex justify-between items-start mb-3">
-              <div className={`p-2.5 rounded-xl ${stat.bg}`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            <div className="flex justify-between items-start mb-4">
+              <div className={`p-3 rounded-2xl ${stat.bg} shadow-sm border border-white/20 dark:border-white/5`}>
+                <stat.icon className={`w-6 h-6 ${stat.color}`} />
               </div>
             </div>
             <div>
-              <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <p className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 tracking-wide uppercase">
                 {stat.label}
               </p>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 {String(stat.value)}
               </h3>
             </div>

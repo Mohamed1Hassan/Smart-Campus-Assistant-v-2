@@ -10,12 +10,14 @@ interface AccountSettingsProps {
   notificationsEnabled: boolean;
   onNotificationToggle: (checked: boolean) => void;
   userRole?: "STUDENT" | "PROFESSOR" | "ADMIN";
+  chromeless?: boolean;
 }
 
 export default function AccountSettings({
   notificationsEnabled,
   onNotificationToggle,
   userRole = "STUDENT",
+  chromeless = false,
 }: AccountSettingsProps) {
   // Format role for display
   const accountTypeLabel =
@@ -97,12 +99,7 @@ export default function AccountSettings({
     }
   };
 
-  return (
-    <div className="bg-white dark:bg-cardDark rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-textDark mb-6">
-        Account Settings
-      </h2>
-
+  const content = (
       <div className="space-y-6">
         <div className="pb-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-2">
@@ -285,6 +282,16 @@ export default function AccountSettings({
           )}
         </div>
       </div>
+  );
+
+  if (chromeless) return content;
+
+  return (
+    <div className="bg-white dark:bg-cardDark rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-textDark mb-6">
+        Account Settings
+      </h2>
+      {content}
     </div>
   );
 }

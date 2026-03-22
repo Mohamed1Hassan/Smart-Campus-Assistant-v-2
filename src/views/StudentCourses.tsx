@@ -109,22 +109,22 @@ export default function StudentCourses() {
         {/* Header */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
+              className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
-              <BookOpen className="w-8 h-8 text-white" />
+              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </motion.div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 My Courses
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
                 Access your course materials.
               </p>
             </div>
@@ -134,34 +134,34 @@ export default function StudentCourses() {
         {/* Filters & Search */}
         <motion.div
           variants={itemVariants}
-          className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
+          className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
         >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
             />
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <div className="flex bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
                 aria-label="Grid view"
               >
-                <LayoutGrid className="w-4 h-4" />
+                <LayoutGrid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
                 aria-label="List view"
               >
-                <List className="w-4 h-4" />
+                <List className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -217,13 +217,17 @@ export default function StudentCourses() {
                 onClick={() =>
                   router.push(`/dashboard/student/courses/${course.id}`)
                 }
-                className={`group bg-white/80 dark:bg-cardDark/80 rounded-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/20 transition-all duration-300 cursor-pointer ${viewMode === "list" ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6" : ""}`}
+                className={`group bg-white/80 dark:bg-cardDark/80 rounded-3xl border border-white/40 dark:border-gray-700/50 overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/20 dark:hover:shadow-indigo-900/30 transition-all duration-500 cursor-pointer ${
+                  viewMode === "list"
+                    ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6"
+                    : "flex flex-col"
+                }`}
                 style={{ willChange: "transform, opacity" }}
               >
                 {/* Card Header (Grid Mode) */}
                 {viewMode === "grid" && (
-                  <div className="h-44 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+                  <div className="h-48 sm:h-52 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80 z-10" />
                     {!imgErrors[course.id] ? (
                       <Image
                         src={
@@ -249,11 +253,11 @@ export default function StudentCourses() {
                     )}
                     <div className="absolute inset-0 z-20 p-5 flex flex-col justify-between">
                       <div className="flex justify-between items-start">
-                        <span className="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-xs font-bold text-white border border-white/30 shadow-sm">
+                        <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-xl text-xs font-extrabold text-white border border-white/30 shadow-sm uppercase tracking-wider">
                           {course.code} • {course.semester}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors">
+                      <h3 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-indigo-200 transition-colors">
                         {course.name}
                       </h3>
                     </div>
@@ -262,18 +266,22 @@ export default function StudentCourses() {
 
                 {/* Card Content */}
                 <div
-                  className={`p-5 ${viewMode === "list" ? "flex-1 p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4" : ""}`}
+                  className={`p-5 sm:p-6 ${
+                    viewMode === "list"
+                      ? "flex-1 p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      : "flex-1 flex flex-col justify-between"
+                  }`}
                 >
                   {viewMode === "list" && (
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm border border-indigo-100 dark:border-indigo-800">
+                      <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-indigo-500/20">
                         {course.code.substring(0, 2)}
                       </div>
                       <div>
-                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {course.name}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                           {course.code} • {course.semester}{" "}
                           {course.academicYear}
                         </p>
@@ -282,25 +290,33 @@ export default function StudentCourses() {
                   )}
 
                   <div
-                    className={`space-y-3 ${viewMode === "list" ? "flex flex-wrap items-center gap-6 space-y-0 sm:mr-8" : ""}`}
+                    className={`${
+                      viewMode === "list"
+                        ? "flex flex-wrap items-center justify-between gap-4 sm:mr-8 bg-gray-50/50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 w-full sm:w-auto"
+                        : "mt-2 space-y-3"
+                    }`}
                   >
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                        <Users className="w-4 h-4" />
-                        <span className="text-xs sm:text-sm">Professor</span>
+                    <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
+                      <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                        <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                          <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <span className="text-sm">Professor</span>
                       </div>
-                      <span className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">
+                      <span className="font-bold text-gray-900 dark:text-white text-sm text-right">
                         {course.professor}
                       </span>
                     </div>
 
                     {course.scheduleTime && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                          <Clock className="w-4 h-4" />
-                          <span className="text-xs sm:text-sm">Schedule</span>
+                      <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
+                        <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                          <div className="p-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                            <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          <span className="text-sm">Schedule</span>
                         </div>
-                        <span className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">
+                        <span className="font-bold text-gray-900 dark:text-white text-sm text-right">
                           {course.scheduleTime}
                         </span>
                       </div>
@@ -308,13 +324,17 @@ export default function StudentCourses() {
                   </div>
 
                   {viewMode === "grid" && (
-                    <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center justify-between text-indigo-600 dark:text-indigo-400 font-medium text-sm group-hover:text-indigo-700 dark:group-hover:text-indigo-300">
-                      <span className="flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        View Details
-                      </span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                      <button className="w-full bg-gray-50 hover:bg-indigo-50 dark:bg-gray-800 dark:hover:bg-indigo-900/20 text-gray-700 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-300 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 group-hover:border-indigo-200 dark:group-hover:border-indigo-800 border border-transparent shadow-sm">
+                        View Course Details
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
                     </div>
+                  )}
+                  {viewMode === "list" && (
+                     <div className="hidden sm:flex items-center text-indigo-500">
+                        <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                     </div>
                   )}
                 </div>
               </motion.div>

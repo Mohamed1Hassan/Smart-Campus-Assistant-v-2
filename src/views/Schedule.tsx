@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { RefreshCw, Download, AlertCircle, CalendarDays } from "lucide-react";
+import { AlertCircle, CalendarDays } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "../components/common/DashboardLayout";
 import ScheduleStats from "../components/student/schedule/ScheduleStats";
@@ -229,90 +229,33 @@ export default function Schedule() {
       });
   }, [classes, filters, searchTerm]);
 
-  const handleExport = () => {
-    // Basic ICS export logic
-    let icsContent =
-      "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Smart Campus//Student Schedule//EN\n";
 
-    classes.forEach((cls: ScheduleClass) => {
-      icsContent += "BEGIN:VEVENT\n";
-      icsContent += `SUMMARY:${cls.course}\n`;
-      icsContent += `DESCRIPTION:Instructor: ${cls.instructor}\\nRoom: ${cls.room}\n`;
-      icsContent += "END:VEVENT\n";
-    });
-
-    icsContent += "END:VCALENDAR";
-
-    const blob = new Blob([icsContent], {
-      type: "text/calendar;charset=utf-8",
-    });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "schedule.ics");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    success("Schedule exported successfully");
-  };
-
-  const handleRefresh = () => {
-    refetch();
-    info("Schedule updated");
-  };
 
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20"
-            >
-              <CalendarDays className="w-8 h-8 text-white" />
-            </motion.div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                My Class Schedule
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                Manage your weekly classes and view details
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleRefresh}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              title="Refresh Schedule"
-            >
-              <RefreshCw
-                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-              />
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl shadow-sm border border-purple-100 dark:border-purple-900/30 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-medium"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export</span>
-            </motion.button>
+        <div className="flex items-center gap-4 sm:gap-6 p-5 md:p-0 bg-white/60 md:bg-transparent dark:bg-gray-800/60 md:dark:bg-transparent rounded-3xl md:rounded-none border border-white/40 dark:border-gray-700/40 md:border-transparent shadow-sm md:shadow-none backdrop-blur-xl mb-4 sm:mb-6">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 shrink-0"
+          >
+            <CalendarDays className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+          </motion.div>
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              My Class Schedule
+            </h1>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
+              Manage your weekly classes and view details
+            </p>
           </div>
         </div>
 
         {/* Day Switcher - Mobile/Tablet Optimized */}
-        <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex overflow-x-auto pb-4 gap-2 sm:gap-3 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           {dayOptions.slice(1).map((day) => (
             <motion.button
               key={day}
@@ -320,11 +263,11 @@ export default function Schedule() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setFilters({ ...filters, day })}
               className={`
-                flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                flex-shrink-0 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl text-sm font-bold transition-all duration-300
                 ${
                   filters.day === day
-                    ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md shadow-purple-500/20"
-                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 border border-transparent scale-105"
+                    : "bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 shadow-sm"
                 }
               `}
             >
@@ -336,11 +279,11 @@ export default function Schedule() {
             whileTap={{ scale: 0.95 }}
             onClick={() => setFilters({ ...filters, day: "Days" })}
             className={`
-              flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+              flex-shrink-0 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl text-sm font-bold transition-all duration-300
               ${
                 filters.day === "Days"
-                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md shadow-purple-500/20"
-                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 border border-transparent scale-105"
+                  : "bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 shadow-sm"
               }
             `}
           >
@@ -424,9 +367,9 @@ export default function Schedule() {
                 </section>
 
                 {/* Main Grid */}
-                <div className="grid lg:grid-cols-4 gap-6">
+                <div className="grid lg:grid-cols-4 gap-6 min-w-0">
                   {/* Sidebar Filters */}
-                  <div className="lg:col-span-1">
+                  <div className="lg:col-span-1 min-w-0">
                     <div className="sticky top-24">
                       <FilterBar
                         filters={filters}
@@ -439,7 +382,7 @@ export default function Schedule() {
                   </div>
 
                   {/* Schedule Table */}
-                  <div className="lg:col-span-3">
+                  <div className="lg:col-span-3 min-w-0">
                     <ScheduleTable
                       classes={filteredClasses}
                       currentDay={currentDay}

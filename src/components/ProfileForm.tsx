@@ -32,72 +32,72 @@ export default function ProfileForm({
   if (!isEditing) {
     // Read-only view
     const content = (
-      <div className="space-y-5">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+      <div className="space-y-4">
+        <div className="flex items-start gap-4 p-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all group">
+          <div className="w-12 h-12 rounded-xl bg-blue-100/50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
             <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Email Address
             </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="font-bold text-gray-900 dark:text-white truncate">
               {profile.email || "Not provided"}
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-start gap-4 p-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 hover:border-purple-200 dark:hover:border-purple-900/50 transition-all group">
+          <div className="w-12 h-12 rounded-xl bg-purple-100/50 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
             <Phone className="w-5 h-5 text-purple-600 dark:text-purple-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Phone Number
             </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="font-bold text-gray-900 dark:text-white truncate">
               {profile.phone || "Not provided"}
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-start gap-4 p-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 hover:border-green-200 dark:hover:border-green-900/50 transition-all group">
+          <div className="w-12 h-12 rounded-xl bg-green-100/50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
             <MapPin className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Address
             </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="font-bold text-gray-900 dark:text-white line-clamp-2">
               {profile.address || "Not provided"}
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-start gap-4 p-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 hover:border-orange-200 dark:hover:border-orange-900/50 transition-all group">
+          <div className="w-12 h-12 rounded-xl bg-orange-100/50 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
             <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Date of Birth
             </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="font-bold text-gray-900 dark:text-white">
               {profile.dob || "Not provided"}
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-start gap-4 p-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 hover:border-red-200 dark:hover:border-red-900/50 transition-all group">
+          <div className="w-12 h-12 rounded-xl bg-red-100/50 dark:bg-red-900/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
             <Phone className="w-5 h-5 text-red-600 dark:text-red-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Emergency Contact
             </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="font-bold text-gray-900 dark:text-white line-clamp-2">
               {profile.emergencyContact || "Not provided"}
             </p>
           </div>

@@ -1308,24 +1308,27 @@ export default function StudentAttendance() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8"
+        className="mb-8 relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-700/50 p-6 lg:p-8 group"
       >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* Glow effect */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-125" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-6">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20"
+              className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-white/20 dark:border-white/10"
             >
-              <QrCode className="w-8 h-8 text-white" />
+              <QrCode className="w-8 h-8 sm:w-10 sm:h-10 text-white" strokeWidth={2} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2"
+                className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight mb-2"
               >
                 Student Attendance
               </motion.h1>
@@ -1333,7 +1336,7 @@ export default function StudentAttendance() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-gray-600 dark:text-gray-400 text-lg"
+                className="text-gray-600 dark:text-gray-400 text-base sm:text-lg font-medium"
               >
                 Secure attendance with multi-step verification
               </motion.p>
@@ -1342,11 +1345,18 @@ export default function StudentAttendance() {
 
           {/* Status Indicators */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <div className={`flex items-center space-x-2 px-4 py-2.5 rounded-2xl border backdrop-blur-sm transition-all shadow-sm
+              ${connectionStatus === "ONLINE" 
+                ? "bg-emerald-50/50 border-emerald-100/50 dark:bg-emerald-900/10 dark:border-emerald-800/30" 
+                : "bg-red-50/50 border-red-100/50 dark:bg-red-900/10 dark:border-red-800/30"}`}
+            >
               <Activity
-                className={`h-4 w-4 ${connectionStatus === "ONLINE" ? "text-green-600" : "text-red-600"}`}
+                className={`h-4 w-4 sm:h-5 sm:w-5 ${connectionStatus === "ONLINE" ? "text-emerald-500" : "text-red-500"}`}
+                strokeWidth={2.5}
               />
-              <span className="text-sm font-medium">{connectionStatus}</span>
+              <span className={`text-sm sm:text-base font-bold ${connectionStatus === "ONLINE" ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
+                {connectionStatus}
+              </span>
             </div>
           </div>
         </div>
@@ -1422,9 +1432,9 @@ export default function StudentAttendance() {
         </motion.div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0">
         {/* Left Column - Scanner & Verification */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-8 min-w-0">
           {currentSession ? (
             <>
               <ScannerSection
@@ -1444,15 +1454,15 @@ export default function StudentAttendance() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 p-12 text-center"
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/40 dark:border-gray-700/50 p-12 text-center"
               >
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Clock className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner border border-gray-100 dark:border-gray-700">
+                  <Clock className="w-12 h-12 text-gray-400 dark:text-gray-500" strokeWidth={1.5} />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">
                   No Active Sessions
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto text-base sm:text-lg">
                   There are no attendance sessions currently active for your
                   enrolled courses. Please check back later or view your
                   schedule.
@@ -1491,7 +1501,7 @@ export default function StudentAttendance() {
         </div>
 
         {/* Right Column - Status & Actions */}
-        <div className="space-y-6 lg:space-y-8">
+        <div className="space-y-6 lg:space-y-8 min-w-0">
           {/* Current Status Card */}
           <StatusCard
             locationData={locationData}

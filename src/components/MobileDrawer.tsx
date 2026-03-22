@@ -228,7 +228,7 @@ export default function MobileDrawer({
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-cardDark border-r border-gray-100 dark:border-gray-800 shadow-2xl z-50 flex flex-col focus:outline-none"
+              className="fixed inset-y-0 left-0 w-[280px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border-r border-white/40 dark:border-gray-800/40 shadow-2xl z-50 flex flex-col focus:outline-none overflow-hidden"
               style={{ willChange: "transform" }}
               role="dialog"
               aria-modal="true"
@@ -236,13 +236,13 @@ export default function MobileDrawer({
               tabIndex={-1}
             >
               {/* Header */}
-              <div className="p-6 border-b border-gray-100 dark:border-gray-800/50 flex items-center justify-between bg-white/50 dark:bg-white/5">
+              <div className="p-6 border-b border-white/20 dark:border-gray-800/50 flex items-center justify-between bg-white/20 dark:bg-white/5 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 relative flex items-center justify-center">
+                  <div className="w-10 h-10 relative flex items-center justify-center bg-white/50 dark:bg-white/10 rounded-xl border border-white/60 dark:border-white/10 shadow-sm">
                     <Image
                       src={logo}
                       alt="Logo"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain p-1.5"
                       priority
                     />
                   </div>
@@ -250,7 +250,7 @@ export default function MobileDrawer({
                     <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-none tracking-tight">
                       Smart Campus
                     </h1>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-0.5">
+                    <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1 opacity-80">
                       Assistant
                     </p>
                   </div>
@@ -258,7 +258,7 @@ export default function MobileDrawer({
 
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-xl text-gray-500 hover:bg-white/50 dark:hover:bg-gray-800 transition-colors"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
@@ -298,10 +298,10 @@ export default function MobileDrawer({
                               <Link
                                 href={item.path}
                                 onClick={handleMenuItemClick}
-                                className="flex items-center gap-3 px-4 py-3.5 flex-1 font-medium text-sm"
+                                className="flex items-center gap-3 px-4 py-3.5 flex-1 font-semibold text-sm"
                               >
                                 <Icon
-                                  className={`w-5 h-5 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-500 dark:text-gray-500"}`}
+                                  className={`w-5 h-5 transition-colors duration-300 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-500 dark:text-gray-400"}`}
                                 />
                                 {item.Tag}
                               </Link>
@@ -326,7 +326,7 @@ export default function MobileDrawer({
                                   initial={{ opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: "auto" }}
                                   exit={{ opacity: 0, height: 0 }}
-                                  className="bg-gray-50/50 dark:bg-gray-800/20"
+                                  className="bg-black/5 dark:bg-white/5 backdrop-blur-sm border-y border-white/10"
                                 >
                                   {item.submenu?.map((subItem, subIndex) => {
                                     const SubIcon = subItem.icon;
@@ -357,16 +357,17 @@ export default function MobileDrawer({
                           <Link
                             href={item.path}
                             onClick={handleMenuItemClick}
-                            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-sm font-medium ${
+                            className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-semibold relative overflow-hidden group/item ${
                               isActive
-                                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/25"
-                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200"
+                                ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                                : "text-gray-600 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                             }`}
                           >
+                            <div className={`absolute inset-0 bg-white/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 ${isActive ? "hidden" : ""}`} />
                             <Icon
-                              className={`w-5 h-5 ${isActive ? "text-white" : "text-gray-500 dark:text-gray-500"}`}
+                              className={`w-5 h-5 relative z-10 transition-transform duration-300 group-hover/item:scale-110 ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"}`}
                             />
-                            {item.Tag}
+                            <span className="relative z-10">{item.Tag}</span>
                           </Link>
                         )}
                       </li>
@@ -376,12 +377,12 @@ export default function MobileDrawer({
               </nav>
 
               {/* Bottom Menu (Logout) */}
-              <div className="p-4 border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-900/20">
+              <div className="p-4 border-t border-white/20 dark:border-gray-800/50 bg-white/10 dark:bg-white/5 backdrop-blur-md">
                 <button
                   onClick={handleLogoutClick}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-red-500 hover:text-white shadow-sm hover:shadow-red-500/20 group/logout"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-5 h-5 transition-transform group-hover/logout:-translate-x-1" />
                   Logout
                 </button>
               </div>

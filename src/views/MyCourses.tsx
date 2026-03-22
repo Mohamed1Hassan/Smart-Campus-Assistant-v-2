@@ -205,32 +205,32 @@ export default function MyCourses() {
         {/* Header */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20"
+              className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 shrink-0"
             >
-              <BookOpen className="w-8 h-8 text-white" />
+              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </motion.div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-1">
                 My Courses
               </h1>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">
                 Manage your curriculum and students.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowAddModal(true)}
-              className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+              className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
             >
               <Plus className="w-5 h-5" />
               Add Course
@@ -241,32 +241,32 @@ export default function MyCourses() {
         {/* Filters & Search */}
         <motion.div
           variants={itemVariants}
-          className="bg-white dark:bg-cardDark p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center"
+          className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
         >
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="relative flex-1 sm:w-96 sm:flex-none">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium"
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div className="flex bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-500"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
               >
-                <LayoutGrid className="w-4 h-4" />
+                <LayoutGrid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-500"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
               >
-                <List className="w-4 h-4" />
+                <List className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -319,12 +319,16 @@ export default function MyCourses() {
                 initial="hidden"
                 animate="visible"
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className={`group bg-white dark:bg-cardDark rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 ${viewMode === "list" ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6" : ""}`}
+                className={`group bg-white/80 dark:bg-cardDark/80 rounded-3xl border border-white/40 dark:border-gray-700/50 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-900/30 transition-all duration-500 ${
+                  viewMode === "list"
+                    ? "flex flex-col sm:flex-row sm:items-center p-4 gap-4 sm:gap-6"
+                    : "flex flex-col"
+                }`}
               >
                 {/* Card Header (Grid Mode) */}
                 {viewMode === "grid" && (
-                  <div className="h-40 relative group-hover:scale-105 transition-transform duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+                  <div className="h-48 sm:h-52 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80 z-10" />
                     <Image
                        
                       src={
@@ -334,11 +338,11 @@ export default function MyCourses() {
                       alt={course.name}
                       fill
                       unoptimized
-                      className="object-cover"
+                      className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 z-20 p-6 flex flex-col justify-between">
+                    <div className="absolute inset-0 z-20 p-5 flex flex-col justify-between">
                       <div className="flex justify-between items-start">
-                        <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/30">
+                        <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-xl text-xs font-extrabold text-white border border-white/30 shadow-sm uppercase tracking-wider">
                           {course.code} • {course.semester}
                         </span>
                         <div className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
@@ -347,13 +351,13 @@ export default function MyCourses() {
                               e.stopPropagation();
                               handleDeleteCourse(course.id);
                             }}
-                            className="p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/90 hover:bg-red-500/80 transition-colors"
+                            className="p-2.5 bg-black/40 backdrop-blur-md rounded-xl text-white/90 hover:bg-red-500 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight drop-shadow-md">
+                      <h3 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-200 transition-colors">
                         {course.name}
                       </h3>
                     </div>
@@ -362,18 +366,22 @@ export default function MyCourses() {
 
                 {/* Card Content */}
                 <div
-                  className={`p-6 ${viewMode === "list" ? "flex-1 p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0" : ""}`}
+                  className={`p-5 sm:p-6 ${
+                    viewMode === "list"
+                      ? "flex-1 p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0"
+                      : "flex-1 flex flex-col justify-between"
+                  }`}
                 >
                   {viewMode === "list" && (
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600 font-bold">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-blue-500/20">
                         {course.code.substring(0, 2)}
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {course.name}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                           {course.code} • {course.semester}{" "}
                           {course.academicYear}
                         </p>
@@ -382,34 +390,42 @@ export default function MyCourses() {
                   )}
 
                   <div
-                    className={`space-y-4 ${viewMode === "list" ? "flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-8 space-y-0 sm:mr-8" : ""}`}
+                    className={`${
+                      viewMode === "list"
+                        ? "flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-8 bg-gray-50/50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 w-full sm:w-auto sm:mr-8"
+                        : "mt-2 space-y-4"
+                    }`}
                   >
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Users className="w-4 h-4" />
+                    <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
+                      <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                        <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
                         <span>Students</span>
                       </div>
-                      <span className="font-medium text-gray-900 dark:text-white">
+                      <span className="font-bold text-gray-900 dark:text-white text-sm text-right">
                         {course.studentCount} / {course.maxStudents}
                       </span>
                     </div>
 
                     {course.scheduleTime && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                          <Clock className="w-4 h-4" />
+                      <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
+                        <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                          <div className="p-1.5 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg">
+                            <Clock className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                          </div>
                           <span>Schedule</span>
                         </div>
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-bold text-gray-900 dark:text-white text-sm text-right">
                           {course.scheduleTime}
                         </span>
                       </div>
                     )}
 
                     {viewMode === "grid" && (
-                      <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+                      <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2.5 overflow-hidden">
                         <div
-                          className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                          className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full rounded-full transition-all duration-1000 ease-out"
                           style={{
                             width: `${(course.studentCount / course.maxStudents) * 100}%`,
                           }}
@@ -419,18 +435,19 @@ export default function MyCourses() {
                   </div>
 
                   {viewMode === "grid" && (
-                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center justify-between gap-3">
                       <button
                         onClick={() =>
                           router.push(
                             `/dashboard/professor/courses/${course.id}`,
                           )
                         }
-                        className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                        className="flex-1 bg-gray-50 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 text-gray-700 hover:text-blue-700 dark:text-gray-300 dark:hover:text-blue-300 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 group-hover:border-blue-200 dark:group-hover:border-blue-800 border border-transparent shadow-sm"
                       >
-                        View Details <ChevronRight className="w-4 h-4" />
+                        Manage Course
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
-                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
+                      <button className="p-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors border border-gray-100 dark:border-gray-700 shadow-sm">
                         <Edit className="w-4 h-4" />
                       </button>
                     </div>
@@ -444,15 +461,15 @@ export default function MyCourses() {
                             `/dashboard/professor/courses/${course.id}`,
                           )
                         }
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-blue-600"
+                        className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl text-blue-600 transition-colors"
                       >
-                        <ExternalLink className="w-4 h-4" />
+                        <ExternalLink className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteCourse(course.id)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-500"
+                        className="p-2.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-red-500 transition-colors"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   )}

@@ -235,7 +235,7 @@ export default function SchedulePreview({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden flex flex-col h-full"
+      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden flex flex-col"
     >
       {/* Enhanced Header */}
       <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10">
@@ -377,114 +377,217 @@ export default function SchedulePreview({
         )}
       </div>
 
-      {/* Enhanced Table */}
+      {/* Unified Table/List Container */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {classes.length > 0 ? (
-          <div className="overflow-x-auto custom-scrollbar flex-1">
-            <table className="w-full">
-              <thead className="sticky top-0 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm z-10">
-                <tr className="border-b border-gray-200/50 dark:border-gray-700/50">
-                  <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Course
-                  </th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Time
-                  </th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Room
-                  </th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="text-right py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/50">
-                {classes.map((classItem, index) => {
-                  const statusInfo = statusConfig[classItem.status];
-                  const StatusIcon = statusInfo.icon;
+          <>
+            
+            {/* Desktop View: Table */}
+            <div className="hidden md:flex overflow-x-auto custom-scrollbar flex-1 relative">
+              <div className="min-w-full">
+                <table className="w-full">
+                <thead className="sticky top-0 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm z-10">
+                  <tr className="border-b border-gray-200/50 dark:border-gray-700/50">
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Course
+                    </th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Time
+                    </th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Room
+                    </th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="text-right py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800/50">
+                  {classes.map((classItem, index) => {
+                    const statusInfo = statusConfig[classItem.status];
+                    const StatusIcon = statusInfo.icon;
 
-                  return (
-                    <motion.tr
-                      key={classItem.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + index * 0.05 }}
-                      className={`group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors duration-200 ${
-                        statusInfo.pulse
-                          ? "bg-emerald-50/10 dark:bg-emerald-900/5"
-                          : ""
-                      }`}
-                    >
-                      <td className="py-4 px-6">
-                        <div>
-                          <span className="text-sm font-bold text-gray-900 dark:text-white block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            {classItem.course}
+                    return (
+                      <motion.tr
+                        key={classItem.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 + index * 0.05 }}
+                        className={`group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors duration-200 ${
+                          statusInfo.pulse
+                            ? "bg-emerald-50/10 dark:bg-emerald-900/5"
+                            : ""
+                        }`}
+                      >
+                        <td className="py-4 px-6">
+                          <div>
+                            <span className="text-sm font-bold text-gray-900 dark:text-white block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                              {classItem.course}
+                            </span>
+                            {classItem.courseCode && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5 block">
+                                {classItem.courseCode}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm text-gray-600 dark:text-gray-300 font-medium font-mono">
+                              {classItem.time}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                              {classItem.room}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusInfo.bgColor} ${statusInfo.color} ${statusInfo.borderColor} ${statusInfo.pulse ? "animate-pulse" : ""}`}
+                          >
+                            <StatusIcon className="w-3 h-3" />
+                            {statusInfo.Tag}
                           </span>
+                        </td>
+                        <td className="py-4 px-6 text-right">
+                          {classItem.status === "ongoing" ? (
+                            <button
+                              onClick={() =>
+                                router.push("/dashboard/student/attendance")
+                              }
+                              className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                            >
+                              <QrCode className="w-3.5 h-3.5" />
+                              Attend
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                router.push(
+                                  `/dashboard/student/courses/${classItem.id}`,
+                                )
+                              }
+                              className="inline-flex items-center gap-1.5 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-xs font-medium"
+                            >
+                              Details
+                              <ExternalLink className="w-3 h-3" />
+                            </button>
+                          )}
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+            {/* Mobile View: Premium Timeline Cards */}
+            <div className="md:hidden p-4 space-y-4">
+              {classes.map((classItem, index) => {
+                const statusInfo = statusConfig[classItem.status] || statusConfig.upcoming;
+                const StatusIcon = statusInfo.icon;
+
+                return (
+                  <div
+                    key={classItem.id}
+                    className={`relative p-4 rounded-2xl shadow-sm border overflow-hidden w-full ${
+                      statusInfo.pulse
+                        ? "bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-200/50 dark:border-emerald-800/30 shadow-emerald-500/10"
+                        : "bg-white/80 dark:bg-gray-800/80 border-gray-100 dark:border-gray-700/50"
+                    }`}
+                  >
+                    {/* Decorative Background Blob for Active state */}
+                    {statusInfo.pulse && (
+                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl animate-pulse" />
+                    )}
+
+                    <div className="relative z-10 w-full">
+                      {/* Card Header (Course + Status) */}
+                      <div className="flex flex-wrap justify-between items-start gap-2 mb-3 w-full">
+                        <div className="flex-1 min-w-[200px]">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1 truncate w-full">
+                            {classItem.course}
+                          </h4>
                           {classItem.courseCode && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5 block">
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-700/50 px-2 py-0.5 rounded-md inline-block">
                               {classItem.courseCode}
                             </span>
                           )}
                         </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3.5 h-3.5 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium font-mono">
-                            {classItem.time}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                            {classItem.room}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusInfo.bgColor} ${statusInfo.color} ${statusInfo.borderColor} ${statusInfo.pulse ? "animate-pulse" : ""}`}
+                          className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusInfo.bgColor} ${statusInfo.color} ${statusInfo.borderColor}`}
                         >
-                          <StatusIcon className="w-3 h-3" />
+                          <StatusIcon className="w-3.5 h-3.5" />
                           {statusInfo.Tag}
                         </span>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        {classItem.status === "ongoing" ? (
-                          <button
-                            onClick={() =>
-                              router.push("/dashboard/student/attendance")
-                            }
-                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                          >
-                            <QrCode className="w-3.5 h-3.5" />
-                            Attend
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              router.push(
-                                `/dashboard/student/courses/${classItem.id}`,
-                              )
-                            }
-                            className="inline-flex items-center gap-1.5 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-xs font-medium"
-                          >
-                            Details
-                            <ExternalLink className="w-3 h-3" />
-                          </button>
-                        )}
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+
+                      <div className="h-px w-full bg-gray-100 dark:bg-gray-700/50 my-3" />
+
+                      {/* Info & Actions */}
+                      <div className="flex flex-col xs:flex-row xs:items-end justify-between gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+                              <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <span className="text-sm text-gray-700 dark:text-gray-300 font-semibold font-mono whitespace-nowrap">
+                              {classItem.time}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
+                              <MapPin className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium truncate">
+                              {classItem.room}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="w-full xs:w-auto">
+                          {classItem.status === "ongoing" ? (
+                            <button
+                              onClick={() =>
+                                router.push("/dashboard/student/attendance")
+                              }
+                              className="w-full xs:w-auto bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex justify-center items-center gap-2"
+                            >
+                              <QrCode className="w-4 h-4" />
+                              Attend
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                router.push(
+                                  `/dashboard/student/courses/${classItem.id}`,
+                                )
+                              }
+                              className="w-full xs:w-auto text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex justify-center items-center gap-1.5"
+                            >
+                              Details
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gray-50/30 dark:bg-gray-800/30">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">

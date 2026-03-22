@@ -67,10 +67,10 @@ export default function ScheduleStats({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: item.delay }}
-            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-gray-700/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-lg border border-white/40 dark:border-gray-700/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 hover:-translate-y-1"
           >
             <div
-              className={`absolute top-0 right-0 w-32 h-32 ${item.bg} rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-500 group-hover:scale-110`}
+              className={`absolute top-0 right-0 w-32 h-32 ${item.bg} rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-125`}
             />
 
             <div className="relative z-10">

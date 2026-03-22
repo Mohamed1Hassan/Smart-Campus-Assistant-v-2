@@ -403,35 +403,35 @@ export default function Profile() {
       userAvatar={avatarPreview || fullProfile.avatarUrl || undefined}
       userType="student"
     >
-      <div className="max-w-7xl mx-auto pb-12">
+      <div className="max-w-7xl mx-auto pb-12 relative z-0">
         {/* Cover Image Section */}
-        <div className="relative h-48 sm:h-64 rounded-b-3xl bg-gradient-to-r from-indigo-600 to-purple-700 overflow-hidden shadow-lg -mt-6 -mx-4 sm:-mx-6 lg:-mx-8 mb-16 sm:mb-20">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        <div className="relative h-48 sm:h-72 rounded-b-[2.5rem] lg:rounded-b-[3rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 overflow-hidden shadow-2xl -mt-6 -mx-4 sm:-mx-6 lg:-mx-8 mb-20 sm:mb-24">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
-          <div className="absolute top-6 left-4 sm:left-6 lg:left-8 z-10">
+          <div className="absolute top-8 left-4 sm:left-6 lg:left-8 z-10">
             <Link
               href="/dashboard/student"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hover:bg-black/30 text-sm sm:text-base"
+              className="flex items-center gap-2 text-white/90 hover:text-white transition-all bg-black/30 backdrop-blur-md border border-white/20 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl hover:bg-black/40 hover:-translate-y-0.5 text-sm sm:text-base shadow-lg"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium">Back</span>
+              <span className="font-bold">Back to Dashboard</span>
             </Link>
           </div>
 
           {isEditing && (
-            <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 lg:right-8 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2 transition-all border border-white/30 text-xs sm:text-sm">
-              <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="font-medium">Change Cover</span>
+            <button className="absolute bottom-6 right-4 sm:bottom-8 sm:right-8 lg:right-10 bg-white/20 backdrop-blur-xl hover:bg-white/30 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-[1.5rem] flex items-center gap-2 transition-all border border-white/40 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 text-xs sm:text-sm">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-bold tracking-wide">Change Cover</span>
             </button>
           )}
         </div>
 
         {/* Profile Header Content */}
-        <div className="px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex flex-col lg:flex-row items-center lg:items-end gap-4 sm:gap-6 -mt-28 sm:-mt-32 mb-8 text-center lg:text-left">
+        <div className="px-4 sm:px-6 lg:px-8 relative z-20">
+          <div className="flex flex-col lg:flex-row items-center lg:items-end gap-5 sm:gap-8 -mt-32 sm:-mt-40 mb-10 text-center lg:text-left">
             <div className="relative group">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden bg-white dark:bg-gray-800 relative z-10">
+              <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-[2.5rem] ring-4 ring-white/50 dark:ring-gray-800/50 shadow-2xl overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl relative z-10 transition-transform duration-300 group-hover:scale-105 group-hover:rotate-2">
                 {avatarPreview || fullProfile.avatarUrl ? (
                   <Image
                     src={avatarPreview || fullProfile.avatarUrl || ""}
@@ -440,16 +440,16 @@ export default function Profile() {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 text-indigo-500 dark:text-indigo-300">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/60 dark:to-purple-900/60 text-indigo-500 dark:text-indigo-300">
                     <User className="w-16 h-16 sm:w-20 sm:h-20" />
                   </div>
                 )}
 
                 {isEditing && (
-                  <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20">
-                    <Camera className="w-6 h-6 sm:w-8 sm:h-8 mb-1" />
-                    <span className="text-[10px] sm:text-xs font-medium">
-                      Change
+                  <label className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20">
+                    <Camera className="w-8 h-8 sm:w-10 sm:h-10 mb-2" />
+                    <span className="text-xs sm:text-sm font-bold tracking-wider uppercase">
+                      Change Photo
                     </span>
                     <input
                       type="file"
@@ -462,13 +462,15 @@ export default function Profile() {
                   </label>
                 )}
               </div>
-              <div className="absolute bottom-2 right-2 z-20 w-5 h-5 sm:w-6 sm:h-6 bg-emerald-500 border-2 border-white dark:border-gray-900 rounded-full animate-pulse"></div>
+              <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 z-20 w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 ring-4 ring-white dark:ring-gray-900 rounded-full shadow-lg">
+                <div className="w-full h-full rounded-full animate-ping bg-emerald-400 opacity-75"></div>
+              </div>
             </div>
 
-            <div className="flex-1 pt-2 lg:pt-0 lg:pb-4 w-full">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex-1 pt-4 lg:pt-0 lg:pb-6 w-full">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-2 tracking-tight">
                     {fullProfile.name}
                   </h1>
                   <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 flex items-center justify-center lg:justify-start gap-2">
@@ -480,30 +482,30 @@ export default function Profile() {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center lg:justify-end gap-3 w-full lg:w-auto">
+                <div className="flex items-center justify-center lg:justify-end gap-3 w-full lg:w-auto mt-2 lg:mt-0">
                   {!isEditing ? (
                     <button
                       onClick={handleToggleEdit}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 font-medium flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl sm:rounded-[1.5rem] hover:from-indigo-500 hover:to-indigo-600 transition-all shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1 font-bold flex items-center justify-center gap-2.5"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
                       Edit Profile
                     </button>
                   ) : (
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                       <button
                         onClick={handleToggleEdit}
-                        className="flex-1 sm:flex-none px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium"
+                        className="flex-1 sm:flex-none px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-white dark:hover:bg-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all font-bold"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={(e) => handleSubmit(e)}
                         disabled={isSubmitting}
-                        className="flex-1 sm:flex-none px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 font-medium flex items-center justify-center gap-2"
+                        className="flex-1 sm:flex-none px-6 sm:px-8 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 font-bold flex items-center justify-center gap-2"
                       >
-                        <Save className="w-4 h-4" />
-                        {isSubmitting ? "Saving..." : "Save"}
+                        <Save className="w-4 h-4 sm:w-5 sm:h-5" />
+                        {isSubmitting ? "Saving..." : "Save Changes"}
                       </button>
                     </div>
                   )}
@@ -530,13 +532,15 @@ export default function Profile() {
             )}
           </AnimatePresence>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Left Column - Personal Info & Achievements */}
-            <div className="space-y-8">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <User className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="space-y-6 sm:space-y-8">
+              <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-[2rem] shadow-xl border border-white/50 dark:border-gray-700/50 p-6 sm:p-8 transition-all hover:shadow-2xl">
+                <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-2xl">
+                    <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                     Personal Information
                   </h2>
                 </div>
@@ -559,12 +563,12 @@ export default function Profile() {
               </div>
 
               {/* Achievements Card */}
-              <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
+              <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 rounded-[2rem] shadow-2xl p-6 sm:p-8 text-white relative overflow-hidden group hover:shadow-indigo-500/20 transition-all">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-white/30 transition-all duration-500"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-400/30 rounded-full -ml-16 -mb-16 blur-2xl group-hover:bg-indigo-400/40 transition-all duration-500"></div>
 
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 relative z-10">
-                  <Award className="w-5 h-5" />
+                <h3 className="text-xl font-bold mb-6 flex items-center gap-2 relative z-10 tracking-tight">
+                  <Award className="w-6 h-6" />
                   Achievements
                 </h3>
 
@@ -597,25 +601,26 @@ export default function Profile() {
                 }
               />
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
+              <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-[2rem] shadow-xl border border-white/50 dark:border-gray-700/50 p-6 sm:p-8 transition-all hover:shadow-2xl">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight flex items-center gap-3">
                   Account Settings
                 </h3>
                 <AccountSettings
                   notificationsEnabled={fullProfile.notificationsEnabled}
                   onNotificationToggle={handleNotificationToggle}
                   userRole="STUDENT"
+                  chromeless={true}
                 />
 
-                <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700">
-                  <h4 className="text-sm font-bold text-red-600 mb-4">
+                <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-800">
+                  <h4 className="text-sm font-bold text-red-500 dark:text-red-400 mb-4 uppercase tracking-wider">
                     Danger Zone
                   </h4>
                   <button
                     onClick={() => setShowDeleteModal(true)}
-                    className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-all text-sm font-medium border border-red-200 dark:border-red-800 flex items-center gap-2"
+                    className="w-full sm:w-auto px-6 py-3 bg-white/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-bold border border-red-200/50 dark:border-red-800/50 flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     Delete Account
                   </button>
                 </div>

@@ -133,10 +133,10 @@ export default function ScheduleTable({
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 min-w-0">
       {/* Desktop Table */}
-      <div className="hidden lg:block overflow-hidden rounded-2xl border border-white/20 dark:border-gray-700/30 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl">
-        <div className="overflow-x-auto">
+      <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl min-w-0">
+        <div className="overflow-x-auto min-w-0 w-full">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50">
@@ -308,30 +308,29 @@ export default function ScheduleTable({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                className={`relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-5 shadow-sm border border-white/20 dark:border-gray-700/30 ${
-                  isCurrentDay ? "ring-2 ring-blue-500/50" : ""
+                className={`relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-lg border border-white/40 dark:border-gray-700/50 hover:shadow-2xl transition-all duration-300 ${
+                  isCurrentDay ? "ring-2 ring-purple-500/50 shadow-purple-500/10" : ""
                 }`}
               >
                 {isCurrentDay && (
-                  <div className="absolute top-0 right-0 px-3 py-1 bg-blue-500 text-white text-[10px] font-bold rounded-bl-xl shadow-sm">
+                  <div className="absolute top-0 right-0 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-extrabold rounded-bl-2xl shadow-md tracking-wider uppercase">
                     TODAY
                   </div>
                 )}
 
-                <div className="flex items-start gap-4 mb-4">
+                <div className="flex items-start gap-4 mb-4 min-w-0 w-full">
                   <div
                     className={`w-12 h-12 rounded-2xl ${dayColorClass} border flex items-center justify-center shadow-sm shrink-0`}
                   >
                     <CourseIcon className="w-5 h-5" strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white truncate mb-1 flex items-center gap-2">
-                      {classItem.course}
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2 min-w-0 w-full">
+                      <span className="truncate flex-1 min-w-0 leading-tight">{classItem.course}</span>
                       {classItem.type && (
                         <span
                           title={classItem.type}
-                          className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold border ${
+                          className={`shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold border ${
                             classItem.type === "Lecture"
                               ? "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
                               : "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800"
@@ -342,53 +341,53 @@ export default function ScheduleTable({
                       )}
                     </h4>
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{classItem.day}</span>
+                      <Calendar className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{classItem.day}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-gray-50/50 dark:bg-gray-700/30 rounded-xl p-3 border border-gray-100 dark:border-gray-700/50">
+                <div className="flex flex-col sm:flex-row gap-3 mb-4 min-w-0 w-full">
+                  <div className="flex-1 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl p-3 border border-gray-100 dark:border-gray-700/50 overflow-hidden min-w-0">
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5 shrink-0" />
                       Time
                     </div>
-                    <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm truncate min-w-0 w-full">
                       {classItem.time}
                     </div>
                   </div>
-                  <div className="bg-gray-50/50 dark:bg-gray-700/30 rounded-xl p-3 border border-gray-100 dark:border-gray-700/50">
+                  <div className="flex-1 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl p-3 border border-gray-100 dark:border-gray-700/50 overflow-hidden min-w-0">
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      <MapPin className="w-3.5 h-3.5" />
+                      <MapPin className="w-3.5 h-3.5 shrink-0" />
                       Room
                     </div>
-                    <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm truncate min-w-0 w-full">
                       {classItem.room}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700/50">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700/50 gap-2 min-w-0 w-full">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 shrink-0">
                       {classItem.instructor.charAt(0)}
                     </div>
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate min-w-0 flex-1">
                       {classItem.instructor}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.color} ${statusInfo.borderColor} border`}
                     >
-                      <StatusIcon className="w-3 h-3" />
+                      <StatusIcon className="w-3 h-3 shrink-0" />
                       {statusInfo.Tag}
                     </span>
                     {onEdit && (
                       <button
                         onClick={() => onEdit(classItem)}
-                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-400 hover:text-indigo-600"
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-400 hover:text-indigo-600 shrink-0"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>

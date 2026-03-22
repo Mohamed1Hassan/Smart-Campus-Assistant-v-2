@@ -181,7 +181,7 @@ export default function UnifiedNavbar({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 w-full bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl border-b border-white/20 dark:border-gray-700/50 shadow-sm px-4 sm:px-6 py-2.5 sm:py-3"
+        className="sticky top-0 z-50 w-full bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border-b border-white/50 dark:border-gray-800/50 shadow-xl px-4 sm:px-6 py-2.5 sm:py-3 transition-all duration-300"
         aria-label="Main navigation"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
@@ -206,21 +206,22 @@ export default function UnifiedNavbar({
               }
               className="flex items-center gap-2 sm:gap-3 group"
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden bg-white/50 dark:bg-white/10 backdrop-blur-sm border border-white/20 dark:border-white/10 shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-lg shadow-indigo-500/10 shrink-0 relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Image
                   src={logo}
                   alt="Smart Campus Logo"
-                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
+                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain relative z-10"
                   width={36}
                   height={36}
                   priority
                 />
               </div>
               <div className={`hidden sm:block ${isMobile ? "hidden" : ""}`}>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-none tracking-tight">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-none tracking-tight">
                   Smart Campus
                 </h1>
-                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-0.5">
+                <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1 opacity-80">
                   {dashboardTitle}
                 </p>
               </div>
@@ -229,7 +230,7 @@ export default function UnifiedNavbar({
 
           {/* Center Section: Navigation Links (Desktop) */}
           <div className="hidden lg:flex items-center justify-center flex-1">
-            <ul className="flex items-center gap-1 bg-gray-100/50 dark:bg-gray-800/50 p-1.5 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+            <ul className="flex items-center gap-1.5 bg-gray-100/30 dark:bg-gray-800/30 backdrop-blur-md p-1.5 rounded-2xl border border-white/40 dark:border-gray-700/40 shadow-inner">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive =
@@ -242,10 +243,10 @@ export default function UnifiedNavbar({
                   <li key={item.path} className="relative">
                     <div className="relative">
                       <div
-                        className={`flex items-center rounded-lg transition-all duration-200 ${
+                        className={`flex items-center rounded-xl transition-all duration-300 ${
                           isActive
-                            ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50"
+                            ? "bg-white/80 dark:bg-gray-700/80 text-indigo-600 dark:text-indigo-400 shadow-md ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-sm"
+                            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/40 dark:hover:bg-gray-700/40"
                         }`}
                       >
                         <button
@@ -321,19 +322,20 @@ export default function UnifiedNavbar({
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={handleProfileClick}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-0.5 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 p-[2px] transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
               >
-                <div className="w-full h-full bg-white dark:bg-gray-900 rounded-[10px] overflow-hidden">
+                <div className="w-full h-full bg-white dark:bg-gray-950 rounded-[14px] overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   {userAvatar ? (
                     <Image
                       src={userAvatar}
                       alt={userName}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover relative z-10"
                       width={40}
                       height={40}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+                    <div className="w-full h-full flex items-center justify-center bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm relative z-10">
                       {userName.charAt(0)}
                     </div>
                   )}

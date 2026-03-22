@@ -29,19 +29,19 @@ const ScannerSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
+      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 dark:border-gray-700/50 overflow-hidden"
     >
-      <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700/50 flex items-center justify-between bg-white/50 dark:bg-gray-800/50">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
-            <QrCode className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+      <div className="p-6 sm:p-8 border-b border-gray-100 dark:border-gray-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-50/50 to-transparent dark:from-indigo-900/10">
+        <div className="flex items-center gap-4">
+          <div className="p-3.5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-900/30 group-hover:scale-110 transition-transform">
+            <QrCode className="w-6 h-6 text-indigo-600 dark:text-indigo-400" strokeWidth={2} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-400 dark:to-purple-400 tracking-tight">
               QR Scanner
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Verify attendance for {courseName || "Current Session"}
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+              Verify attendance for <span className="text-indigo-600 dark:text-indigo-400 font-bold">{courseName || "Current Session"}</span>
             </p>
           </div>
         </div>
@@ -53,8 +53,11 @@ const ScannerSection = ({
         )}
       </div>
 
-      <div className="p-6 sm:p-8">
-        <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-square bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 ring-1 ring-gray-200 dark:ring-gray-800">
+      <div className="p-6 sm:p-10 relative overflow-hidden">
+        {/* Decorative background blur inside the scanner area */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="relative z-10 max-w-xs sm:max-w-md mx-auto aspect-square bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white/80 dark:border-gray-800 ring-1 ring-black/5 dark:ring-white/10">
           {isScanning ? (
             <>
               <video
@@ -116,19 +119,21 @@ const ScannerSection = ({
           )}
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-10 relative z-10 flex justify-center">
           <Button
             onClick={onStartScan}
             disabled={isScanning}
             className={`
-              px-8 py-6 rounded-2xl text-base sm:text-lg font-bold shadow-xl transition-all hover:scale-105 active:scale-95 w-full sm:w-auto
+              relative px-8 py-7 rounded-2xl text-lg font-black shadow-xl transition-all duration-300 hover:scale-[1.03] active:scale-95 w-full sm:w-auto overflow-hidden group
               ${
                 permissions.camera === "denied"
-                  ? "bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/20"
-                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/25"
+                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-orange-500/30"
+                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/30 border border-white/10"
               }
             `}
           >
+            {/* Glossy overlay effect for button */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             {isScanning ? (
               <span className="flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 animate-spin" />

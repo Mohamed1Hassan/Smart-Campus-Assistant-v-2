@@ -42,7 +42,7 @@ export default function FilterBar({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 p-6 mb-6 sticky top-24 z-10"
+      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/40 dark:border-gray-700/50 p-5 sm:p-6 mb-6 sticky top-24 z-10"
     >
       <div className="flex flex-col gap-4">
         {/* Search Bar */}

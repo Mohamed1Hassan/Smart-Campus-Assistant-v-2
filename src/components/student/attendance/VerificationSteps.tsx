@@ -43,18 +43,18 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden"
+      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/40 dark:border-gray-700/50 overflow-hidden"
     >
-      <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
-            <Shield className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-emerald-50/50 to-transparent dark:from-emerald-900/10">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30">
+            <Shield className="w-6 h-6 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-400 dark:to-teal-400">
               Verification
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
               Security checks
             </p>
           </div>

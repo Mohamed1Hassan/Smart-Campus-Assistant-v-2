@@ -449,42 +449,46 @@ export default function StudentDashboard() {
         {/* Header Section */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-row items-center justify-between gap-4" // Changed to flex-row for mobile
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0"
+              className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
-              <LayoutDashboard className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </motion.div>
-            <div>
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 Dashboard
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
-                Welcome back, {user?.firstName} 👋
+              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
+                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 font-bold">{user?.firstName}</span> 👋
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-sm font-medium">
+          <div className="flex items-center justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-none border-gray-100 dark:border-gray-700/50">
+            <div className="flex-1 sm:hidden flex items-center gap-2 px-3 py-2 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-bold uppercase tracking-wider">
+              <Calendar className="w-3.5 h-3.5 opacity-70" />
+              {stats?.currentSemester || "Current"}
+            </div>
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-xl text-sm font-bold">
               <Calendar className="w-4 h-4" />
               {stats?.currentSemester || "Current Semester"}
             </div>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className={`p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:shadow-md active:scale-95 ${isRefreshing ? "animate-spin text-indigo-600" : ""}`}
+              className={`p-2.5 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:shadow-md active:scale-95 ${isRefreshing ? "animate-spin text-indigo-600" : ""}`}
               title="Refresh Dashboard"
             >
               <RefreshCw className="w-5 h-5" />
             </button>
             <button
               onClick={handleHardRefresh}
-              className="p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 transition-all hover:shadow-md active:scale-95 group"
+              className="p-2.5 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700 text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 transition-all hover:shadow-md active:scale-95 group"
               title="Force Update / Fix Issues"
             >
               <Zap className="w-5 h-5 fill-current group-hover:animate-pulse" />
@@ -542,24 +546,27 @@ export default function StudentDashboard() {
             <SchedulePreview classes={todaySchedule} />
 
             {/* Quick Actions (Mobile Only) */}
-            <div className="lg:hidden grid grid-cols-2 gap-3">
+            <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
               <button
                 onClick={() => router.push("/dashboard/student/ai-assistant")}
-                className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white shadow-lg shadow-indigo-500/20 flex flex-col items-center justify-center gap-2"
+                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-3xl text-white shadow-lg shadow-indigo-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
               >
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <Sparkles className="w-6 h-6" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <span className="font-medium">Ask AI</span>
+                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Ask AI</span>
               </button>
+              
               <button
                 onClick={() => router.push("/dashboard/student/schedule")}
-                className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-700 dark:text-gray-200 shadow-sm flex flex-col items-center justify-center gap-2"
+                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-400 rounded-3xl text-white shadow-lg shadow-blue-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
               >
-                <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                  <Calendar className="w-6 h-6" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                  <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <span className="font-medium">Full Schedule</span>
+                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
               </button>
             </div>
           </motion.div>
