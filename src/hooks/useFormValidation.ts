@@ -187,8 +187,21 @@ export function useFormValidation<T extends Record<string, unknown>>(
       });
       setTouched(allTouched);
 
-      // Validate all fields
-      const validations = validateAll();
+      // Validate all fields ignoring untouched status for submission
+      const fieldsToValidate: Record<
+        string,
+        { value: unknown; rules: ValidationRule[]; touched: boolean }
+      > = {};
+
+      for (const [key, rules] of Object.entries(validationRules)) {
+        fieldsToValidate[key] = {
+          value: values[key as keyof T],
+          rules,
+          touched: true,
+        };
+      }
+
+      const validations = validateForm(fieldsToValidate);
       const validationErrors: Record<string, string> = {};
 
       for (const [key, validation] of Object.entries(validations)) {

@@ -70,10 +70,10 @@ export const validators = {
   }),
 
   universityId: (
-    message = "University ID must be between 7 and 10 digits",
+    message = "University ID must be exactly 8 digits",
   ): ValidationRule => ({
     test: (value: unknown) =>
-      typeof value === "string" && /^\d{7,10}$/.test(value),
+      typeof value === "string" && /^\d{8}$/.test(value),
     message,
   }),
 

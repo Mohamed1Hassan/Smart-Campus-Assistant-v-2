@@ -135,14 +135,14 @@ export default function Login() {
 
         <main
           id="main-content"
-          className="w-full max-w-6xl flex items-center justify-center p-4 sm:p-8 relative z-10"
+          className="w-full max-w-6xl flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10"
           aria-labelledby="login-title"
         >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8 bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/50 overflow-hidden"
+            transition={{ duration: 0.6, ease: "easeOut", type: "spring", stiffness: 200, damping: 20 }}
+            className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8 bg-white/70 lg:bg-white/80 backdrop-blur-3xl lg:backdrop-blur-2xl rounded-[2.5rem] lg:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] lg:shadow-2xl border border-white/60 lg:border-white/50 overflow-hidden"
           >
             {/* Left Side - Illustration/Branding */}
             <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">
@@ -198,55 +198,51 @@ export default function Login() {
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="p-6 md:p-12 lg:p-16 flex flex-col justify-center bg-white/50">
-              {/* Mobile Logo - Visible only on small screens */}
-              <div className="lg:hidden flex flex-col items-center mb-8 text-center">
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
+            <div className="p-6 pt-10 md:p-12 lg:p-16 flex flex-col justify-center bg-white/40 lg:bg-white/50">
+              {/* Intelligent Responsive Header for Mobile */}
+              <div className="mb-8 text-center lg:text-left flex flex-col items-center lg:items-start">
+                <motion.div 
+                  initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="w-20 h-20 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-3xl flex items-center justify-center mb-4 backdrop-blur-sm shadow-sm border border-white/50 relative"
+                  transition={{ delay: 0.1, ease: "easeOut" }}
+                  className="lg:hidden flex flex-col items-center mb-6"
                 >
-                  <Image
-                    src={logo}
-                    alt="Smart Campus Logo"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </motion.div>
-                <motion.div
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100/50 relative p-3">
+                    <Image
+                      src={logo}
+                      alt="Smart Campus Logo"
+                      fill
+                      className="object-contain p-2"
+                    />
+                  </div>
+                  <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight">
                     Smart Campus
                   </h1>
-                  <p className="text-sm text-gray-500 font-medium">
-                    Secure Attendance System
-                  </p>
+                  <p className="text-sm text-gray-400 font-medium mt-1">Ready for class?</p>
                 </motion.div>
-              </div>
 
-              <div className="mb-8 text-center lg:text-left">
+                {/* Desktop Welcome Back Text */}
                 <h1
                   id="login-title"
                   className="text-3xl font-bold text-gray-900 mb-2 hidden lg:block tracking-tight"
                 >
                   Welcome Back! 👋
                 </h1>
-                <p className="text-gray-500 text-sm lg:text-base">
+                <p className="text-gray-500 text-sm lg:text-base hidden lg:block">
                   Please sign in to continue to your dashboard.
+                </p>
+                {/* Mobile Welcome Text */}
+                <p className="text-gray-500 text-sm max-w-sm lg:hidden mt-2 text-center">
+                  Enter your credentials to securely access your academic dashboard.
                 </p>
               </div>
 
               {/* Role Selection Tabs - Only show when NOT registering */}
               {!showRegisterForm && (
-                <div className="flex p-1.5 bg-gray-100/80 rounded-2xl mb-8 relative border border-gray-200/50">
+                <div className="flex p-1.5 bg-gray-500/5 lg:bg-gray-100/80 backdrop-blur-sm lg:backdrop-blur-none rounded-2xl mb-8 relative border border-gray-200/40 lg:border-gray-200/50">
                   <motion.div
                     layout
-                    className="absolute inset-y-1.5 left-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-sm border border-gray-100"
+                    className="absolute inset-y-1.5 left-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] lg:shadow-sm border-none lg:border lg:border-gray-100"
                     animate={{
                       x: role === "student" ? 0 : "100%",
                     }}
@@ -393,16 +389,16 @@ export default function Login() {
                       className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                     >
                       {isLoading || isSubmitting ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>Signing in...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Sign In</span>
-                          <ArrowRight className="w-5 h-5" />
-                        </>
-                      )}
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Signing in...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Sign In</span>
+                            <ArrowRight className="w-5 h-5" />
+                          </>
+                        )}
                     </button>
 
                     <div className="relative my-8">
@@ -419,9 +415,9 @@ export default function Login() {
                     <button
                       type="button"
                       onClick={() => setShowRegisterForm(true)}
-                      className="w-full bg-white border border-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                      className="w-full bg-white border border-gray-200/80 lg:border-gray-200 text-gray-700 font-medium lg:font-bold py-4 rounded-2xl lg:rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98] lg:active:scale-100"
                     >
-                      <UserPlus className="w-5 h-5 text-gray-500" />
+                      <UserPlus className="w-5 h-5 text-gray-400 lg:text-gray-500" />
                       Create Account
                     </button>
                   </motion.form>
@@ -454,7 +450,7 @@ export default function Login() {
                     </div>
 
                     <RegisterForm
-                      role={role}
+                      role="student"
                       onSuccess={async (credentials) => {
                         if (credentials) {
                           try {
@@ -560,7 +556,11 @@ function RegisterForm({
     validationRules: {
       name: [
         validators.required("Name is required"),
-        validators.minLength(2, "Name must be at least 2 characters"),
+        validators.minLength(5, "Name must be at least 5 characters"),
+        validators.pattern(
+          /^[^\s]+\s+[^\s]+.*$/,
+          "Please enter your full name (first and last name)"
+        ),
       ],
       universityId: [
         validators.required("University ID is required"),
@@ -575,8 +575,8 @@ function RegisterForm({
         validators.minLength(6, "Password must be at least 6 characters"),
       ],
       confirmPassword: [validators.required("Please confirm your password")],
-      major: [validators.required("Major is required")],
-      level: [validators.required("Level is required")],
+      major: [validators.required(role === "student" ? "Major is required" : "Department is required")],
+      ...(role === "student" ? { level: [validators.required("Level is required")] } : {}),
     },
     onSubmit: async (values) => {
       setIsSubmitting(true);
