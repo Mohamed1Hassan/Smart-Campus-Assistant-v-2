@@ -276,7 +276,7 @@ class AuthService {
         role: user.role.toLowerCase() as "student" | "professor" | "admin",
         firstName: user.firstName,
         lastName: user.lastName,
-        isActive: true, // User model doesn't have isActive - all users considered active
+        isActive: user.isActive,
         tokenVersion: user.tokenVersion || 1,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -510,7 +510,7 @@ class AuthService {
         name: user.name,
         tokenVersion: user.tokenVersion || 1,
         role: user.role as "student" | "professor" | "admin",
-        isActive: true,
+        isActive: user.isActive,
       };
 
       return this.sanitizeUser(userWithTokenVersion);
@@ -543,7 +543,7 @@ class AuthService {
         name: user.name,
         tokenVersion: user.tokenVersion || 1,
         role: user.role as "student" | "professor" | "admin",
-        isActive: true,
+        isActive: user.isActive,
       };
 
       return this.sanitizeUser(userWithTokenVersion);
@@ -686,7 +686,7 @@ class AuthService {
     }
 
     if (!this.isValidUniversityId(data.universityId)) {
-      throw new Error("University ID must be 8 digits");
+      throw new Error("University ID must be 7-10 digits");
     }
 
     if (data.email && !this.isValidEmail(data.email)) {
@@ -715,7 +715,7 @@ class AuthService {
     }
 
     if (!this.isValidUniversityId(data.universityId)) {
-      throw new Error("University ID must be 8 digits");
+      throw new Error("University ID must be 7-10 digits");
     }
 
     if (!this.isValidPassword(data.password)) {

@@ -63,25 +63,33 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error: unknown) {
-    console.error("[API/Auth/Login] Error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Internal server error";
-    if (
-      errorMessage === "Invalid university ID or password" ||
-      errorMessage.includes("must be 8 digits") ||
-      errorMessage.includes("7-10 digits")
-    ) {
+    console.error("[API/Auth/Login] Error detail:", error);
+    
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    // Check for specific known errors that should be 401/400
+    const isAuthError = 
+      errorMessage.includes("Invalid university ID or password") || 
+      errorMessage.includes("digits") || 
+      errorMessage.includes("at least 6 characters") ||
+      errorMessage.includes("required");
+
+    if (isAuthError) {
       return NextResponse.json(
-        { success: false, message: errorMessage },
+        { 
+          success: false, 
+          message: errorMessage,
+          code: errorMessage.includes("Invalid") ? "INVALID_CREDENTIALS" : "VALIDATION_ERROR"
+        },
         { status: 401 },
       );
     }
+
     return NextResponse.json(
       {
         success: false,
         message: "Internal server error",
-        error:
-          process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
       { status: 500 },
     );
