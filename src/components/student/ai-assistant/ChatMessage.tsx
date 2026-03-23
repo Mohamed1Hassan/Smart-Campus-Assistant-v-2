@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 export interface ChatMessage {
   id: string;
@@ -16,8 +16,8 @@ export default function ChatMessage({ message, index }: ChatMessageProps) {
   const isStudent = message.sender === "student";
 
   // Use Unicode escape sequences to avoid raw emoji parsing issues in some Babel setups
-  const studentAvatar = "u{1F468}u200Du{1F393}";
-  const aiAvatar = "u{1F916}"; // 🤖
+  const studentAvatar = "\u{1F468}\u200D\u{1F393}";
+  const aiAvatar = "\u{1F916}"; // 🤖
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {

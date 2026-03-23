@@ -56,6 +56,7 @@ export default function StudentAIAssistant() {
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isInitialLoadRef = useRef(true);
 
   const DEV = process.env.NODE_ENV === "development";
 
@@ -157,6 +158,7 @@ export default function StudentAIAssistant() {
 
   useEffect(() => {
     if (activeSessionId && typeof window !== "undefined") {
+      isInitialLoadRef.current = true;
       const savedMessages = localStorage.getItem(
         `student-ai-session-${activeSessionId}-messages`,
       );
@@ -175,6 +177,10 @@ export default function StudentAIAssistant() {
       } else {
         setMessages([]);
       }
+      // Speed up the transition by clearing the initial load flag after a short delay
+      setTimeout(() => {
+        isInitialLoadRef.current = false;
+      }, 100);
     }
   }, [activeSessionId]);
 
@@ -299,6 +305,7 @@ export default function StudentAIAssistant() {
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
+    isInitialLoadRef.current = false; // Ensure new messages animate
     setIsLoading(true);
 
     try {
@@ -644,8 +651,8 @@ export default function StudentAIAssistant() {
 
                     return (
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={isInitialLoadRef.current ? false : { opacity: 0, y: 20 }}
+                        animate={isInitialLoadRef.current ? false : { opacity: 1, y: 0 }}
                         key={message.id}
                         className={`flex ${isAi ? "justify-start" : "justify-end"}`}
                       >
