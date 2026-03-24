@@ -94,6 +94,7 @@ export default function AdminStudentPreview() {
   const [scheduleFilters, setScheduleFilters] = useState({
     day: "Days",
     status: "Status",
+    type: "Type",
   });
   const [scheduleSearch, setScheduleSearch] = useState("");
 
@@ -106,12 +107,16 @@ export default function AdminStudentPreview() {
         (scheduleFilters.status === "Upcoming" && cls.status === "upcoming") ||
         (scheduleFilters.status === "Ongoing" && cls.status === "ongoing") ||
         (scheduleFilters.status === "Completed" && cls.status === "completed");
+      const matchesType =
+        scheduleFilters.type === "Type" ||
+        (scheduleFilters.type === "Lecture" && cls.type === "Lecture") ||
+        (scheduleFilters.type === "Section" && cls.type === "Section");
       const matchesSearch =
         cls.course.toLowerCase().includes(scheduleSearch.toLowerCase()) ||
         cls.instructor.toLowerCase().includes(scheduleSearch.toLowerCase()) ||
         cls.room.toLowerCase().includes(scheduleSearch.toLowerCase());
 
-      return matchesDay && matchesStatus && matchesSearch;
+      return matchesDay && matchesStatus && matchesType && matchesSearch;
     });
   }, [schedules, scheduleFilters, scheduleSearch]);
 
@@ -268,6 +273,13 @@ export default function AdminStudentPreview() {
         const mappedSchedules = (schedulesRes.data || []).map(
           (item: RawSchedule) => {
             const status: "upcoming" | "ongoing" | "completed" = "upcoming"; // Default
+            // Calculate duration manually to ensure consistency with student view
+            const startStr = item.startTime || "00:00";
+            const endStr = item.endTime || "00:00";
+            const start = new Date(`2000/01/01 ${startStr}`);
+            const end = new Date(`2000/01/01 ${endStr}`);
+            const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
             return {
               id: item.id.toString(),
               course: item.course.courseName,
@@ -286,8 +298,8 @@ export default function AdminStudentPreview() {
               room: item.room || "TBA",
               instructor: `${item.professor.firstName} ${item.professor.lastName}`,
               status: status,
-              duration: `${item.duration}h`,
-              type: (item.duration >= 1.8 ? "Lecture" : "Section") as
+              duration: `${durationHours.toFixed(1)}h`,
+              type: (durationHours >= 1.8 ? "Lecture" : "Section") as
                 | "Lecture"
                 | "Section",
             };
@@ -523,6 +535,20 @@ export default function AdminStudentPreview() {
                 <option>Upcoming</option>
                 <option>Ongoing</option>
                 <option>Completed</option>
+              </select>
+              <select
+                value={scheduleFilters.type}
+                onChange={(e) =>
+                  setScheduleFilters({
+                    ...scheduleFilters,
+                    type: e.target.value,
+                  })
+                }
+                className="bg-white border border-gray-100 rounded-[1.5rem] px-10 py-5 text-[10px] font-black uppercase tracking-widest text-gray-600 focus:ring-[6px] focus:ring-blue-500/5 outline-none cursor-pointer hover:bg-gray-50 transition-all appearance-none shadow-sm"
+              >
+                <option>Type</option>
+                <option>Lecture</option>
+                <option>Section</option>
               </select>
             </div>
           </div>
