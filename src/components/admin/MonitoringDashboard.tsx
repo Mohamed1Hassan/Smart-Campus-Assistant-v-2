@@ -17,7 +17,15 @@ import {
   Server,
   Users,
   Zap,
+  ChevronRight,
+  Monitor,
+  Database,
+  Globe,
+  Loader2,
+  Clock,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { apiClient } from "@/services/api";
 
 interface SystemMetrics {
   cpu: {
@@ -94,39 +102,34 @@ const MonitoringDashboard: React.FC = () => {
     "overview" | "logs" | "performance" | "errors"
   >("overview");
 
-  // Fetch system metrics
+  // Fetch metrics using apiClient
   const fetchSystemMetrics = useCallback(async () => {
     try {
-      const response = await fetch("/api/admin/metrics/system");
-      if (response.ok) {
-        const data = await response.json();
-        setSystemMetrics(data);
+      const result = await apiClient.get<SystemMetrics>("/admin/metrics/system");
+      if (result.success && result.data) {
+        setSystemMetrics(result.data);
       }
     } catch (error) {
       console.error("Failed to fetch system metrics:", error);
     }
   }, []);
 
-  // Fetch application metrics
   const fetchAppMetrics = useCallback(async () => {
     try {
-      const response = await fetch("/api/admin/metrics/application");
-      if (response.ok) {
-        const data = await response.json();
-        setAppMetrics(data);
+      const result = await apiClient.get<ApplicationMetrics>("/admin/metrics/application");
+      if (result.success && result.data) {
+        setAppMetrics(result.data);
       }
     } catch (error) {
       console.error("Failed to fetch application metrics:", error);
     }
   }, []);
 
-  // Fetch recent logs
   const fetchRecentLogs = useCallback(async () => {
     try {
-      const response = await fetch("/api/admin/logs/recent");
-      if (response.ok) {
-        const data = await response.json();
-        setRecentLogs(data);
+      const result = await apiClient.get<LogEntry[]>("/admin/logs/recent");
+      if (result.success && result.data) {
+        setRecentLogs(result.data);
       }
     } catch (error) {
       console.error("Failed to fetch recent logs:", error);
@@ -198,234 +201,179 @@ const MonitoringDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Monitoring Dashboard
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Real-time system and application monitoring
-              </p>
+    <div className="min-h-full bg-transparent p-0 lg:p-4">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* Header Section */}
+        <div className="bg-white/40 backdrop-blur-xl border border-white/40 rounded-[2.5rem] p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-3xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                <Monitor className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+                  System Guard
+                </h1>
+                <p className="text-gray-500 font-medium text-sm">
+                  Real-time infrastructure and application health monitoring
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Auto Refresh:
-                </label>
+            <div className="flex flex-wrap items-center justify-center gap-4 bg-white/50 p-2 rounded-[2rem] border border-white/60">
+              <div className="flex items-center gap-3 px-4 py-2 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                  Live Feed
+                </span>
+                <div className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
                 <input
                   type="checkbox"
                   checked={autoRefresh}
                   onChange={(e) => setAutoRefresh(e.target.checked)}
-                  className="rounded border-gray-300"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </div>
 
               <select
                 value={refreshInterval}
                 onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                className="rounded border-gray-300 text-sm"
+                className="bg-white px-4 py-2 rounded-2xl border border-gray-100 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer"
               >
-                <option value={5000}>5 seconds</option>
-                <option value={10000}>10 seconds</option>
-                <option value={30000}>30 seconds</option>
-                <option value={60000}>1 minute</option>
+                <option value={5000}>5s REFRESH</option>
+                <option value={10000}>10s REFRESH</option>
+                <option value={30000}>30s REFRESH</option>
               </select>
 
               <button
                 onClick={fetchAllMetrics}
                 disabled={isLoading}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 bg-gray-900 hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-gray-900/10 transition-all active:scale-95 disabled:opacity-50 text-[10px] uppercase tracking-widest"
               >
-                <RefreshCw
-                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                <span>Refresh</span>
+                {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                Refresh Now
               </button>
             </div>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6">
-          <nav className="flex space-x-8">
-            {[
-              { id: "overview", Tag: "Overview", icon: BarChart3 },
-              { id: "logs", Tag: "Logs", icon: Activity },
-              { id: "performance", Tag: "Performance", icon: Zap },
-              { id: "errors", Tag: "Errors", icon: AlertTriangle },
-            ].map(({ id, Tag, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() =>
-                  setSelectedTab(
-                    id as "overview" | "logs" | "performance" | "errors",
-                  )
-                }
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedTab === id
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{Tag}</span>
-              </button>
-            ))}
-          </nav>
+        {/* Tab Navigation */}
+        <div className="flex flex-wrap gap-2 p-1.5 bg-gray-100/50 rounded-[2rem] w-fit border border-gray-200/50 backdrop-blur-md">
+          {[
+            { id: "overview", label: "Overview", icon: BarChart3, color: "blue" },
+            { id: "logs", label: "Event Logs", icon: Activity, color: "violet" },
+            { id: "performance", label: "Speed", icon: Zap, color: "amber" },
+            { id: "errors", label: "Incidents", icon: AlertTriangle, color: "rose" },
+          ].map(({ id, label, icon: Icon, color }) => (
+            <button
+              key={id}
+              onClick={() => setSelectedTab(id as any)}
+              className={`flex items-center gap-2.5 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${
+                selectedTab === id
+                  ? `bg-white text-${color}-600 shadow-lg shadow-black/5 scale-100 ring-1 ring-black/5`
+                  : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${selectedTab === id ? `text-${color}-600` : ""}`} />
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Overview Tab */}
         {selectedTab === "overview" && (
-          <div className="space-y-6">
+          <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
             {/* System Metrics */}
             {systemMetrics && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <Server className="w-5 h-5 mr-2" />
-                  System Metrics
-                </h2>
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gray-900 flex items-center justify-center text-white">
+                    <Server className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Infrastructure</h2>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-wider">Node Server & HW Utilization</p>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* CPU Usage */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Cpu className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm text-gray-600">CPU Usage</span>
-                    </div>
-                    <div
-                      className={`text-2xl font-bold ${getStatusColor(systemMetrics.cpu.usage)}`}
-                    >
-                      {systemMetrics.cpu.usage.toFixed(1)}%
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {systemMetrics.cpu.cores} cores
-                    </div>
-                  </div>
-
-                  {/* Memory Usage */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <MemoryStick className="w-5 h-5 text-green-600" />
-                      <span className="text-sm text-gray-600">Memory</span>
-                    </div>
-                    <div
-                      className={`text-2xl font-bold ${getStatusColor(systemMetrics.memory.percentage)}`}
-                    >
-                      {systemMetrics.memory.percentage.toFixed(1)}%
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {formatBytes(systemMetrics.memory.used)} /{" "}
-                      {formatBytes(systemMetrics.memory.total)}
-                    </div>
-                  </div>
-
-                  {/* Disk Usage */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <HardDrive className="w-5 h-5 text-purple-600" />
-                      <span className="text-sm text-gray-600">Disk</span>
-                    </div>
-                    <div
-                      className={`text-2xl font-bold ${getStatusColor(systemMetrics.disk.percentage)}`}
-                    >
-                      {systemMetrics.disk.percentage.toFixed(1)}%
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {formatBytes(systemMetrics.disk.used)} /{" "}
-                      {formatBytes(systemMetrics.disk.total)}
-                    </div>
-                  </div>
-
-                  {/* Uptime */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Activity className="w-5 h-5 text-orange-600" />
-                      <span className="text-sm text-gray-600">Uptime</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {formatUptime(systemMetrics.uptime)}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Last updated:{" "}
-                      {new Date(systemMetrics.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
+                  <MetricCard
+                    title="CPU Usage"
+                    value={`${systemMetrics.cpu.usage.toFixed(1)}%`}
+                    subtitle={`${systemMetrics.cpu.cores} Physical Cores`}
+                    icon={<Cpu className="w-5 h-5" />}
+                    color="blue"
+                    percentage={systemMetrics.cpu.usage}
+                  />
+                  <MetricCard
+                    title="Memory"
+                    value={`${systemMetrics.memory.percentage.toFixed(1)}%`}
+                    subtitle={`${formatBytes(systemMetrics.memory.used)} / ${formatBytes(systemMetrics.memory.total)}`}
+                    icon={<MemoryStick className="w-5 h-5" />}
+                    color="green"
+                    percentage={systemMetrics.memory.percentage}
+                  />
+                  <MetricCard
+                    title="Disk Space"
+                    value={`${systemMetrics.disk.percentage.toFixed(1)}%`}
+                    subtitle={`${formatBytes(systemMetrics.disk.used)} Used`}
+                    icon={<HardDrive className="w-5 h-5" />}
+                    color="purple"
+                    percentage={systemMetrics.disk.percentage}
+                  />
+                  <MetricCard
+                    title="System Uptime"
+                    value={formatUptime(systemMetrics.uptime)}
+                    subtitle={`Last boot: ${new Date(systemMetrics.timestamp).toLocaleDateString()}`}
+                    icon={<Activity className="w-5 h-5" />}
+                    color="amber"
+                  />
                 </div>
               </div>
             )}
 
             {/* Application Metrics */}
             {appMetrics && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <BarChart3 className="w-5 h-5 mr-2" />
-                  Application Metrics
-                </h2>
+              <div className="space-y-6 pt-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white">
+                    <Database className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Application Logic</h2>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-wider">API Traffic & User Activity</p>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* Requests */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Network className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm text-gray-600">Requests</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {appMetrics.requests.total.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {appMetrics.requests.successful} successful,{" "}
-                      {appMetrics.requests.failed} failed
-                    </div>
-                  </div>
-
-                  {/* Users */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Users className="w-5 h-5 text-green-600" />
-                      <span className="text-sm text-gray-600">Users</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {appMetrics.users.active}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {appMetrics.users.total} total,{" "}
-                      {appMetrics.users.newToday} new today
-                    </div>
-                  </div>
-
-                  {/* Errors */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <AlertTriangle className="w-5 h-5 text-red-600" />
-                      <span className="text-sm text-gray-600">Errors</span>
-                    </div>
-                    <div className="text-2xl font-bold text-red-600">
-                      {appMetrics.errors.total}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {appMetrics.errors.last24h} last 24h,{" "}
-                      {appMetrics.errors.critical} critical
-                    </div>
-                  </div>
-
-                  {/* Performance */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Zap className="w-5 h-5 text-yellow-600" />
-                      <span className="text-sm text-gray-600">Performance</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {appMetrics.requests.averageResponseTime.toFixed(0)}ms
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {appMetrics.performance.slowQueries} slow queries
-                    </div>
-                  </div>
+                  <MetricCard
+                    title="API Requests"
+                    value={appMetrics.requests.total.toLocaleString()}
+                    subtitle={`${appMetrics.requests.successful} OK • ${appMetrics.requests.failed} ERR`}
+                    icon={<Globe className="w-5 h-5" />}
+                    color="blue"
+                  />
+                  <MetricCard
+                    title="Active Users"
+                    value={appMetrics.users.active.toString()}
+                    subtitle={`${appMetrics.users.total} Registered Total`}
+                    icon={<Users className="w-5 h-5" />}
+                    color="indigo"
+                  />
+                  <MetricCard
+                    title="Critical Errors"
+                    value={appMetrics.errors.critical.toString()}
+                    subtitle={`${appMetrics.errors.total} Total Incidents`}
+                    icon={<AlertTriangle className="w-5 h-5" />}
+                    color="rose"
+                    alert={appMetrics.errors.critical > 0}
+                  />
+                  <MetricCard
+                    title="Response Time"
+                    value={`${appMetrics.requests.averageResponseTime.toFixed(0)}ms`}
+                    subtitle={`${appMetrics.performance.slowQueries} Slow Queries`}
+                    icon={<Zap className="w-5 h-5" />}
+                    color="amber"
+                  />
                 </div>
               </div>
             )}
@@ -434,73 +382,61 @@ const MonitoringDashboard: React.FC = () => {
 
         {/* Logs Tab */}
         {selectedTab === "logs" && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-semibold flex items-center">
-                <Activity className="w-5 h-5 mr-2" />
-                Recent Logs
-              </h2>
+          <div className="bg-gray-950 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/5 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                <span className="ml-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">system.journal.v1</span>
+              </div>
+              <Activity className="w-4 h-4 text-white/20" />
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
-              {recentLogs.map((log) => (
-                <div key={log.id} className="p-4 border-b hover:bg-gray-50">
-                  <div className="flex items-start justify-between">
+            <div className="max-h-[500px] overflow-y-auto custom-scrollbar p-6 space-y-2 font-mono text-[11px] leading-relaxed">
+              {recentLogs && recentLogs.length > 0 ? (
+                recentLogs.map((log) => (
+                  <div key={log.id} className="group flex items-start gap-4 p-2 rounded-lg hover:bg-white/[0.03] transition-colors text-left uppercase">
+                    <span className="text-white/20 shrink-0 select-none">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter shrink-0 ${
+                      log.level === 'ERROR' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                      log.level === 'WARN' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                      'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                    }`}>
+                      {log.level}
+                    </span>
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${getLogLevelColor(log.level)}`}
-                        >
-                          {log.level}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {log.source}
-                        </span>
-                        {log.userId && (
-                          <span className="text-sm text-gray-500">
-                            User: {log.userId}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-900">{log.message}</p>
-                      {log.metadata && (
-                        <pre className="text-xs text-gray-600 mt-2 bg-gray-100 p-2 rounded overflow-x-auto">
-                          {JSON.stringify(log.metadata, null, 2)}
-                        </pre>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500 ml-4">
-                      {new Date(log.timestamp).toLocaleString()}
+                      <span className="text-blue-400 font-bold mr-2">@{log.source.replace('/api/admin/', '')}</span>
+                      <span className="text-gray-300">{log.message}</span>
+                      {log.userId && <span className="text-indigo-400 ml-2 font-bold opacity-50 underline decoration-indigo-400/30">u:{log.userId}</span>}
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="py-20 text-center space-y-4">
+                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+                    <Clock className="w-8 h-8 text-white/20 animate-pulse" />
+                  </div>
+                  <p className="text-white/40 font-black text-[10px] uppercase tracking-widest leading-none mt-4">
+                    Waiting for log stream...
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
 
-        {/* Performance Tab */}
-        {selectedTab === "performance" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Performance Metrics
-            </h2>
-            <p className="text-gray-600">
-              Performance monitoring charts and metrics will be displayed here.
-            </p>
-          </div>
-        )}
-
-        {/* Errors Tab */}
-        {selectedTab === "errors" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <AlertTriangle className="w-5 h-5 mr-2" />
-              Error Analysis
-            </h2>
-            <p className="text-gray-600">
-              Error tracking and analysis will be displayed here.
+        {/* Performance & Error Placeholders */}
+        {(selectedTab === "performance" || selectedTab === "errors") && (
+          <div className="h-96 flex flex-col items-center justify-center text-center bg-white/40 backdrop-blur-md rounded-[3rem] border border-white/40 shadow-sm animate-in zoom-in-95 duration-500">
+            <div className="w-24 h-24 bg-white/80 rounded-[2rem] flex items-center justify-center shadow-xl shadow-black/5 mb-8 border border-white/60">
+              {selectedTab === "performance" ? <Zap className="w-10 h-10 text-amber-500" /> : <AlertTriangle className="w-10 h-10 text-rose-500" />}
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2">
+              Advanced Analytics Pending
+            </h3>
+            <p className="text-gray-500 max-w-sm font-medium text-sm leading-relaxed">
+              We are currently finalizing the high-frequency data pipeline for {selectedTab === "performance" ? "real-time profiling" : "incident forensic"} modules.
             </p>
           </div>
         )}
@@ -508,5 +444,82 @@ const MonitoringDashboard: React.FC = () => {
     </div>
   );
 };
+
+function MetricCard({ 
+  title, 
+  value, 
+  subtitle, 
+  icon, 
+  color, 
+  percentage, 
+  alert 
+}: { 
+  title: string; 
+  value: string; 
+  subtitle: string; 
+  icon: React.ReactNode; 
+  color: string;
+  percentage?: number;
+  alert?: boolean;
+}) {
+  const colorMap: Record<string, string> = {
+    blue: "from-blue-500/10 to-indigo-500/10 text-blue-600 border-blue-100 bg-blue-100",
+    green: "from-emerald-500/10 to-teal-500/10 text-emerald-600 border-emerald-100 bg-emerald-100",
+    purple: "from-purple-500/10 to-violet-500/10 text-purple-600 border-purple-100 bg-purple-100",
+    amber: "from-amber-500/10 to-orange-500/10 text-amber-600 border-amber-100 bg-amber-100",
+    rose: "from-rose-500/10 to-red-500/10 text-rose-600 border-rose-100 bg-rose-100",
+    indigo: "from-indigo-500/10 to-blue-500/10 text-indigo-600 border-indigo-100 bg-indigo-100",
+  };
+
+  const currentStyles = colorMap[color] || colorMap.blue;
+  const stylesArr = currentStyles.split(" ");
+
+  return (
+    <motion.div
+      whileHover={{ y: -8, scale: 1.02 }}
+      className={`p-6 rounded-[2rem] border bg-gradient-to-br ${stylesArr[0]} ${stylesArr[1]} ${stylesArr[3]} relative overflow-hidden backdrop-blur-sm transition-all duration-300`}
+    >
+      {alert && (
+        <div className="absolute top-0 right-0 w-3 h-3 rounded-full bg-rose-500 mt-5 mr-5 shadow-[0_0_12px_rgba(244,63,94,0.6)]">
+          <div className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-75"></div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mb-5">
+        <div className={`w-12 h-12 rounded-2xl ${stylesArr[4]} flex items-center justify-center shadow-lg shadow-black/5 ${stylesArr[2]}`}>
+          {icon}
+        </div>
+        {percentage !== undefined && (
+          <div className="text-[10px] font-black text-gray-800 px-2 py-1 bg-white/40 border border-white/20 rounded-lg uppercase tracking-wider backdrop-blur-sm">
+            LEVEL: {percentage.toFixed(0)}%
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h4 className="text-gray-600 text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-60">
+          {title}
+        </h4>
+        <div className="text-3xl font-black text-gray-900 tracking-tighter">
+          {value}
+        </div>
+        <p className="text-[10px] font-bold text-gray-400 mt-2 truncate">
+          {subtitle}
+        </p>
+      </div>
+
+      {percentage !== undefined && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100/30">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className={`h-full ${color === 'rose' ? 'bg-rose-500' : 'bg-blue-600'}`} 
+          />
+        </div>
+      )}
+    </motion.div>
+  );
+}
 
 export default MonitoringDashboard;

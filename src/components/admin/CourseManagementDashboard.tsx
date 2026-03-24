@@ -17,6 +17,7 @@ import {
   ChevronRight,
   X,
   Image as ImageIcon,
+  ShieldCheck,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,91 +77,93 @@ const CourseCard = React.memo(
       course.coverImage || getCourseImage(course.courseName, course.id);
 
     return (
-      <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col animate-in fade-in slide-in-from-bottom-4">
-        <div className="relative h-44 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+      <div className="group bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1.5 transition-all duration-500 flex flex-col animate-in fade-in slide-in-from-bottom-4">
+        <div className="relative h-48 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10 opacity-60 group-hover:opacity-80 transition-opacity" />
           {!imgError ? (
             <Image
               src={coverImg}
               alt={course.courseName}
               onError={() => setImgError(true)}
               width={400}
-              height={200}
+              height={220}
               unoptimized
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-6 text-center">
+            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center p-6 text-center">
               <div className="space-y-2">
-                <ImageIcon className="w-8 h-8 text-white/40 mx-auto" />
-                <p className="text-white/60 text-[10px] font-bold uppercase tracking-wider leading-tight line-clamp-2">
+                <ImageIcon className="w-10 h-10 text-white/30 mx-auto" />
+                <p className="text-white/50 text-[10px] font-black uppercase tracking-widest leading-tight line-clamp-2 px-4">
                   {course.courseName}
                 </p>
               </div>
             </div>
           )}
-          <div className="absolute top-3 left-3 z-20 flex gap-2">
-            <span className="px-2.5 py-1 bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-[10px] font-bold text-white uppercase tracking-wider">
+          <div className="absolute top-4 left-4 z-20 flex gap-2">
+            <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-[10px] font-black text-white uppercase tracking-widest">
               {course.courseCode}
             </span>
             <span
-              className={`px-2.5 py-1 backdrop-blur-md border rounded-lg text-[10px] font-bold uppercase tracking-wider ${course.isActive ? "bg-green-500/20 border-green-500/30 text-green-100" : "bg-gray-500/20 border-gray-500/30 text-gray-100"}`}
+              className={`px-3 py-1 backdrop-blur-md border rounded-xl text-[10px] font-black uppercase tracking-widest ${course.isActive ? "bg-green-500/20 border-green-500/30 text-green-100" : "bg-red-500/20 border-red-500/30 text-red-100"}`}
             >
+              <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 ${course.isActive ? "bg-green-400" : "bg-red-400"}`}></span>
               {course.isActive ? "Active" : "Archived"}
             </span>
           </div>
-          <div className="absolute bottom-3 left-4 z-20 right-4">
-            <h3 className="text-lg font-bold text-white line-clamp-1 leading-tight drop-shadow-md">
+          <div className="absolute bottom-4 left-5 z-20 right-5">
+            <h3 className="text-xl font-black text-white line-clamp-1 leading-tight drop-shadow-lg tracking-tight">
               {course.courseName}
             </h3>
           </div>
         </div>
 
-        <div className="p-5 flex-1 flex flex-col space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2 text-gray-500">
-                <User className="w-4 h-4" />
+        <div className="p-6 flex-1 flex flex-col space-y-5">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2.5 text-gray-500 font-bold">
+                <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100/50">
+                  <User className="w-3.5 h-3.5" />
+                </div>
                 <span className="truncate max-w-[120px]">
                   {course.professor
                     ? `${course.professor.firstName} ${course.professor.lastName}`
                     : "Unassigned"}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                <Clock className="w-4 h-4 text-blue-500" />
+              <div className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full font-black text-[10px] uppercase tracking-widest">
                 {course.credits} Credits
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500 font-medium">Capacity</span>
-                <span className="text-gray-900 font-bold">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest leading-none">
+                <span className="text-gray-400">Enrollment</span>
+                <span className="text-gray-900 font-black">
                   {enrolledCount} / {capacity}
                 </span>
               </div>
-              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden border border-gray-100/50">
                 <div
                   style={{ width: `${Math.min(enrollmentProgress, 100)}%` }}
-                  className={`h-full rounded-full transition-all duration-1000 ${enrollmentProgress >= 90 ? "bg-red-500" : enrollmentProgress >= 70 ? "bg-orange-500" : "bg-blue-600"}`}
+                  className={`h-full rounded-full transition-all duration-1000 ${enrollmentProgress >= 90 ? "bg-red-500Shadow" : enrollmentProgress >= 70 ? "bg-orange-500" : "bg-blue-600 shadow-lg shadow-blue-500/20"}`}
                 />
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-50 flex items-center justify-between gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="flex gap-1">
+          <div className="pt-4 border-t border-gray-50 flex items-center justify-between gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+            <div className="flex gap-1.5">
               <button
                 onClick={() => onEdit(course)}
-                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all border border-transparent hover:border-blue-100"
                 title="Edit Course"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => onToggleStatus(course.id, course.isActive)}
-                className={`p-2 rounded-lg transition-all ${course.isActive ? "text-gray-400 hover:text-orange-600 hover:bg-orange-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
+                className={`p-2.5 rounded-xl transition-all border border-transparent ${course.isActive ? "text-gray-400 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-100" : "text-gray-400 hover:text-green-600 hover:bg-green-50 hover:border-green-100"}`}
                 title={course.isActive ? "Archive" : "Activate"}
               >
                 <ShieldOff className="w-4 h-4" />
@@ -168,7 +171,7 @@ const CourseCard = React.memo(
             </div>
             <button
               onClick={() => onDelete(course.id)}
-              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+              className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"
               title="Delete Course"
             >
               <Trash2 className="w-4 h-4" />
@@ -262,13 +265,16 @@ export default function CourseManagementDashboard() {
           });
         }
       } catch (error: unknown) {
+        const err = error as any;
         if (
-          (error as { name?: string; code?: string })?.name === "AbortError" ||
-          (error as { name?: string; code?: string })?.code === "ERR_CANCELED"
+          err?.name === "AbortError" ||
+          err?.name === "CanceledError" ||
+          err?.code === "ERR_CANCELED" ||
+          err?.code === "ABORT_ERROR"
         ) {
           return;
         }
-        const errorMsg = (error as any)?.message || (error as any)?.error || JSON.stringify(error);
+        const errorMsg = err?.message || err?.error || JSON.stringify(error);
         console.error("Failed to fetch courses:", errorMsg);
       } finally {
         if (abortControllerRef.current === controller) {
@@ -474,103 +480,120 @@ export default function CourseManagementDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
-            <BookOpen className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Course Management
-            </h2>
-            <p className="text-gray-500">
-              Configure curriculum and academic offerings
-            </p>
-          </div>
+    <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mix-blend-isolation">
+      {/* Header Area */}
+      <div className="p-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-gradient-to-r from-gray-50/50 to-white/30">
+        <div>
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-gray-900 to-gray-600">
+            Curriculum Management
+          </h2>
+          <p className="text-sm text-gray-500 mt-1.5 font-medium">
+            Review and organize the academic course catalog.
+          </p>
         </div>
-        <button
-          onClick={handleOpenCreateModal}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-blue-200"
-        >
-          <Plus className="w-5 h-5" />
-          Create New Course
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex bg-gray-100/50 p-1 rounded-2xl border border-gray-100/50">
+             <button 
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-xl transition-all ${viewMode === "grid" ? "bg-white text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+             >
+                <LayoutGrid className="w-4 h-4" />
+             </button>
+             <button 
+              onClick={() => setViewMode("table")}
+              className={`p-2 rounded-xl transition-all ${viewMode === "table" ? "bg-white text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+             >
+                <List className="w-4 h-4" />
+             </button>
+          </div>
+          <button
+            onClick={handleOpenCreateModal}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all text-xs uppercase tracking-widest flex items-center gap-2 group shrink-0"
+          >
+            <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+            <span>Create Course</span>
+          </button>
+        </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="flex flex-1 items-center gap-3 w-full">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search courses..."
-              value={filters.searchTerm}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, searchTerm: e.target.value }))
+      <div className="p-6 border-b border-gray-100 flex flex-wrap gap-4 items-center bg-white/50">
+        <div className="relative flex-1 min-w-[300px] group">
+          <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-500 transition-colors" />
+          <input
+            type="text"
+            placeholder="Search courses by name, code, or description..."
+            value={filters.searchTerm}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, searchTerm: e.target.value }))
+            }
+            className="w-full pl-12 pr-12 py-3 rounded-2xl border border-gray-100 bg-white/50 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-sm font-medium shadow-sm"
+          />
+          {filters.searchTerm && (
+            <button
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, searchTerm: "" }))
               }
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
-            />
-            {filters.searchTerm && (
-              <button
-                onClick={() =>
-                  setFilters((prev) => ({ ...prev, searchTerm: "" }))
-                }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative group">
+            <select
+              value={filters.selectedMajor}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, selectedMajor: e.target.value }))
+              }
+              className="appearance-none pl-4 pr-10 py-3 rounded-2xl border border-gray-100 bg-white/50 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-[10px] font-black uppercase tracking-widest text-gray-700 cursor-pointer min-w-[170px] shadow-sm"
+            >
+              <option value="">All Specializations</option>
+              {majors.map((major) => (
+                <option key={major} value={major}>
+                  {major}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover:translate-y-[-40%] transition-transform" />
           </div>
 
-          <select
-            value={filters.selectedMajor}
-            onChange={(e) =>
-              setFilters((prev) => ({ ...prev, selectedMajor: e.target.value }))
-            }
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-gray-50/50 font-medium min-w-[160px]"
-          >
-            <option value="">All Specializations</option>
-            {majors.map((major) => (
-              <option key={major} value={major}>
-                {major}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={filters.selectedSemester}
-            onChange={(e) =>
-              setFilters((prev) => ({
-                ...prev,
-                selectedSemester: e.target.value,
-              }))
-            }
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-gray-50/50 font-medium min-w-[140px]"
-          >
-            <option value="">All Semesters</option>
-            <option value="FALL">Fall</option>
-            <option value="SPRING">Spring</option>
-            <option value="SUMMER">Summer</option>
-          </select>
-
-          <label className="flex items-center gap-2 px-3 py-2 cursor-pointer bg-gray-50/50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-all">
-            <input
-              type="checkbox"
-              checked={filters.showArchived}
+          <div className="relative group">
+            <select
+              value={filters.selectedSemester}
               onChange={(e) =>
                 setFilters((prev) => ({
                   ...prev,
-                  showArchived: e.target.checked,
+                  selectedSemester: e.target.value,
                 }))
               }
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-            <span className="text-sm font-bold text-gray-700 select-none">
-              Show Archived
-            </span>
-          </label>
+              className="appearance-none pl-4 pr-11 py-3 rounded-2xl border border-gray-100 bg-white/50 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-[10px] font-black uppercase tracking-widest text-gray-700 cursor-pointer min-w-[150px] shadow-sm"
+            >
+              <option value="">All Semesters</option>
+              <option value="FALL">Fall</option>
+              <option value="SPRING">Spring</option>
+              <option value="SUMMER">Summer</option>
+            </select>
+            <ChevronRight className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover:translate-y-[-40%] transition-transform" />
+          </div>
+
+          <button
+            onClick={() =>
+              setFilters((prev) => ({
+                ...prev,
+                showArchived: !prev.showArchived,
+              }))
+            }
+            className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+              filters.showArchived 
+              ? "bg-amber-50 border-amber-200 text-amber-700 shadow-inner" 
+              : "bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100"
+            }`}
+          >
+            {filters.showArchived ? "Hidden (Archived)" : "Show Archived"}
+          </button>
 
           {(filters.selectedMajor ||
             filters.selectedSemester ||
@@ -585,29 +608,12 @@ export default function CourseManagementDashboard() {
                   showArchived: false,
                 });
               }}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-all"
+              className="flex items-center gap-1.5 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
               Clear
             </button>
           )}
-        </div>
-
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex bg-gray-100 p-1 rounded-xl">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white shadow-sm text-blue-600 font-bold" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`p-2 rounded-lg transition-all ${viewMode === "table" ? "bg-white shadow-sm text-blue-600 font-bold" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
 
@@ -633,16 +639,16 @@ export default function CourseManagementDashboard() {
                 ))}
             </div>
           ) : courses.length > 0 ? (
-            <div key="content" className="relative">
+            <div key="content" className="relative p-8">
               {loading && (
-                <div className="absolute inset-0 z-30 bg-white/40 backdrop-blur-[1px] flex items-center justify-center rounded-2xl transition-all">
-                  <div className="bg-white p-4 rounded-full shadow-xl shadow-blue-500/10 border border-blue-50">
-                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                <div className="absolute inset-0 z-[40] bg-white/40 backdrop-blur-[1px] flex items-center justify-center rounded-[3rem] transition-all">
+                  <div className="bg-white p-5 rounded-[2rem] shadow-2xl shadow-blue-500/10 border border-blue-50/50">
+                    <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
                   </div>
                 </div>
               )}
               {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {courses.map((course: Course) => (
                     <CourseCard
                       key={course.id}
@@ -654,73 +660,67 @@ export default function CourseManagementDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-                  <table className="w-full text-left">
-                    <thead className="bg-gray-50/50 border-b border-gray-100">
-                      <tr>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                          Course
+                <div className="bg-white/30 rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+                  <table className="w-full text-left border-separate border-spacing-0">
+                    <thead>
+                      <tr className="bg-gray-50/50">
+                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 first:pl-10">
+                          Academic Course
                         </th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                          Professor
+                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                          Faculty
                         </th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                          Enrollment
+                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                          Engagement
                         </th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                          Status
+                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                          Security
                         </th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">
-                          Actions
+                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 pr-10">
+                          Operations
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100/50">
                       {courses.map((course: Course) => (
                         <tr
                           key={course.id}
-                          className="hover:bg-gray-50/50 transition-colors group"
+                          className="hover:bg-blue-50/30 transition-all group/row"
                         >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-gray-100 relative">
-                                <Image
-                                  src={
-                                    course.coverImage ||
-                                    getCourseImage(course.courseName, course.id)
-                                  }
-                                  alt={course.courseName}
-                                  fill
-                                  unoptimized
-                                  className="object-cover"
-                                />
+                          <td className="px-8 py-5 first:pl-10">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/10 shrink-0 group-hover/row:scale-110 transition-transform duration-300">
+                                {course.courseCode.charAt(0)}
                               </div>
                               <div>
-                                <div className="font-bold text-gray-900">
+                                <div className="font-bold text-gray-900 group-hover/row:text-blue-600 transition-colors uppercase tracking-tight">
                                   {course.courseName}
                                 </div>
-                                <div className="text-xs text-gray-500 font-mono">
+                                <div className="text-[10px] font-black uppercase tracking-widest text-blue-600 mt-0.5">
                                   {course.courseCode}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm font-medium text-gray-700">
-                              {course.professor
-                                ? `${course.professor.firstName} ${course.professor.lastName}`
-                                : "Unassigned"}
+                          <td className="px-8 py-5">
+                            <div className="flex items-center gap-2.5 text-xs font-bold text-gray-700">
+                               <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100/50 text-gray-400 group-hover/row:text-blue-500 transition-colors">
+                                  <User className="w-3.5 h-3.5" />
+                               </div>
+                               {course.professor
+                                 ? `${course.professor.firstName} ${course.professor.lastName}`
+                                 : "Unassigned"}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold">
+                          <td className="px-8 py-5">
+                            <div className="flex items-center gap-3">
+                              <div className="text-xs font-black text-gray-900">
                                 {course._count?.enrollments || 0}/
                                 {course.capacity || 500}
-                              </span>
-                              <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              </div>
+                              <div className="w-20 h-1.5 bg-gray-50 rounded-full overflow-hidden border border-gray-100/50">
                                 <div
-                                  className="h-full bg-blue-600"
+                                  className="h-full bg-blue-600 shadow-[0_0_8px_rgb(37,99,235,0.3)] transition-all duration-1000"
                                   style={{
                                     width: `${Math.min(((course._count?.enrollments || 0) / (course.capacity || 500)) * 100, 100)}%`,
                                   }}
@@ -728,21 +728,25 @@ export default function CourseManagementDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-8 py-5">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${course.isActive ? "bg-green-50 text-green-700 border border-green-100" : "bg-gray-50 text-gray-500 border border-gray-100"}`}
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                course.isActive 
+                                ? "bg-green-50 text-green-700 border-green-100 shadow-sm shadow-green-500/5" 
+                                : "bg-red-50 text-red-700 border-red-100 shadow-sm shadow-red-500/5"
+                              }`}
                             >
                               <span
-                                className={`w-1.5 h-1.5 rounded-full ${course.isActive ? "bg-green-500" : "bg-gray-400"}`}
+                                className={`w-1.5 h-1.5 rounded-full ${course.isActive ? "bg-green-500 animate-pulse" : "bg-red-500"}`}
                               />
                               {course.isActive ? "Active" : "Archived"}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <td className="px-8 py-5 text-right pr-10">
+                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0">
                               <button
                                 onClick={() => handleOpenEditModal(course)}
-                                className="p-2 text-gray-400 hover:text-blue-600 rounded-lg transition-all"
+                                className="p-2.5 text-gray-400 hover:text-blue-600 rounded-xl transition-all border border-transparent hover:border-blue-100 hover:bg-blue-50"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
@@ -750,13 +754,14 @@ export default function CourseManagementDashboard() {
                                 onClick={() =>
                                   handleToggleStatus(course.id, course.isActive)
                                 }
-                                className="p-2 text-gray-400 hover:text-orange-600 rounded-lg transition-all"
+                                className={`p-2.5 rounded-xl transition-all border border-transparent ${course.isActive ? "text-gray-400 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-100" : "text-gray-400 hover:text-green-600 hover:bg-green-50 hover:border-green-100"}`}
                               >
                                 <ShieldOff className="w-4 h-4" />
                               </button>
+                              <div className="h-4 w-px bg-gray-100 mx-1"></div>
                               <button
                                 onClick={() => handleDeleteCourse(course.id)}
-                                className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-all"
+                                className="p-2.5 text-gray-400 hover:text-red-600 rounded-xl transition-all border border-transparent hover:border-red-100 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -790,26 +795,27 @@ export default function CourseManagementDashboard() {
       </div>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4">
-          <p className="text-sm text-gray-500">
-            Showing{" "}
-            <span className="font-bold text-gray-900">
-              {(pagination.page - 1) * pagination.limit + 1}-
-              {Math.min(pagination.page * pagination.limit, pagination.total)}
-            </span>{" "}
-            of{" "}
-            <span className="font-bold text-gray-900">{pagination.total}</span>{" "}
-            materials
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 hover:bg-gray-50 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4 rotate-180" />
-            </button>
+      <div className="p-8 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-400 bg-white/50 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm">
+          Displaying <span className="text-gray-900">{(pagination.page - 1) * pagination.limit + 1}</span> -{" "}
+          <span className="text-gray-900">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> 
+          <span className="mx-2 text-gray-200">|</span> Total <span className="text-blue-600">{pagination.total}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 bg-white/50 p-1.5 rounded-[1.5rem] border border-gray-100 shadow-sm">
+          <button
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
+            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              pagination.page === 1 
+              ? "text-gray-300 bg-gray-50/50 cursor-not-allowed" 
+              : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
+            }`}
+          >
+            Prev
+          </button>
+          
+          <div className="hidden sm:flex items-center gap-1.5 px-1">
             {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
               .filter(
                 (p) =>
@@ -820,70 +826,81 @@ export default function CourseManagementDashboard() {
               .map((p, i, arr) => (
                 <React.Fragment key={p}>
                   {i > 0 && arr[i - 1] !== p - 1 && (
-                    <span className="px-2 text-gray-400">...</span>
+                    <span className="px-2 text-gray-300 font-black">...</span>
                   )}
                   <button
                     onClick={() => handlePageChange(p)}
-                    className={`w-9 h-9 rounded-lg border font-bold text-sm transition-all ${pagination.page === p ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200" : "bg-white border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600"}`}
+                    className={`w-10 h-10 rounded-xl text-[10px] font-black transition-all ${
+                      pagination.page === p 
+                      ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20 scale-110 z-10" 
+                      : "hover:bg-white text-gray-400 border border-transparent hover:border-gray-100 hover:text-gray-900 active:scale-95"
+                    }`}
                   >
                     {p}
                   </button>
                 </React.Fragment>
               ))}
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.totalPages}
-              className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 hover:bg-gray-50 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
+
+          <button
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              pagination.page === pagination.totalPages 
+              ? "text-gray-300 bg-gray-50/50 cursor-not-allowed" 
+              : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
+            }`}
+          >
+            Next
+          </button>
         </div>
-      )}
+      </div>
 
       {/* Create/Edit Modal */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/60 backdrop-blur-md overflow-y-auto">
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white rounded-3xl w-full max-w-2xl my-auto shadow-2xl overflow-hidden"
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-[3rem] w-full max-w-2xl my-auto shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden border border-white/60"
             >
-              <div className="p-8 border-b border-gray-100 bg-gray-50/50 relative">
+              <div className="p-10 border-b border-gray-100 bg-gradient-to-br from-gray-50/80 to-white/20 relative">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-xl transition-all"
+                  className="absolute top-8 right-8 p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all group/close"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5 group-hover/close:rotate-90 transition-transform duration-300" />
                 </button>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-blue-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-300">
                     {modalMode === "create" ? (
-                      <Plus className="w-6 h-6 text-blue-600" />
+                      <Plus className="w-8 h-8" />
                     ) : (
-                      <Edit2 className="w-6 h-6 text-blue-600" />
+                      <Edit2 className="w-8 h-8" />
                     )}
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">
                       {modalMode === "create"
-                        ? "Create New Course"
-                        : "Edit Course Details"}
+                        ? "Curriculum Evolution"
+                        : "Refine Offering"}
                     </h3>
-                    <p className="text-sm text-gray-500">
-                      Provide the details for the academic course offering.
+                    <p className="text-sm text-gray-500 font-medium mt-1">
+                      {modalMode === "create" 
+                        ? "Initialize a new academic course in the system."
+                        : "Update course parameters and identifiers."}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Course Name
+              <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Full Academic Title
                     </label>
                     <input
                       required
@@ -892,13 +909,13 @@ export default function CourseManagementDashboard() {
                       onChange={(e) =>
                         setFormData({ ...formData, courseName: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder:text-gray-300"
-                      placeholder="Fundamentals of Data Science"
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all placeholder:text-gray-200 font-bold text-gray-900 shadow-sm"
+                      placeholder="Fundamentals of Neural Networks"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Course Code
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Course Token (Code)
                     </label>
                     <input
                       required
@@ -910,13 +927,13 @@ export default function CourseManagementDashboard() {
                           courseCode: e.target.value.toUpperCase(),
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-mono"
-                      placeholder="CS-101"
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-mono font-black text-blue-600 bg-blue-50/10 shadow-sm"
+                      placeholder="CS-402"
                     />
                   </div>
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Description
+                  <div className="md:col-span-2 space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Curriculum Abstract
                     </label>
                     <textarea
                       rows={3}
@@ -927,14 +944,14 @@ export default function CourseManagementDashboard() {
                           description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all resize-none"
-                      placeholder="Brief overview of the course content..."
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all resize-none font-medium text-gray-600 shadow-sm"
+                      placeholder="Establish a brief overview of the learning objectives and core curriculum components..."
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5" />
-                      Cover Image URL
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                      <ImageIcon className="w-3.5 h-3.5 text-blue-500" />
+                      Visual Identity URL
                     </label>
                     <input
                       type="text"
@@ -942,16 +959,13 @@ export default function CourseManagementDashboard() {
                       onChange={(e) =>
                         setFormData({ ...formData, coverImage: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all text-xs font-mono text-gray-400 shadow-sm"
                       placeholder="https://images.unsplash.com/..."
                     />
-                    <p className="text-[10px] text-gray-400">
-                      Leave empty to use a topic-based default image.
-                    </p>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Specialization (Major)
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Academic Domain
                     </label>
                     <input
                       type="text"
@@ -959,52 +973,35 @@ export default function CourseManagementDashboard() {
                       onChange={(e) =>
                         setFormData({ ...formData, major: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder:text-gray-300"
-                      placeholder="e.g. إدارة أعمال"
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm"
+                      placeholder="e.g. Computer Science"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
                       Level
                     </label>
-                    <select
-                      value={formData.level}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          level: parseInt(e.target.value),
-                        })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all bg-gray-50 cursor-pointer"
-                    >
-                      <option value={1}>Level 1</option>
-                      <option value={2}>Level 2</option>
-                      <option value={3}>Level 3</option>
-                      <option value={4}>Level 4</option>
-                    </select>
+                    <div className="relative group/sel">
+                      <select
+                        value={formData.level}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            level: parseInt(e.target.value),
+                          })
+                        }
+                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
+                      >
+                        {[1, 2, 3, 4, 5].map(lv => <option key={lv} value={lv}>Level {lv}</option>)}
+                      </select>
+                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5" />
-                      Student Capacity
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      value={formData.capacity}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          capacity: parseInt(e.target.value),
-                        })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
-                      min="1"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Credits
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Academic Credits
                     </label>
                     <input
                       required
@@ -1016,93 +1013,78 @@ export default function CourseManagementDashboard() {
                           credits: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm"
                       min="1"
                       max="10"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Assigned Professor
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Faculty Assignment
                     </label>
-                    <select
-                      required
-                      value={formData.professorId}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          professorId: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all bg-gray-50 cursor-pointer"
-                    >
-                      <option value="">Select a professor</option>
-                      {professors.map((p: Professor) => (
-                        <option key={p.id} value={p.id}>
-                          {p.firstName} {p.lastName} ({p.universityId})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative group/sel">
+                      <select
+                        required
+                        value={formData.professorId}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            professorId: e.target.value,
+                          })
+                        }
+                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
+                      >
+                        <option value="">Choose Professor...</option>
+                        {professors.map((p: Professor) => (
+                          <option key={p.id} value={p.id}>
+                            {p.firstName} {p.lastName}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Semester
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Academic Term
                     </label>
-                    <select
-                      value={formData.semester}
-                      onChange={(e) =>
-                        setFormData({ ...formData, semester: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all bg-gray-50 cursor-pointer"
-                    >
-                      <option value="FALL">Fall</option>
-                      <option value="SPRING">Spring</option>
-                      <option value="SUMMER">Summer</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Academic Year
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      value={formData.academicYear}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          academicYear: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
-                      placeholder="2024-2025"
-                    />
+                    <div className="relative group/sel">
+                      <select
+                        value={formData.semester}
+                        onChange={(e) =>
+                          setFormData({ ...formData, semester: e.target.value })
+                        }
+                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
+                      >
+                        <option value="FALL">Fall Semester</option>
+                        <option value="SPRING">Spring Semester</option>
+                        <option value="SUMMER">Summer Term</option>
+                      </select>
+                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex gap-4 mt-8">
-                  <button
+                <div className="pt-10 border-t border-gray-50 flex items-center justify-between gap-6">
+                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 py-3.5 rounded-2xl font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all hover:border-gray-300"
+                    className="px-8 py-4 bg-gray-50 hover:bg-gray-100 text-gray-500 font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-sm"
                   >
-                    Cancel
+                    Discard Changes
                   </button>
                   <button
-                    type="submit"
                     disabled={isSubmitting}
-                    className="flex-[2] py-3.5 rounded-2xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all text-[10px] uppercase tracking-widest flex items-center gap-3 group disabled:opacity-50"
                   >
                     {isSubmitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : null}
-                    {isSubmitting
-                      ? modalMode === "create"
-                        ? "Creating..."
-                        : "Saving..."
-                      : modalMode === "create"
-                        ? "Create Course"
-                        : "Save Changes"}
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="w-5 h-5 group-hover:scale-125 transition-transform" />
+                    )}
+                    <span>{modalMode === "create" ? "Initiate Offering" : "Authorize Changes"}</span>
                   </button>
                 </div>
               </form>

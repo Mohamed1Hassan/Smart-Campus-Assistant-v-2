@@ -168,7 +168,7 @@ export default function StudentDashboard() {
       if (res.success) return res.data;
       throw new Error(res.message || "Failed to fetch stats");
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && user.role === "student",
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -346,7 +346,7 @@ export default function StudentDashboard() {
 
       return mergedSchedule;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && user.role === "student",
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 30 * 1000, // Refresh every 30 seconds
   });

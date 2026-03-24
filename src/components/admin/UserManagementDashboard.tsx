@@ -321,31 +321,34 @@ export default function UserManagementDashboard() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mix-blend-isolation">
+    <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mix-blend-isolation">
       {/* Header Area */}
-      <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
+      <div className="p-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-gradient-to-r from-gray-50/50 to-white/30">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">User Management</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage all students and professors across the university.
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-gray-900 to-gray-600">
+            User Management
+          </h2>
+          <p className="text-sm text-gray-500 mt-1.5 font-medium">
+            Supervise students and faculty members across the campus.
           </p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm shadow-blue-500/20 transition-all text-sm shrink-0"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all text-xs uppercase tracking-widest shrink-0 flex items-center gap-2 group"
         >
-          + Add New User
+          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+          <span>Add New User</span>
         </button>
       </div>
 
       {/* Add User Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-900">Add New User</h3>
-              <p className="text-sm text-gray-500">
-                Create a new account manually.
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
+            <div className="p-8 border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">Add New Member</h3>
+              <p className="text-sm text-gray-500 mt-1 font-medium">
+                Provision a new identity for the campus ecosystem.
               </p>
             </div>
             <form onSubmit={handleAddUser} className="p-6 space-y-4">
@@ -498,23 +501,23 @@ export default function UserManagementDashboard() {
                 </div>
               )}
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
+              <div className="pt-6 flex items-center justify-end gap-3 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                  className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm shadow-blue-500/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 group"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : null}
-                  Create User
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : <Plus className="w-3.5 h-3.5 group-hover:scale-125 transition-transform" />}
+                  Create Identity
                 </button>
               </div>
             </form>
@@ -524,12 +527,12 @@ export default function UserManagementDashboard() {
 
       {/* Edit User Modal */}
       {isEditModalOpen && editingUser && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-900">Edit User</h3>
-              <p className="text-sm text-gray-500">
-                Update user details. Leave password blank to keep it unchanged.
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
+            <div className="p-8 border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">Modify Identity</h3>
+              <p className="text-sm text-gray-500 mt-1 font-medium">
+                Update core attributes for <span className="text-blue-600">@{editingUser.universityId}</span>
               </p>
             </div>
             <form onSubmit={handleEditUser} className="p-6 space-y-4">
@@ -595,22 +598,22 @@ export default function UserManagementDashboard() {
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
+              <div className="pt-6 flex items-center justify-end gap-3 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                  className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm shadow-blue-500/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-8 py-3 bg-gray-900 hover:bg-black text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl shadow-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : null}
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : <Check className="w-3.5 h-3.5" />}
                   Save Changes
                 </button>
               </div>
@@ -624,297 +627,219 @@ export default function UserManagementDashboard() {
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col md:flex-row max-h-[90vh]">
             {/* Left Column: User Profile */}
-            <div className="w-full md:w-80 bg-gray-50/50 border-r border-gray-100 p-8 flex flex-col items-center text-center">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/20 mb-6">
+            <div className="w-full md:w-80 bg-gradient-to-b from-gray-50 to-white border-r border-gray-100 p-8 flex flex-col items-center text-center">
+              <div className="relative group">
+                <div className="w-28 h-28 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-black shadow-xl shadow-blue-500/20 mb-8 transition-transform group-hover:scale-105 duration-300">
                   {viewingUser.firstName?.charAt(0)}
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 border-4 border-white rounded-full shadow-sm"></div>
               </div>
               
-              <h4 className="font-bold text-2xl text-gray-900 leading-tight mb-2">
+              <h4 className="font-black text-2xl text-gray-900 leading-tight mb-2 tracking-tight">
                 {viewingUser.firstName} {viewingUser.lastName}
               </h4>
-              <div className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wider mb-8">
+              <div className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-full uppercase tracking-widest mb-10 shadow-lg shadow-blue-500/20">
                 {viewingUser.role}
               </div>
 
               <div className="w-full space-y-4 text-left">
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                  <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">University ID</div>
-                  <div className="text-sm font-semibold text-gray-900">{viewingUser.universityId}</div>
-                </div>
-                
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                  <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Email</div>
-                  <div className="text-sm font-semibold text-gray-900 truncate">{viewingUser.email}</div>
-                </div>
+                <InfoChip label="University ID" value={viewingUser.universityId} />
+                <InfoChip label="Email Address" value={viewingUser.email} />
 
                 {viewingUser.role === "STUDENT" && (
                   <>
-                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                      <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Major</div>
-                      <div className="text-sm font-semibold text-gray-900">{viewingUser.major || "N/A"}</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                      <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Academic Year</div>
-                      <div className="text-sm font-semibold text-gray-900">{viewingUser.year ? `Year ${viewingUser.year}` : "N/A"}</div>
-                    </div>
+                    <InfoChip label="Major" value={viewingUser.major || "N/A"} />
+                    <InfoChip label="Academic Year" value={viewingUser.year ? `Year ${viewingUser.year}` : "N/A"} />
                   </>
                 )}
 
                 {viewingUser.role === "PROFESSOR" && viewingUser.department && (
-                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Department</div>
-                    <div className="text-sm font-semibold text-gray-900">{viewingUser.department}</div>
-                  </div>
+                  <InfoChip label="Department" value={viewingUser.department} />
                 )}
               </div>
 
               <button
                 onClick={() => setIsInfoModalOpen(false)}
-                className="mt-auto w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-2xl transition-all shadow-lg shadow-gray-200"
+                className="mt-auto w-full py-4 bg-gray-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-gray-200"
               >
-                Close Summary
+                Close Profile
               </button>
             </div>
 
-            {/* Right Column: Content (Courses etc) */}
-            <div className="flex-1 p-8 overflow-visible flex flex-col">
+            <div className="flex-1 p-8 overflow-y-auto max-h-[90vh] custom-scrollbar bg-white">
               {viewingUser.role === "PROFESSOR" ? (
-                <>
-                  <div className="flex items-center justify-between mb-8 overflow-visible relative">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900">Teaching Curriculum</h3>
-                        <p className="text-gray-500">Manage assigned courses and student capacity</p>
+                <div className="space-y-8">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-visible relative">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                          <BookOpen className="w-4 h-4 text-indigo-600" />
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">Teaching Curriculum</h3>
                       </div>
-                      
-                      {/* Archived Toggle */}
-                      <button 
-                        onClick={() => setShowArchivedCourses(!showArchivedCourses)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-xs font-bold ${
-                          showArchivedCourses 
-                          ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-inner' 
-                          : 'bg-white border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600'
-                        }`}
-                      >
-                        <Archive className={`w-4 h-4 ${showArchivedCourses ? 'text-amber-600' : ''}`} />
-                        {showArchivedCourses ? 'Showing Archived' : 'View Archived'}
-                        {viewingUser.courses && viewingUser.courses.filter(c => c.isArchived).length > 0 && !showArchivedCourses && (
-                          <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                        )}
-                      </button>
+                      <p className="text-gray-500 text-sm font-medium">Manage assigned courses and academic capacity</p>
                     </div>
                     
-                    {!isAssigningCourse ? (
+                    <div className="flex items-center gap-3">
                       <button 
-                        onClick={() => {
-                          fetchAvailableCourses();
-                          setIsAssigningCourse(true);
-                        }}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all text-sm"
+                        onClick={() => setShowArchivedCourses(!showArchivedCourses)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border transition-all text-[10px] font-black uppercase tracking-widest ${
+                          showArchivedCourses 
+                          ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-inner' 
+                          : 'bg-white border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-600'
+                        }`}
                       >
-                        <Plus className="w-4 h-4" />
-                        Assign New Course
+                        <Archive className={`w-3.5 h-3.5 ${showArchivedCourses ? 'text-amber-600' : ''}`} />
+                        {showArchivedCourses ? 'Archived' : 'View Archived'}
                       </button>
-                    ) : (
-                      <div className="flex flex-col gap-2 min-w-[320px] animate-in slide-in-from-right duration-300 relative">
-                        <div className="relative">
-                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                            <Search className="w-4 h-4" />
-                          </div>
-                          <input 
-                            type="text"
-                            placeholder="Search code or name..."
-                            value={courseSearchTerm}
-                            onFocus={() => {
-                              if (!allCourses.length) fetchAvailableCourses();
-                            }}
-                            onChange={(e) => setCourseSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2.5 bg-gray-100 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                          />
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                             {allCourses.length > 0 && (
-                               <span className="text-[10px] font-bold text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded-md">
-                                 {allCourses.filter(ac => !viewingUser.courses?.some(vc => vc.id === String(ac.id))).length} available
-                               </span>
-                             )}
-                             {courseSearchTerm && (
-                              <button 
-                                onClick={() => {
-                                  setCourseSearchTerm("");
-                                  setSelectedCourseId("");
-                                }}
-                                className="text-gray-400 hover:text-gray-600"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
+                      
+                      {!isAssigningCourse ? (
+                        <button 
+                          onClick={() => {
+                            fetchAvailableCourses();
+                            setIsAssigningCourse(true);
+                          }}
+                          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-lg shadow-blue-500/20 transition-all text-[10px] uppercase tracking-widest"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Assign Course
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2 animate-in slide-in-from-right duration-300">
+                           <div className="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-blue-100">
+                             <Search className="w-3.5 h-3.5" />
+                             Selecting Course...
+                           </div>
+                           <button 
+                             onClick={() => setIsAssigningCourse(false)}
+                             className="p-2.5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-2xl transition-all"
+                           >
+                             <X className="w-4 h-4" />
+                           </button>
                         </div>
-
-                        <div className="absolute top-[110%] left-0 right-0 z-[100] bg-white rounded-2xl shadow-2xl border border-gray-100 max-h-[300px] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5">
-                          {allCourses.length > 0 ? (
-                            <>
-                              {allCourses
-                                .filter(ac => 
-                                  !viewingUser.courses?.some(vc => vc.id === String(ac.id)) &&
-                                  (ac.courseCode.toLowerCase().includes(courseSearchTerm.toLowerCase()) || 
-                                   ac.courseName.toLowerCase().includes(courseSearchTerm.toLowerCase()))
-                                )
-                                .map(course => (
-                                  <button
-                                    key={course.id}
-                                    onClick={() => {
-                                      setSelectedCourseId(String(course.id));
-                                      setCourseSearchTerm(`${course.courseCode} - ${course.courseName}`);
-                                    }}
-                                    className={`w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center justify-between group transition-all ${selectedCourseId === String(course.id) ? 'bg-blue-50' : ''}`}
-                                  >
-                                    <div>
-                                      <div className={`text-sm font-bold ${selectedCourseId === String(course.id) ? 'text-blue-700' : 'text-gray-900'} group-hover:text-blue-700`}>{course.courseCode}</div>
-                                      <div className="text-xs text-gray-500">{course.courseName}</div>
-                                    </div>
-                                    {selectedCourseId === String(course.id) && (
-                                      <Check className="w-4 h-4 text-blue-600" />
-                                    )}
-                                  </button>
-                                ))
-                              }
-                              {allCourses.filter(ac => 
-                                  !viewingUser.courses?.some(vc => vc.id === String(ac.id)) &&
-                                  (ac.courseCode.toLowerCase().includes(courseSearchTerm.toLowerCase()) || 
-                                   ac.courseName.toLowerCase().includes(courseSearchTerm.toLowerCase()))
-                              ).length === 0 && (
-                                <div className="p-8 text-center">
-                                  <div className="text-sm font-bold text-gray-900 mb-1">No matches found</div>
-                                  <div className="text-xs text-gray-500">Try a different name or code.</div>
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <div className="p-8 text-center flex flex-col items-center gap-3">
-                              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-                              <div className="text-xs font-medium text-gray-500">Fetching available courses...</div>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 mt-1">
-                          <button 
-                            onClick={handleAssignCourse}
-                            disabled={!selectedCourseId || isOperationLoading}
-                            className="flex-1 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
-                          >
-                            {isOperationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                            Confirm
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setIsAssigningCourse(false);
-                              setSelectedCourseId("");
-                              setCourseSearchTerm("");
-                            }}
-                            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold rounded-xl transition-all"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
-                    {viewingUser.courses && viewingUser.courses.filter(c => c.isArchived === showArchivedCourses).length > 0 ? (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {viewingUser.courses
-                          .filter(c => c.isArchived === showArchivedCourses)
-                          .map((course, idx) => (
-                          <div key={idx} className={`group relative bg-white rounded-3xl border overflow-hidden hover:shadow-2xl transition-all duration-500 ${course.isArchived ? 'border-amber-100 grayscale-[0.3]' : 'border-gray-100'}`}>
-                            {/* Card Header with Image */}
-                            <div className="h-32 relative">
-                              <div className={`absolute inset-0 z-10 ${course.isArchived ? 'bg-gradient-to-t from-amber-900/80 via-transparent to-transparent' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent'}`} />
-                              <NextImage
-                                src={
-                                  course.coverImage ||
-                                  getCourseImage(course.courseName, course.id)
-                                }
-                                alt={course.courseName}
-                                fill
-                                unoptimized
-                                className="absolute inset-0 object-cover group-hover:scale-110 transition-transform duration-700"
-                              />
-                              <div className="absolute inset-0 z-20 p-5 flex flex-col justify-between">
-                                <div className="flex justify-between items-start">
-                                  <span className={`px-3 py-1 backdrop-blur-md rounded-full text-[10px] font-bold text-white border ${course.isArchived ? 'bg-amber-500/30 border-amber-400/50' : 'bg-white/20 border-white/30'}`}>
-                                    {course.courseCode} • {course.semester} {course.isArchived && "• ARCHIVED"}
-                                  </span>
-                                  <button 
-                                    onClick={() => handleUnassignCourse(course.id)}
-                                    className="p-2 bg-red-500/20 hover:bg-red-500 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-all duration-300"
-                                    title="Unassign Professor"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                  {isAssigningCourse && (
+                    <div className="bg-gray-50/50 border border-gray-100 rounded-3xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                      <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input 
+                          type="text"
+                          placeholder="Search courses by code or name..."
+                          value={courseSearchTerm}
+                          onChange={(e) => setCourseSearchTerm(e.target.value)}
+                          className="w-full pl-11 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar p-1">
+                        {allCourses
+                          .filter(ac => 
+                            !viewingUser.courses?.some(vc => vc.id === String(ac.id)) &&
+                            (ac.courseCode.toLowerCase().includes(courseSearchTerm.toLowerCase()) || 
+                             ac.courseName.toLowerCase().includes(courseSearchTerm.toLowerCase()))
+                          )
+                          .map(course => (
+                            <button
+                              key={course.id}
+                              onClick={() => setSelectedCourseId(String(course.id))}
+                              className={`p-4 rounded-2xl border text-left transition-all flex items-center justify-between group ${
+                                selectedCourseId === String(course.id) 
+                                ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                                : 'bg-white border-gray-100 hover:border-blue-300'
+                              }`}
+                            >
+                              <div className="min-w-0">
+                                <div className={`text-xs font-black uppercase tracking-wider mb-0.5 ${selectedCourseId === String(course.id) ? 'text-blue-100' : 'text-blue-600'}`}>
+                                  {course.courseCode}
                                 </div>
-                                <h5 className="text-lg font-bold text-white line-clamp-1 truncate">
+                                <div className={`text-sm font-bold truncate ${selectedCourseId === String(course.id) ? 'text-white' : 'text-gray-900'}`}>
                                   {course.courseName}
-                                </h5>
-                              </div>
-                            </div>
-                            
-                            {/* Card Body */}
-                            <div className="p-5 space-y-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
-                                  <Users className="w-4 h-4" />
-                                  <span>Enrolled Students</span>
                                 </div>
-                                <span className="text-sm font-bold text-gray-900">
-                                  {course.studentCount} / {course.capacity}
-                                </span>
                               </div>
-                              
-                              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                <div 
-                                  className={`h-full rounded-full transition-all duration-700 ${course.isArchived ? 'bg-amber-500' : 'bg-blue-500'}`}
-                                  style={{ width: `${Math.min((course.studentCount / course.capacity) * 100, 100)}%` }}
-                                />
-                              </div>
-
-                              {course.scheduleTime && (
-                                <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-2xl">
-                                  <Clock className="w-4 h-4 text-blue-500" />
-                                  <span className="font-semibold">{course.scheduleTime}</span>
-                                </div>
+                              {selectedCourseId === String(course.id) ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                <Plus className="w-4 h-4 text-gray-300 group-hover:text-blue-500" />
                               )}
+                            </button>
+                          ))
+                        }
+                      </div>
+
+                      {selectedCourseId && (
+                        <div className="flex items-center justify-end pt-4 border-t border-gray-100 gap-3">
+                          <span className="text-xs text-gray-500 font-medium">Ready to assign?</span>
+                          <button
+                            onClick={handleAssignCourse}
+                            disabled={isOperationLoading}
+                            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-green-500/20 flex items-center gap-2 disabled:opacity-50"
+                          >
+                            {isOperationLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                            Confirm Assignment
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {viewingUser.courses && viewingUser.courses.length > 0 ? (
+                      viewingUser.courses
+                        .filter(c => c.isArchived === showArchivedCourses)
+                        .map((course) => (
+                        <div key={course.id} className="group bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-50 to-indigo-50/20 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-lg uppercase tracking-wider">
+                              {course.courseCode}
+                            </span>
+                            <button
+                              onClick={() => handleUnassignCourse(course.id)}
+                              className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                            >
+                              <ShieldOff className="w-4 h-4" />
+                            </button>
+                          </div>
+                          
+                          <h5 className="font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors leading-tight">
+                            {course.courseName}
+                          </h5>
+
+                          <div className="mt-auto space-y-3 pt-4 border-t border-gray-100/50">
+                            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-gray-400">
+                              <span>Availability</span>
+                              <span className="text-gray-900">{course.studentCount} / {course.capacity}</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-indigo-500 rounded-full transition-all duration-1000"
+                                style={{ width: `${(course.studentCount / course.capacity) * 100}%` }}
+                              />
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-gray-50/50 rounded-[40px] border border-dashed border-gray-200">
-                        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-sm mb-6">
-                          <BookOpen className="w-10 h-10 text-gray-300" />
                         </div>
-                        <h4 className="text-xl font-bold text-gray-900 mb-2">No {showArchivedCourses ? 'Archived' : 'Active'} Courses</h4>
-                        <p className="text-gray-500 max-w-xs">
-                          {showArchivedCourses 
-                            ? "This professor doesn't have any archived curriculum records." 
-                            : "This professor isn't assigned to any active courses yet."}
-                        </p>
+                      ))
+                    ) : (
+                      <div className="col-span-full py-12 text-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 border border-gray-100 text-gray-300">
+                          <BookOpen className="w-8 h-8" />
+                        </div>
+                        <h4 className="font-bold text-gray-900 mb-1">No courses assigned</h4>
+                        <p className="text-sm text-gray-500">This professor currently has no teaching duties.</p>
                       </div>
                     )}
                   </div>
-                </>
+                </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center bg-gray-50 rounded-[40px] border border-gray-100">
-                   <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center shadow-xl shadow-indigo-500/5 mb-8">
+                <div className="h-full flex flex-col items-center justify-center text-center bg-gray-50/50 rounded-[40px] border border-gray-100 p-12">
+                   <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center shadow-xl shadow-indigo-500/5 mb-8 border border-gray-100/50">
                     <Shield className="w-12 h-12 text-indigo-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">System Administrator</h3>
-                  <p className="text-gray-500 max-w-sm">Detailed academic management is restricted to Student and Professor roles.</p>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">System Administrator</h3>
+                  <p className="text-gray-500 max-w-sm font-medium">Detailed academic management is restricted to Student and Professor roles.</p>
                 </div>
               )}
             </div>
@@ -923,106 +848,110 @@ export default function UserManagementDashboard() {
       )}
 
       {/* Filter Area */}
-      <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 items-center bg-white">
-        <div className="relative w-full md:w-96">
-          <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row gap-6 items-center bg-white/50">
+        <div className="relative w-full md:w-96 group">
+          <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-500 transition-colors" />
           <input
             type="text"
             placeholder="Search by name, ID, or department..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-100 bg-white/50 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-sm font-medium shadow-sm"
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="relative group">
+            <Filter className="w-3.5 h-3.5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
-              className="appearance-none pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm bg-gray-50 font-medium text-gray-700 cursor-pointer min-w-[140px]"
+              className="appearance-none pl-11 pr-11 py-3 rounded-2xl border border-gray-100 bg-white/50 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-[10px] font-black uppercase tracking-widest text-gray-700 cursor-pointer min-w-[160px] shadow-sm"
             >
               <option>All Roles</option>
               <option>Student</option>
               <option>Professor</option>
               <option>Admin</option>
             </select>
-            <Filter className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none group-hover:translate-y-[-40%] transition-transform" />
           </div>
         </div>
       </div>
 
       {/* Table Area */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-separate border-spacing-0">
           <thead>
-            <tr className="bg-gray-50/80 border-b border-gray-100">
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                User
+            <tr className="bg-gray-50/50">
+              <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 first:pl-10">
+                Identity
               </th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Role & Dept
+              <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                Role & Division
               </th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Status
+              <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                Security Status
               </th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Last Active
+              <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                Last Activity
               </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Actions
+              <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 pr-10">
+                Operations
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100/50 bg-white/30">
             {users.map((user) => (
               <tr
                 key={user.id}
-                className="hover:bg-gray-50/50 transition-colors group"
+                className="hover:bg-blue-50/30 transition-all group/row"
               >
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 font-bold shrink-0">
+                <td className="px-8 py-5 first:pl-10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/10 shrink-0 group-hover/row:scale-110 transition-transform duration-300">
                       {user.firstName?.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-bold text-gray-900 group-hover/row:text-blue-600 transition-colors">
                         {user.firstName} {user.lastName}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-0.5">
                         ID: {user.universityId}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">
+                <td className="px-8 py-5">
+                  <div className="text-sm text-gray-900 font-bold">
                     {user.role}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-[11px] font-medium text-gray-500 mt-0.5">
                     {user.department || user.major}
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-8 py-5">
                   <span
                     onClick={() => handleToggleStatus(user.id, user.isActive)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border cursor-pointer hover:shadow-sm transition-all ${user.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border cursor-pointer hover:shadow-md transition-all active:scale-95 ${
+                      user.isActive 
+                      ? "bg-green-50 text-green-700 border-green-100 shadow-sm shadow-green-500/5" 
+                      : "bg-red-50 text-red-700 border-red-100 shadow-sm shadow-red-500/5"
+                    }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${user.isActive ? "bg-green-500" : "bg-red-500"}`}
+                      className={`w-1.5 h-1.5 rounded-full ${user.isActive ? "bg-green-500 animate-pulse" : "bg-red-500"}`}
                     ></span>
                     {user.isActive ? "Active" : "Suspended"}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                <td className="px-8 py-5 text-xs font-bold text-gray-500">
                   {user.lastActive || "N/A"}
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <td className="px-8 py-5 text-right pr-10">
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0">
                     <button
                       onClick={() => handleToggleStatus(user.id, user.isActive)}
-                      className={`p-1.5 rounded-lg transition-colors ${user.isActive ? "text-gray-400 hover:text-red-600 hover:bg-red-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
+                      className={`p-2 rounded-xl transition-all ${user.isActive ? "text-gray-400 hover:text-red-600 hover:bg-red-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
                       title={user.isActive ? "Suspend User" : "Activate User"}
                     >
                       {user.isActive ? (
@@ -1037,7 +966,7 @@ export default function UserManagementDashboard() {
                         setEditPassword("");
                         setIsEditModalOpen(true);
                       }}
-                      className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                      className="p-2 text-gray-400 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all px-3"
                       title="Edit User"
                     >
                       <Edit className="w-4 h-4" />
@@ -1047,17 +976,21 @@ export default function UserManagementDashboard() {
                         setViewingUser(user);
                         setIsInfoModalOpen(true);
                       }}
-                      className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
+                      className="p-2 text-gray-400 hover:text-indigo-600 rounded-xl hover:bg-indigo-50 transition-all px-4"
                       title="View Details"
                     >
-                      <div className="w-4 h-4 flex items-center justify-center font-bold font-serif text-sm border border-current rounded-full leading-none shrink-0" style={{ paddingBottom: "1px" }}>i</div>
+                      <div className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                        <div className="w-4 h-4 flex items-center justify-center border-2 border-current rounded-lg text-[8px] leading-none pt-0.5">i</div>
+                        <span>Profile</span>
+                      </div>
                     </button>
+                    <div className="h-4 w-px bg-gray-100 mx-1"></div>
                     <button
                       onClick={() => handleDeleteUser(user.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                      className="p-2 text-gray-400 hover:text-red-600 rounded-xl hover:bg-red-100 transition-all"
                       title="Delete User"
                     >
-                      <MoreVertical className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
@@ -1074,37 +1007,64 @@ export default function UserManagementDashboard() {
       </div>
 
       {/* Pagination */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-sm text-gray-600">
-        <div>
-          Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
-          {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-          {pagination.total} users
+      <div className="p-6 border-t border-gray-100 bg-white/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-100/50 px-4 py-2 rounded-full border border-gray-100">
+          Showing <span className="text-gray-900">{(pagination.page - 1) * pagination.limit + 1}</span> to{" "}
+          <span className="text-gray-900">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{" "}
+          <span className="text-blue-600">{pagination.total}</span> entries
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5 bg-gray-100/30 p-1.5 rounded-2xl border border-gray-100">
           <button
             onClick={() => handlePageChange(pagination.page - 1)}
             disabled={pagination.page === 1}
-            className={`px-3 py-1 border border-gray-200 rounded-md transition-all ${pagination.page === 1 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 text-gray-700"}`}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              pagination.page === 1 
+              ? "text-gray-300 cursor-not-allowed" 
+              : "bg-white text-gray-600 hover:bg-white hover:text-blue-600 shadow-sm border border-gray-100"
+            }`}
           >
             Prev
           </button>
-          {[...Array(pagination.totalPages)].map((_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 border rounded-md transition-all ${pagination.page === i + 1 ? "bg-blue-50 text-blue-600 font-medium border-blue-200" : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"}`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          <div className="hidden sm:flex items-center gap-1">
+            {[...Array(pagination.totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-9 h-9 rounded-xl text-[10px] font-black transition-all ${
+                  pagination.page === i + 1 
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+                  : "hover:bg-white text-gray-400 border border-transparent hover:border-gray-100 hover:text-gray-600"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => handlePageChange(pagination.page + 1)}
             disabled={pagination.page === pagination.totalPages}
-            className={`px-3 py-1 border border-gray-200 rounded-md transition-all ${pagination.page === pagination.totalPages ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 text-gray-700"}`}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              pagination.page === pagination.totalPages 
+              ? "text-gray-300 cursor-not-allowed" 
+              : "bg-white text-gray-600 hover:bg-white hover:text-blue-600 shadow-sm border border-gray-100"
+            }`}
           >
             Next
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoChip({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="text-[8px] uppercase font-black text-gray-400 mb-1.5 tracking-widest leading-none">
+        {label}
+      </div>
+      <div className="text-sm font-bold text-gray-900 leading-tight truncate">
+        {value}
       </div>
     </div>
   );

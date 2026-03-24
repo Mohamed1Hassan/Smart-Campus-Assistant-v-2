@@ -338,6 +338,9 @@ export default function ProfessorChatbot() {
 
       const data = resp?.data;
       if (data && data.redirect) {
+        // Manually set client-side cookie and localStorage as a robust fallback
+        document.cookie = "isAdminUnlocked=true; path=/; max-age=3600; SameSite=Lax";
+        localStorage.setItem("isAdminUnlocked", "true");
         router.push(data.redirect);
         return;
       }

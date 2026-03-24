@@ -155,31 +155,31 @@ export default function AdminStudentPreview() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+        whileHover={{ y: -5 }}
         onClick={() => onEdit(course)}
-        className="group bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/20 transition-all duration-300 cursor-pointer"
+        className="group bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white/60 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 cursor-pointer"
       >
         {/* Card Header */}
-        <div className="h-44 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+        <div className="h-52 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent z-10" />
           {!imgError ? (
             <NextImage
               src={coverImg}
               alt={course.courseName}
               width={400}
-              height={176}
+              height={208}
               onError={() => setImgError(true)}
-              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-              unoptimized={true} // For external image URLs
+              className="w-full h-full object-cover transform scale-105 group-hover:scale-100 transition-transform duration-1000"
+              unoptimized={true}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <ImageIcon className="w-8 h-8 text-white/40" />
+            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+              <ImageIcon className="w-12 h-12 text-white/20" />
             </div>
           )}
-          <div className="absolute inset-0 z-20 p-5 flex flex-col justify-between text-left">
+          <div className="absolute inset-0 z-20 p-8 flex flex-col justify-between text-left">
             <div className="flex justify-between items-start">
-              <span className="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-xs font-bold text-white border border-white/30 shadow-sm">
+              <span className="px-4 py-1.5 bg-blue-600/90 backdrop-blur-md rounded-xl text-[10px] font-black text-white uppercase tracking-widest border border-white/20">
                 {course.courseCode}
               </span>
               <button
@@ -187,47 +187,45 @@ export default function AdminStudentPreview() {
                   e.stopPropagation();
                   onEdit(course);
                 }}
-                className="p-2 bg-white/20 backdrop-blur-md rounded-lg text-white border border-white/30 hover:bg-white/40 transition-colors"
+                className="p-3 bg-white/20 backdrop-blur-md rounded-2xl text-white border border-white/20 hover:bg-blue-600 transition-all group/edit"
               >
-                <Edit2 className="w-4 h-4" />
+                <Edit2 className="w-4 h-4 group-hover/edit:scale-110 transition-transform" />
               </button>
             </div>
-            <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors">
-              {course.courseName}
-            </h3>
+            <div>
+              <h3 className="text-xl font-black text-white line-clamp-2 leading-tight tracking-tight drop-shadow-lg group-hover:text-blue-200 transition-colors">
+                {course.courseName}
+              </h3>
+            </div>
           </div>
         </div>
 
         {/* Card Content */}
-        <div className="p-5">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                <Users className="w-4 h-4" />
-                <span className="text-xs">Professor</span>
-              </div>
-              <span className="font-medium text-gray-900 dark:text-white text-xs">
-                {getProfessorDisplay(course)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span className="text-xs">Major & Level</span>
-              </div>
-              <span className="font-medium text-gray-900 dark:text-white text-xs">
-                {course.major} • Level {course.level}
-              </span>
-            </div>
+        <div className="p-8 space-y-5">
+           <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Faculty Lead
+            </span>
+            <span className="text-sm font-bold text-gray-900">
+              {getProfessorDisplay(course)}
+            </span>
           </div>
 
-          <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center justify-between text-indigo-600 dark:text-indigo-400 font-medium text-sm group-hover:text-indigo-700 dark:group-hover:text-indigo-300">
-            <span className="flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5" />
-              View Details
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Domain & Iteration
             </span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span className="text-sm font-bold text-blue-600">
+              {course.major} • L{course.level}
+            </span>
+          </div>
+
+          <div className="pt-5 border-t border-gray-50 flex items-center justify-between text-blue-600 font-black text-[10px] uppercase tracking-widest group-hover:text-blue-700 transition-colors">
+            <span className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Manifesto Details
+            </span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
           </div>
         </div>
       </motion.div>
@@ -384,41 +382,41 @@ export default function AdminStudentPreview() {
   return (
     <div className="space-y-6">
       {/* Header & Main Filters */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-            <Users className="w-6 h-6 text-indigo-600" />
+      {/* Header & Main Filters */}
+      <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 flex flex-col xl:flex-row justify-between items-center gap-10">
+        <div className="flex items-center gap-8">
+          <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-blue-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+            <Users className="w-10 h-10" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Student Portal Preview
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">
+              Student <span className="text-blue-600">Portal</span> Preview
             </h2>
-            <p className="text-sm text-gray-500">
-              View what students see based on criteria
+            <p className="text-sm text-gray-500 font-medium mt-1">
+              Validating ecosystem accessibility and visual integrity.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex items-center gap-3 bg-gray-50/50 p-2 rounded-[2rem] border border-gray-100/50">
             <select
               value={selectedMajor}
               onChange={(e) => setSelectedMajor(e.target.value)}
-              className="bg-transparent border-none focus:ring-0 text-sm font-semibold text-gray-700 px-3 cursor-pointer"
+              className="bg-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-700 shadow-sm border border-gray-100/50 outline-none cursor-pointer hover:bg-white/80 transition-all appearance-none text-center min-w-[120px]"
             >
               {majors.map((m) => (
                 <option key={m} value={m}>
-                  {m}
+                  {m} Domain
                 </option>
               ))}
             </select>
-            <div className="w-px h-4 bg-gray-200"></div>
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(parseInt(e.target.value))}
-              className="bg-transparent border-none focus:ring-0 text-sm font-semibold text-gray-700 px-3 cursor-pointer"
+              className="bg-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-sm border border-gray-100/50 outline-none cursor-pointer hover:bg-white/80 transition-all appearance-none text-center min-w-[120px]"
             >
-              {[1, 2, 3, 4].map((l) => (
+              {[1, 2, 3, 4, 5].map((l) => (
                 <option key={l} value={l}>
                   Level {l}
                 </option>
@@ -426,20 +424,20 @@ export default function AdminStudentPreview() {
             </select>
           </div>
 
-          <div className="flex bg-gray-100 p-1 rounded-xl">
+          <div className="flex items-center gap-2 bg-gray-50/50 p-2 rounded-[2rem] border border-gray-100/50">
             <button
               onClick={() => setViewMode("courses")}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === "courses" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "courses" ? "bg-white text-blue-600 shadow-xl shadow-blue-500/10 border border-gray-100 scale-105" : "text-gray-400 hover:text-gray-900"}`}
             >
               <BookOpen className="w-4 h-4" />
-              Courses
+              Inventory
             </button>
             <button
               onClick={() => setViewMode("schedule")}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === "schedule" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "schedule" ? "bg-white text-blue-600 shadow-xl shadow-blue-500/10 border border-gray-100 scale-105" : "text-gray-400 hover:text-gray-900"}`}
             >
               <Calendar className="w-4 h-4" />
-              Schedule
+              Timeline
             </button>
           </div>
         </div>
@@ -482,45 +480,33 @@ export default function AdminStudentPreview() {
         <div className="space-y-4">
           {/* Schedule Filters */}
           <div className="flex flex-col gap-4">
-            <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-hide">
-              {[
-                "Saturday",
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-              ].map((day) => (
+            <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide py-2">
+              {["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
                 <button
                   key={day}
-                  onClick={() =>
-                    setScheduleFilters({ ...scheduleFilters, day })
-                  }
-                  className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${scheduleFilters.day === day ? "bg-indigo-600 text-white shadow-md" : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"}`}
+                  onClick={() => setScheduleFilters({ ...scheduleFilters, day })}
+                  className={`flex-shrink-0 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === day ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
                 >
                   {day}
                 </button>
               ))}
               <button
-                onClick={() =>
-                  setScheduleFilters({ ...scheduleFilters, day: "Days" })
-                }
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${scheduleFilters.day === "Days" ? "bg-indigo-600 text-white shadow-md" : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"}`}
+                onClick={() => setScheduleFilters({ ...scheduleFilters, day: "Days" })}
+                className={`flex-shrink-0 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === "Days" ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
               >
-                All Days
+                Entire Timeline
               </button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-6">
+              <div className="relative flex-1 group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search schedule..."
+                  placeholder="Intercept specific curriculum entries..."
                   value={scheduleSearch}
                   onChange={(e) => setScheduleSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-white border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                  className="w-full pl-16 pr-8 py-5 bg-white border border-gray-100 rounded-[1.5rem] focus:ring-[6px] focus:ring-blue-500/5 focus:border-blue-500/50 outline-none transition-all text-sm font-bold text-gray-900 shadow-sm"
                 />
               </div>
               <select
@@ -531,9 +517,9 @@ export default function AdminStudentPreview() {
                     status: e.target.value,
                   })
                 }
-                className="bg-white border border-gray-100 rounded-xl px-4 py-2 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-indigo-500/20 outline-none cursor-pointer"
+                className="bg-white border border-gray-100 rounded-[1.5rem] px-10 py-5 text-[10px] font-black uppercase tracking-widest text-gray-600 focus:ring-[6px] focus:ring-blue-500/5 outline-none cursor-pointer hover:bg-gray-50 transition-all appearance-none shadow-sm"
               >
-                <option>Status</option>
+                <option>Filter Status</option>
                 <option>Upcoming</option>
                 <option>Ongoing</option>
                 <option>Completed</option>

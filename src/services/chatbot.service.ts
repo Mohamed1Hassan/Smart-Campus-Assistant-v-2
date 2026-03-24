@@ -52,7 +52,7 @@ export class ChatbotService {
       const context = await this.buildContext(userId, session, request);
 
       // Check for secret admin command
-      if (request.message.trim() === "/sudo_admin_access") {
+      if (request.message.trim() === "AdminPassword@tiba99") {
         const user = await this.prisma.user.findUnique({
           where: { id: userId },
           select: { role: true },

@@ -175,6 +175,8 @@ export default function UnifiedNavbar({
         ? "Admin Dashboard"
         : "Professor Dashboard";
 
+  if (pathname === "/dashboard/admin") return null;
+
   return (
     <>
       <motion.nav

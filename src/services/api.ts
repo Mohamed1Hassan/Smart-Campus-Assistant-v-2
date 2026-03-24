@@ -576,6 +576,19 @@ class ApiClient {
       });
     }
 
+    // Handle Axios CanceledError (AbortController or axios.CancelToken)
+    const isCanceled =
+      err.code === "ERR_CANCELED" ||
+      (error as any)?.name === "CanceledError" ||
+      (error as any)?.name === "AbortError" ||
+      (axios as any).isCancel?.(error);
+
+    if (isCanceled) {
+      apiError.code = "ABORT_ERROR";
+      apiError.message = "Request was cancelled";
+      return apiError;
+    }
+
     if (err.response) {
       // Server responded with error status
       const response = err.response.data as Record<string, unknown>;

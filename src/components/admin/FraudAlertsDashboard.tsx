@@ -122,75 +122,77 @@ export default function FraudAlertsDashboard() {
   return (
     <div className="space-y-6">
       {/* Header / Stats Summary */}
-      <div className="bg-gradient-to-br from-red-50 to-orange-50/30 border border-red-100 rounded-2xl p-6 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-red-100 rounded-xl text-red-600">
-            <ShieldAlert className="w-8 h-8" />
+      {/* Header / Stats Summary */}
+      <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 flex flex-col xl:flex-row justify-between items-center gap-10">
+        <div className="flex items-center gap-8">
+          <div className="w-20 h-20 bg-red-600 rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-red-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+            <ShieldAlert className="w-10 h-10" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
-              Security & Fraud Investigation
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">
+              Security <span className="text-red-600">Guard</span>
             </h2>
-            <p className="text-red-700/80 mt-1 text-sm max-w-md">
-              Monitor suspicious attendance activities detected by the AI
-              Assistant and resolved potential breaches.
+            <p className="text-sm text-gray-500 font-medium mt-1 max-w-md">
+              Monitoring high-frequency attendance anomalies and potential ecosystem breaches.
             </p>
           </div>
         </div>
-        <div className="flex gap-4">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-red-100 shadow-sm flex flex-col items-center min-w-[120px] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-1 opacity-10">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
+
+        <div className="flex gap-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-[2rem] p-6 border border-gray-100 shadow-sm flex flex-col items-center min-w-[140px] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-1 opacity-5">
+              <AlertTriangle className="w-12 h-12 text-red-600" />
             </div>
-            <span className="text-3xl font-black text-red-600">
+            <span className="text-4xl font-black text-red-600">
               {summary.highRiskCount}
             </span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
-              High Risk
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">
+              Critical
             </span>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-amber-100 shadow-sm flex flex-col items-center min-w-[120px] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-1 opacity-10">
-              <Clock className="w-8 h-8 text-amber-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-[2rem] p-6 border border-gray-100 shadow-sm flex flex-col items-center min-w-[140px] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-1 opacity-5">
+              <Clock className="w-12 h-12 text-amber-600" />
             </div>
-            <span className="text-3xl font-black text-amber-600">
+            <span className="text-4xl font-black text-amber-600">
               {summary.pendingReviewCount}
             </span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
-              Pending Review
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">
+              Queue
             </span>
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96 group">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+        <div className="relative w-full md:w-[28rem] group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-red-500 transition-colors" />
           <input
             type="text"
-            placeholder="Search by student, ID, or description..."
+            placeholder="Intercept specific identifiers or anomalies..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
+            className="w-full pl-16 pr-8 py-5 bg-white border border-gray-100 rounded-[1.5rem] focus:ring-[6px] focus:ring-red-500/5 focus:border-red-500/50 outline-none transition-all font-bold text-gray-900 shadow-sm"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-3 px-10 py-5 text-[10px] font-black uppercase tracking-widest text-gray-600 bg-white border border-gray-100 rounded-[1.5rem] hover:bg-gray-50 transition-all shadow-sm">
             <Filter className="w-4 h-4" />
-            Advanced Filter
+            Intelligence Matrix
           </button>
         </div>
       </div>
 
       {/* Alerts List */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden min-h-[400px]">
-        <div className="divide-y divide-gray-100">
+      <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden min-h-[500px]">
+        <div className="divide-y divide-gray-50">
           {loading ? (
-            <div className="h-96 flex flex-col items-center justify-center gap-4">
-              <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-              <p className="text-gray-500 font-medium animate-pulse">
-                Analyzing security data...
+            <div className="h-[500px] flex flex-col items-center justify-center gap-6">
+              <Loader2 className="w-12 h-12 text-red-600 animate-spin" />
+              <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">
+                Forensic Analysis Phase
               </p>
             </div>
           ) : alerts.length > 0 ? (
@@ -198,11 +200,11 @@ export default function FraudAlertsDashboard() {
               {alerts.map((alert) => (
                 <motion.div
                   layout
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   key={alert.id}
-                  className={`p-6 hover:bg-gray-50/50 transition-all group relative overflow-hidden ${alert.isResolved ? "opacity-60" : ""}`}
+                  className={`p-10 hover:bg-gray-50/50 transition-all group relative overflow-hidden ${alert.isResolved ? "opacity-50" : ""}`}
                 >
                   <div className="flex flex-col lg:flex-row gap-6 items-start">
                     {/* Severity Pillar */}

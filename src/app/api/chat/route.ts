@@ -97,13 +97,28 @@ export async function POST(req: NextRequest) {
           parsedUserId,
         );
 
-        return NextResponse.json({
+        const responseData: any = {
           success: true,
           reply: response.message.content,
           suggestions: response.suggestions,
           session: response.session,
           redirect: response.message.metadata?.redirect,
-        });
+        };
+
+        const nextResp = NextResponse.json(responseData);
+
+        // If this message triggers an admin redirect, set the unlock cookie
+        if (response.message.metadata?.redirect === "/dashboard/admin") {
+          nextResp.cookies.set("isAdminUnlocked", "true", {
+            httpOnly: false, // Accessible by client to check
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: 3600, // 1 hour
+          });
+        }
+
+        return nextResp;
       }
     }
 
