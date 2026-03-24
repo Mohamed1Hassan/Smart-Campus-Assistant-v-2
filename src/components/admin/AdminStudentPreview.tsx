@@ -307,7 +307,32 @@ export default function AdminStudentPreview() {
         // Map schedules to match ScheduleTable expectations
         const mappedSchedules = (schedulesRes.data || []).map(
           (item: RawSchedule) => {
-            const status: "upcoming" | "ongoing" | "completed" = "upcoming"; // Default
+            // Calculate dynamic status
+            const now = new Date();
+            const currentDay = now.getDay(); // 0 = Sunday, ..., 6 = Saturday
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            const [startH, startM] = (item.startTime || "00:00").split(":").map(Number);
+            const [endH, endM] = (item.endTime || "00:00").split(":").map(Number);
+            const startTotalMinutes = startH * 60 + startM;
+            const endTotalMinutes = endH * 60 + endM;
+
+            let status: "upcoming" | "ongoing" | "completed" = "upcoming";
+            if (currentDay > item.dayOfWeek) {
+              status = "completed";
+            } else if (currentDay < item.dayOfWeek) {
+              status = "upcoming";
+            } else {
+              // Same day
+              if (currentMinutes > endTotalMinutes) {
+                status = "completed";
+              } else if (currentMinutes >= startTotalMinutes && currentMinutes <= endTotalMinutes) {
+                status = "ongoing";
+              } else {
+                status = "upcoming";
+              }
+            }
+
             // Calculate duration manually to ensure consistency with student view
             const startStr = item.startTime || "00:00";
             const endStr = item.endTime || "00:00";
