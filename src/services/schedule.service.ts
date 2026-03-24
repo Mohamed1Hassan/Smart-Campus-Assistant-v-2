@@ -9,6 +9,7 @@ export interface CreateScheduleData {
   startTime: string; // Format: "HH:MM"
   endTime: string; // Format: "HH:MM"
   room?: string;
+  type?: string;
   semester?: string;
 }
 
@@ -18,6 +19,7 @@ export interface UpdateScheduleData {
   startTime?: string;
   endTime?: string;
   room?: string;
+  type?: string;
   semester?: string;
   isActive?: boolean;
 }
@@ -35,6 +37,7 @@ export interface FormattedSchedule {
   startTime: string;
   endTime: string;
   room?: string | null;
+  type?: string | null;
   semester: string;
   isActive: boolean;
   professorId: number;
@@ -166,6 +169,7 @@ export class ScheduleService {
         startTime: data.startTime,
         endTime: data.endTime,
         room: data.room,
+        type: data.type,
         semester: data.semester || "Fall 2024",
         isActive: true,
       },
@@ -472,6 +476,7 @@ export class ScheduleService {
         ? data.dayOfWeek
         : existingSchedule.dayOfWeek;
     const room = data.room !== undefined ? data.room : existingSchedule.room;
+    const type = data.type !== undefined ? data.type : existingSchedule.type;
     const professorId =
       data.professorId !== undefined
         ? data.professorId
@@ -498,7 +503,10 @@ export class ScheduleService {
 
     const updatedSchedule = await prisma.schedule.update({
       where: { id: scheduleId },
-      data,
+      data: {
+        ...data,
+        type: type,
+      },
       include: {
         course: {
           select: {

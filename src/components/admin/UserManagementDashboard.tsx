@@ -2,14 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
-  MoreVertical,
   ShieldOff,
   CheckCircle2,
   ChevronDown,
   Loader2,
   Edit,
-  Users,
-  Clock,
   Plus,
   Trash2,
   X,
@@ -19,8 +16,6 @@ import {
   Archive,
 } from "lucide-react";
 import { apiClient } from "@/services/api";
-import NextImage from "next/image";
-import { getCourseImage } from "@/utils/courseImages";
 
 interface User {
   id: string;

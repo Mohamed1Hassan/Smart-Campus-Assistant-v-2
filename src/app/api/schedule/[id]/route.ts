@@ -71,8 +71,9 @@ export async function PUT(
       );
     }
 
+    const role = payload.role?.toLowerCase() || "";
     if (
-      payload.role !== "admin" &&
+      role !== "admin" &&
       schedule.professorId !== parseInt(payload.userId)
     ) {
       return NextResponse.json(
@@ -146,8 +147,9 @@ export async function DELETE(
       );
     }
 
+    const role = payload.role?.toLowerCase() || "";
     if (
-      payload.role !== "admin" &&
+      role !== "admin" &&
       schedule.professorId !== parseInt(payload.userId)
     ) {
       return NextResponse.json(

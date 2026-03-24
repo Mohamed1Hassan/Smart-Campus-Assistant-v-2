@@ -62,7 +62,8 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = JWTUtils.verifyAccessToken(token);
-    if (payload.role !== "professor" && payload.role !== "admin") {
+    const role = payload.role?.toLowerCase() || "";
+    if (role !== "professor" && role !== "admin") {
       return NextResponse.json(
         { success: false, message: "Insufficient permissions" },
         { status: 403 },

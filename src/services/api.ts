@@ -576,12 +576,12 @@ class ApiClient {
       });
     }
 
-    // Handle Axios CanceledError (AbortController or axios.CancelToken)
+    const errorWithPossibleName = error as { name?: string };
     const isCanceled =
       err.code === "ERR_CANCELED" ||
-      (error as any)?.name === "CanceledError" ||
-      (error as any)?.name === "AbortError" ||
-      (axios as any).isCancel?.(error);
+      errorWithPossibleName?.name === "CanceledError" ||
+      errorWithPossibleName?.name === "AbortError" ||
+      axios.isCancel(error);
 
     if (isCanceled) {
       apiError.code = "ABORT_ERROR";

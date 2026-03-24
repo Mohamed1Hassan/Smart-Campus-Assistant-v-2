@@ -142,14 +142,12 @@ export default function StudentAIAssistant() {
         } else {
           createAndSetInitialSession();
         }
-      } catch (_error) {
+      } catch {
         createAndSetInitialSession();
       }
     } else {
       createAndSetInitialSession();
     }
-    // We only want this to run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -191,7 +189,7 @@ export default function StudentAIAssistant() {
     }
   }, [activeSessionId]);
 
-  const addToast = (
+  const addToast = useCallback((
     message: string,
     type: "success" | "error" | "info" | "warning" = "info",
   ) => {
@@ -209,7 +207,7 @@ export default function StudentAIAssistant() {
         showInfo(message, { showProgress: true });
         break;
     }
-  };
+  }, [showSuccess, showError, showWarning, showInfo]);
 
   const detectLanguage = useCallback((text: string): "ar" | "en" => {
     const arabicRegex = /[\u0600-\u06FF]/;
@@ -331,7 +329,7 @@ export default function StudentAIAssistant() {
       } else {
         throw new Error(data?.error || "Failed to get AI response");
       }
-    } catch (error) {
+    } catch {
       const detectedLang = detectLanguage(text);
       const errorText = detectedLang === "ar"
         ? "عذراً، الخادم غير متاح حالياً. يرجى المحاولة لاحقاً."
@@ -380,7 +378,7 @@ export default function StudentAIAssistant() {
       });
       addToast("Message deleted", "success");
     }
-  }, [activeSessionId, debouncedSave, updateSessionMetadata]);
+  }, [activeSessionId, debouncedSave, updateSessionMetadata, addToast]);
 
   const retryLast = () => {
     const lastUser = [...messages].reverse().find((m) => m.sender === "student");

@@ -12,11 +12,9 @@ import {
   ShieldAlert,
   Users,
   LayoutDashboard,
-  LayoutGrid,
   Settings,
   BookOpen,
   UserCheck,
-  Monitor,
   ShieldCheck,
   LogOut,
 } from "lucide-react";
@@ -173,7 +171,7 @@ export default function AdminDashboard() {
                   key={tab.id}
                   active={activeTab === tab.id}
                   onClick={() =>
-                    setActiveTab(tab.id as any)
+                    setActiveTab(tab.id as typeof activeTab)
                   }
                   icon={tab.icon}
                   label={tab.label}

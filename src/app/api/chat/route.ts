@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
           parsedUserId,
         );
 
-        const responseData: any = {
+        const responseData = {
           success: true,
           reply: response.message.content,
           suggestions: response.suggestions,

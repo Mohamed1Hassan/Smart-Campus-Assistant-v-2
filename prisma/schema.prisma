@@ -149,6 +149,7 @@ model Schedule {
   startTime   String
   endTime     String
   room        String?
+  type        String?  // "Lecture" or "Section"
   semester    String   @default("Fall 2024")
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())

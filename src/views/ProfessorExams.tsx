@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -48,7 +48,7 @@ interface SecurityAlert {
   status: "OPEN" | "PENALIZED" | "DISMISSED";
 }
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: never[] = [];
 
 // --- Components ---
 
@@ -188,24 +188,25 @@ export default function ProfessorExams() {
   const [localAlerts, setLocalAlerts] = useState<SecurityAlert[]>([]);
 
   useEffect(() => {
-    if (!activeProctorExam) {
-      setLocalAlerts(EMPTY_ARRAY);
-      return;
-    }
+    if (!activeProctorExam || !realAlerts || realAlerts.length === 0) return;
 
-    if (realAlerts && realAlerts.length > 0) {
+    // Use a small timeout or requestAnimationFrame to defer the state update
+    // This avoids the "synchronous setState in effect" warning while keeping the synchronization logic
+    const updateLocalAlerts = () => {
       setLocalAlerts((prev: SecurityAlert[]) => {
-        // Only if we haven't loaded yet or if we have new ones
-        if (prev.length === 0) return realAlerts;
+        if (prev.length === 0) return realAlerts as unknown as SecurityAlert[];
 
-        // Otherwise, we merge uniquely by ID to avoid refreshing local state (Dismiss/Penalize)
         const prevIds = new Set(prev.map((a: SecurityAlert) => a.id));
-        const newAlerts = realAlerts.filter((a: SecurityAlert) => !prevIds.has(a.id));
+        const newAlerts = (realAlerts as unknown as SecurityAlert[]).filter((a: SecurityAlert) => !prevIds.has(a.id));
+        
         if (newAlerts.length === 0) return prev;
         return [...newAlerts, ...prev];
       });
-    }
-  }, [activeProctorExam, realAlerts]);
+    };
+
+    const frameId = requestAnimationFrame(updateLocalAlerts);
+    return () => cancelAnimationFrame(frameId);
+  }, [realAlerts, activeProctorExam]);
 
   // Socket listener for real-time alerts
   useEffect(() => {
@@ -295,6 +296,7 @@ export default function ProfessorExams() {
                     onClick={() => {
                       setSelectedCourse(course.id);
                       setActiveProctorExam(null);
+                      setLocalAlerts(EMPTY_ARRAY);
                     }}
                     className={`w-full p-4 rounded-2xl text-left transition-all border ${
                       selectedCourse === course.id
@@ -339,7 +341,10 @@ export default function ProfessorExams() {
                   </div>
                   <div className="pt-4 border-t border-red-200/50 dark:border-red-900/50">
                     <button
-                      onClick={() => setActiveProctorExam(null)}
+                      onClick={() => {
+                        setActiveProctorExam(null);
+                        setLocalAlerts(EMPTY_ARRAY);
+                      }}
                       className="w-full py-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                     >
                       End Proctoring Session

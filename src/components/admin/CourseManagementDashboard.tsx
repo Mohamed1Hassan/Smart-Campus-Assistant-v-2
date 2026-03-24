@@ -8,12 +8,10 @@ import {
   Edit2,
   Trash2,
   User,
-  Clock,
   ShieldOff,
   Loader2,
   LayoutGrid,
   List,
-  Users,
   ChevronRight,
   X,
   Image as ImageIcon,
@@ -265,7 +263,7 @@ export default function CourseManagementDashboard() {
           });
         }
       } catch (error: unknown) {
-        const err = error as any;
+        const err = error as { name?: string; code?: string; message?: string; error?: string };
         if (
           err?.name === "AbortError" ||
           err?.name === "CanceledError" ||
@@ -274,7 +272,7 @@ export default function CourseManagementDashboard() {
         ) {
           return;
         }
-        const errorMsg = err?.message || err?.error || JSON.stringify(error);
+        const errorMsg = err?.message || err?.error || String(error);
         console.error("Failed to fetch courses:", errorMsg);
       } finally {
         if (abortControllerRef.current === controller) {

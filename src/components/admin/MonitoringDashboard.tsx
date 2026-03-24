@@ -12,19 +12,17 @@ import {
   Cpu,
   HardDrive,
   MemoryStick,
-  Network,
   RefreshCw,
   Server,
   Users,
   Zap,
-  ChevronRight,
   Monitor,
   Database,
   Globe,
   Loader2,
   Clock,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { apiClient } from "@/services/api";
 
 interface SystemMetrics {
@@ -177,29 +175,6 @@ const MonitoringDashboard: React.FC = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
-  // Get log level color
-  const getLogLevelColor = (level: string): string => {
-    switch (level) {
-      case "ERROR":
-        return "text-red-600 bg-red-100";
-      case "WARN":
-        return "text-yellow-600 bg-yellow-100";
-      case "INFO":
-        return "text-blue-600 bg-blue-100";
-      case "DEBUG":
-        return "text-gray-600 bg-gray-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  // Get status color based on percenTage
-  const getStatusColor = (percenTage: number): string => {
-    if (percenTage >= 90) return "text-red-600";
-    if (percenTage >= 75) return "text-yellow-600";
-    return "text-green-600";
-  };
-
   return (
     <div className="min-h-full bg-transparent p-0 lg:p-4">
       <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -266,7 +241,7 @@ const MonitoringDashboard: React.FC = () => {
           ].map(({ id, label, icon: Icon, color }) => (
             <button
               key={id}
-              onClick={() => setSelectedTab(id as any)}
+              onClick={() => setSelectedTab(id as typeof selectedTab)}
               className={`flex items-center gap-2.5 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${
                 selectedTab === id
                   ? `bg-white text-${color}-600 shadow-lg shadow-black/5 scale-100 ring-1 ring-black/5`

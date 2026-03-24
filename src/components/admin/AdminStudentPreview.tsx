@@ -59,6 +59,7 @@ interface RawSchedule {
   startTime: string;
   endTime: string;
   duration: number;
+  type?: "Lecture" | "Section";
   room?: string;
   course: {
     courseName: string;
@@ -91,6 +92,7 @@ export default function AdminStudentPreview() {
   const [editingSchedule, setEditingSchedule] = useState<ScheduleClass | null>(
     null,
   );
+  const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [scheduleFilters, setScheduleFilters] = useState({
     day: "Days",
     status: "Status",
@@ -140,6 +142,39 @@ export default function AdminStudentPreview() {
         error instanceof Error ? error.message : "Failed to update schedule";
       toastError(message);
       console.error("Failed to update schedule:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Use a custom interface matching backend DTO instead of RawSchedule
+  interface AddScheduleData {
+    courseId: number;
+    professorId: number;
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    room: string;
+    type: "Lecture" | "Section";
+    semester: string;
+  }
+  
+  const handleAddSchedule = async (data: AddScheduleData) => {
+    setIsUpdating(true);
+    try {
+      const res = await apiClient.post("/api/schedule", data);
+      if (res.success) {
+        toastSuccess("Schedule entry added successfully");
+        setIsAddingSchedule(false);
+        fetchData();
+      } else {
+        toastError(res.message || "Failed to add schedule entry");
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Failed to add schedule entry";
+      toastError(message);
+      console.error("Failed to add schedule entry:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -492,21 +527,28 @@ export default function AdminStudentPreview() {
         <div className="space-y-4">
           {/* Schedule Filters */}
           <div className="flex flex-col gap-4">
-            <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide py-2">
+            <div className="flex flex-wrap items-center gap-3 pb-2">
               {["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
                 <button
                   key={day}
                   onClick={() => setScheduleFilters({ ...scheduleFilters, day })}
-                  className={`flex-shrink-0 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === day ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
+                  className={`flex-shrink-0 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === day ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
                 >
                   {day}
                 </button>
               ))}
               <button
                 onClick={() => setScheduleFilters({ ...scheduleFilters, day: "Days" })}
-                className={`flex-shrink-0 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === "Days" ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
+                className={`flex-shrink-0 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${scheduleFilters.day === "Days" ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100/50"}`}
               >
                 Entire Timeline
+              </button>
+              <div className="flex-1 min-w-[1rem]" />
+              <button
+                onClick={() => setIsAddingSchedule(true)}
+                className="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all bg-indigo-600 text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-700"
+              >
+                + Add Entry
               </button>
             </div>
 
@@ -603,6 +645,7 @@ export default function AdminStudentPreview() {
                     startTime: (formData.get("startTime") as string) || "",
                     endTime: (formData.get("endTime") as string) || "",
                     room: (formData.get("room") as string) || "",
+                    type: (formData.get("type") as "Lecture" | "Section") || "Lecture",
                   });
                 }}
                 className="p-6 space-y-4"
@@ -662,6 +705,19 @@ export default function AdminStudentPreview() {
                             {d}
                           </option>
                         ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Type
+                      </label>
+                      <select
+                        name="type"
+                        defaultValue={editingSchedule.type || "Lecture"}
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      >
+                        <option value="Lecture">Lecture</option>
+                        <option value="Section">Section</option>
                       </select>
                     </div>
                     <div>
@@ -726,6 +782,193 @@ export default function AdminStudentPreview() {
                       <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                     ) : (
                       "Save Changes"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Schedule Add Modal */}
+      <AnimatePresence>
+        {isAddingSchedule && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900">
+                    Add Schedule Entry
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Create a new curriculum session
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsAddingSchedule(false)}
+                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleAddSchedule({
+                    courseId: parseInt(
+                      (formData.get("courseId") as string) || "0",
+                    ),
+                    professorId: parseInt(
+                      (formData.get("professorId") as string) || "0",
+                    ),
+                    dayOfWeek: parseInt(
+                      (formData.get("dayOfWeek") as string) || "0",
+                    ),
+                    startTime: (formData.get("startTime") as string) || "",
+                    endTime: (formData.get("endTime") as string) || "",
+                    room: (formData.get("room") as string) || "",
+                    type:
+                      (formData.get("type") as "Lecture" | "Section") ||
+                      "Lecture",
+                    semester: "Fall 2024", // Default for now
+                  });
+                }}
+                className="p-6 space-y-4"
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                      Course
+                    </label>
+                    <select
+                      name="courseId"
+                      required
+                      className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                    >
+                      <option value="">Select a course</option>
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.courseCode} - {c.courseName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                      Professor
+                    </label>
+                    <select
+                      name="professorId"
+                      required
+                      className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                    >
+                      {professors.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.firstName} {p.lastName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Day
+                      </label>
+                      <select
+                        name="dayOfWeek"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      >
+                        {[
+                          "Sunday",
+                          "Monday",
+                          "Tuesday",
+                          "Wednesday",
+                          "Thursday",
+                          "Friday",
+                          "Saturday",
+                        ].map((d, i) => (
+                          <option key={d} value={i}>
+                            {d}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Type
+                      </label>
+                      <select
+                        name="type"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      >
+                        <option value="Lecture">Lecture</option>
+                        <option value="Section">Section</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Room
+                      </label>
+                      <input
+                        name="room"
+                        type="text"
+                        placeholder="e.g. Hall A"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Start Time
+                      </label>
+                      <input
+                        name="startTime"
+                        type="time"
+                        defaultValue="09:00"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        End Time
+                      </label>
+                      <input
+                        name="endTime"
+                        type="time"
+                        defaultValue="11:00"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingSchedule(false)}
+                    className="flex-1 px-6 py-3 bg-gray-50 text-gray-600 font-bold rounded-2xl hover:bg-gray-100 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all disabled:opacity-50"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                    ) : (
+                      "Add Entry"
                     )}
                   </button>
                 </div>
