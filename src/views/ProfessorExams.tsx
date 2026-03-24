@@ -48,6 +48,8 @@ interface SecurityAlert {
   status: "OPEN" | "PENALIZED" | "DISMISSED";
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 // --- Components ---
 
 const GlassCard = ({
@@ -106,7 +108,7 @@ export default function ProfessorExams() {
   });
 
   // Load courses
-  const { data: courses = [] } = useQuery({
+  const { data: courses = EMPTY_ARRAY } = useQuery({
     queryKey: ["professor-courses-summary"],
     queryFn: async () => {
       const res = await apiClient.get("/api/courses", {
@@ -116,7 +118,7 @@ export default function ProfessorExams() {
     },
   });
 
-  const { data: exams = [], isLoading } = useQuery<Exam[]>({
+  const { data: exams = EMPTY_ARRAY, isLoading } = useQuery<Exam[]>({
     queryKey: ["course-exams", selectedCourse],
     queryFn: async () => {
       if (!selectedCourse) return [];
@@ -156,7 +158,7 @@ export default function ProfessorExams() {
   });
 
   // Load real security alerts for the active exam
-  const { data: realAlerts = [] } = useQuery<SecurityAlert[]>({
+  const { data: realAlerts = EMPTY_ARRAY } = useQuery<SecurityAlert[]>({
     queryKey: ["exam-alerts", activeProctorExam],
     queryFn: async () => {
       if (!activeProctorExam) return [];
@@ -185,15 +187,25 @@ export default function ProfessorExams() {
   // We initialize local state with realAlerts
   const [localAlerts, setLocalAlerts] = useState<SecurityAlert[]>([]);
 
-  // Derive localAlerts from realAlerts instead of using useEffect
-  const initialAlerts = useMemo(() => {
-    return realAlerts.slice();
-  }, [realAlerts]);
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocalAlerts(initialAlerts);
-  }, [activeProctorExam, initialAlerts]); // Sync when exam or realAlerts changes
+    if (!activeProctorExam) {
+      setLocalAlerts(EMPTY_ARRAY);
+      return;
+    }
+
+    if (realAlerts && realAlerts.length > 0) {
+      setLocalAlerts((prev: SecurityAlert[]) => {
+        // Only if we haven't loaded yet or if we have new ones
+        if (prev.length === 0) return realAlerts;
+
+        // Otherwise, we merge uniquely by ID to avoid refreshing local state (Dismiss/Penalize)
+        const prevIds = new Set(prev.map((a: SecurityAlert) => a.id));
+        const newAlerts = realAlerts.filter((a: SecurityAlert) => !prevIds.has(a.id));
+        if (newAlerts.length === 0) return prev;
+        return [...newAlerts, ...prev];
+      });
+    }
+  }, [activeProctorExam, realAlerts]);
 
   // Socket listener for real-time alerts
   useEffect(() => {

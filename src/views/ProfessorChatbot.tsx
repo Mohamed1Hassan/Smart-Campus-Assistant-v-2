@@ -194,6 +194,7 @@ export default function ProfessorChatbot() {
     return arabicRegex.test(text) ? "ar" : "en";
   };
 
+  // FIXED: Using functional update to break infinite loop dependency with sessions state
   const createNewSession = useCallback(() => {
     const id = String(Date.now());
     const newSess: Session = {
@@ -203,12 +204,11 @@ export default function ProfessorChatbot() {
       updatedAt: new Date().toISOString(),
       messageCount: 0,
     };
-    const updatedSessions = [newSess, ...sessions].slice(0, MAX_SESSIONS);
-    setSessions(updatedSessions);
+    setSessions(prev => [newSess, ...prev].slice(0, MAX_SESSIONS));
     setActiveSessionId(id);
     setMessages([]);
     return id;
-  }, [sessions]);
+  }, []);
 
   const handleNewSession = () => {
     createNewSession();
@@ -216,6 +216,7 @@ export default function ProfessorChatbot() {
     if (window.innerWidth < 1024) setShowSessionsPanel(false);
   };
 
+  // FIXED: Stabilized session loading logic
   useEffect(() => {
     if (!user?.id) return;
 
@@ -246,7 +247,8 @@ export default function ProfessorChatbot() {
     } else {
       createNewSession();
     }
-  }, [user?.id, createNewSession]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]); // Removed createNewSession from deps to avoid loop if it changes
 
   const deleteSession = (sessionId: string) => {
     if (sessions.length === 1) {
@@ -259,14 +261,16 @@ export default function ProfessorChatbot() {
 
   const confirmDeleteSession = () => {
     if (!deleteSessionTarget || !user?.id) return;
-    const filtered = sessions.filter((s) => s.id !== deleteSessionTarget);
-    setSessions(filtered);
+    setSessions(prev => {
+       const filtered = prev.filter((s) => s.id !== deleteSessionTarget);
+       if (activeSessionId === deleteSessionTarget && filtered.length > 0) {
+         setActiveSessionId(filtered[0].id);
+       }
+       return filtered;
+    });
     localStorage.removeItem(
       `professor-ai-session-${user.id}-${deleteSessionTarget}-messages`,
     );
-    if (activeSessionId === deleteSessionTarget && filtered.length > 0) {
-      setActiveSessionId(filtered[0].id);
-    }
     setShowDeleteSessionConfirm(false);
     setDeleteSessionTarget(null);
     addToast("Chat deleted", "success");
@@ -399,10 +403,12 @@ export default function ProfessorChatbot() {
 
   const confirmDeleteMessage = () => {
     if (!deleteMessageTarget) return;
-    const filtered = messages.filter((m) => m.id !== deleteMessageTarget);
-    setMessages(filtered);
-    debouncedSave(activeSessionId, filtered);
-    updateSessionMetadata(activeSessionId, filtered.length);
+    setMessages(prev => {
+       const filtered = prev.filter((m) => m.id !== deleteMessageTarget);
+       debouncedSave(activeSessionId, filtered);
+       updateSessionMetadata(activeSessionId, filtered.length);
+       return filtered;
+    });
     setShowDeleteMessageConfirm(false);
     setDeleteMessageTarget(null);
     addToast("Message deleted", "success");
@@ -547,7 +553,7 @@ export default function ProfessorChatbot() {
                                   {new Date(
                                     session.updatedAt,
                                   ).toLocaleDateString()}{" "}
-                                  �?{session.messageCount} msgs
+                                  · {session.messageCount} msgs
                                 </p>
                               </div>
 

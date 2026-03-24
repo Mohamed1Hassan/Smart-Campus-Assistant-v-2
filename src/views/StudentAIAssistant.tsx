@@ -106,6 +106,7 @@ export default function StudentAIAssistant() {
     [DEV],
   );
 
+  // FIXED: Stabilized session initialization to prevent infinite loops
   useEffect(() => {
     if (typeof window === "undefined") return;
     const savedSessions = localStorage.getItem("student-ai-sessions");
@@ -147,6 +148,8 @@ export default function StudentAIAssistant() {
     } else {
       createAndSetInitialSession();
     }
+    // We only want this to run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -220,8 +223,7 @@ export default function StudentAIAssistant() {
       ...initialSessionTemplate,
     };
 
-    const updatedSessions = [newSess, ...sessions].slice(0, MAX_SESSIONS);
-    setSessions(updatedSessions);
+    setSessions(prev => [newSess, ...prev].slice(0, MAX_SESSIONS));
     setActiveSessionId(id);
     setMessages([]);
     addToast("New chat created", "success");
@@ -238,14 +240,14 @@ export default function StudentAIAssistant() {
       typeof window !== "undefined" &&
       window.confirm("Delete this chat? This action cannot be undone.")
     ) {
-      const filtered = sessions.filter((s) => s.id !== sessionId);
-      setSessions(filtered);
+      setSessions(prev => {
+        const filtered = prev.filter((s) => s.id !== sessionId);
+        if (activeSessionId === sessionId && filtered.length > 0) {
+          setActiveSessionId(filtered[0].id);
+        }
+        return filtered;
+      });
       localStorage.removeItem(`student-ai-session-${sessionId}-messages`);
-
-      if (activeSessionId === sessionId && filtered.length > 0) {
-        setActiveSessionId(filtered[0].id);
-      }
-
       addToast("Chat deleted", "success");
     }
   };
@@ -328,7 +330,7 @@ export default function StudentAIAssistant() {
       }
     } catch (error) {
       const detectedLang = detectLanguage(text);
-      const errorText = detectedLang === "ar" 
+      const errorText = detectedLang === "ar"
         ? "عذراً، الخادم غير متاح حالياً. يرجى المحاولة لاحقاً."
         : "Sorry, I cannot connect to the server right now. Please try again later.";
 
@@ -365,15 +367,17 @@ export default function StudentAIAssistant() {
     }
   };
 
-  const deleteMessage = (messageId: string) => {
+  const deleteMessage = useCallback((messageId: string) => {
     if (typeof window !== "undefined" && window.confirm("Delete this message?")) {
-      const filtered = messages.filter((m) => m.id !== messageId);
-      setMessages(filtered);
-      debouncedSave(activeSessionId, filtered);
-      updateSessionMetadata(activeSessionId, filtered.length);
+      setMessages(prev => {
+         const filtered = prev.filter((m) => m.id !== messageId);
+         debouncedSave(activeSessionId, filtered);
+         updateSessionMetadata(activeSessionId, filtered.length);
+         return filtered;
+      });
       addToast("Message deleted", "success");
     }
-  };
+  }, [activeSessionId, debouncedSave, updateSessionMetadata]);
 
   const retryLast = () => {
     const lastUser = [...messages].reverse().find((m) => m.sender === "student");
@@ -392,8 +396,8 @@ export default function StudentAIAssistant() {
     messages.map((message) => {
       const isAi = message.sender === "ai";
       const isArabic = detectLanguage(message.text) === "ar";
-      const timestamp = message.timestamp instanceof Date 
-        ? message.timestamp 
+      const timestamp = message.timestamp instanceof Date
+        ? message.timestamp
         : new Date(message.timestamp);
 
       return (
@@ -489,7 +493,7 @@ export default function StudentAIAssistant() {
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0">
                                 <h4 className={`font-medium text-sm truncate ${activeSessionId === session.id ? "text-indigo-900 dark:text-indigo-100" : "text-gray-700 dark:text-gray-300"}`}>{session.name}</h4>
-                                <p className="text-xs text-gray-400 mt-1">{new Date(session.updatedAt).toLocaleDateString()} • {session.messageCount} msgs</p>
+                                <p className="text-xs text-gray-400 mt-1">{new Date(session.updatedAt).toLocaleDateString()} · {session.messageCount} msgs</p>
                               </div>
                               {activeSessionId === session.id && (
                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -521,7 +525,7 @@ export default function StudentAIAssistant() {
                   <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">AI Assistant</h1>
                   <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Online • {activeSession?.name || "New Chat"}
+                    Online · {activeSession?.name || "New Chat"}
                   </p>
                 </div>
               </div>
@@ -597,6 +601,16 @@ export default function StudentAIAssistant() {
             </div>
           </div>
         </div>
+        <style jsx global>{`
+          @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+          }
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+        `}</style>
       </DashboardLayout>
     </ErrorBoundary>
   );

@@ -235,7 +235,7 @@ export default function CourseManagementDashboard() {
 
       setLoading(true);
       try {
-        let url = `/admin/courses?page=${page}&limit=${viewMode === "grid" ? 12 : 10}`;
+        let url = `/api/admin/courses?page=${page}&limit=${viewMode === "grid" ? 12 : 10}`;
         if (filters.searchTerm)
           url += `&query=${encodeURIComponent(filters.searchTerm)}`;
         if (filters.selectedMajor)
@@ -268,7 +268,8 @@ export default function CourseManagementDashboard() {
         ) {
           return;
         }
-        console.error("Failed to fetch courses:", error);
+        const errorMsg = (error as any)?.message || (error as any)?.error || JSON.stringify(error);
+        console.error("Failed to fetch courses:", errorMsg);
       } finally {
         if (abortControllerRef.current === controller) {
           setLoading(false);
@@ -282,7 +283,7 @@ export default function CourseManagementDashboard() {
   const fetchMajors = async () => {
     try {
       const result = await apiClient.get<string[]>(
-        "/admin/courses?action=majors",
+        "/api/admin/courses?action=majors",
       );
       if (result.success && result.data) {
         setMajors(result.data);
@@ -295,7 +296,7 @@ export default function CourseManagementDashboard() {
   const fetchProfessors = async () => {
     try {
       const result = await apiClient.get<Professor[]>(
-        "/admin/courses?action=professors",
+        "/api/admin/courses?action=professors",
       );
       if (result.success && result.data) {
         setProfessors(result.data);
@@ -376,7 +377,7 @@ export default function CourseManagementDashboard() {
     currentStatus: boolean,
   ) => {
     try {
-      const result = await apiClient.patch("/admin/courses", {
+      const result = await apiClient.patch("/api/admin/courses", {
         courseId,
         isActive: !currentStatus,
       });
@@ -393,7 +394,7 @@ export default function CourseManagementDashboard() {
 
     try {
       const result = await apiClient.delete(
-        `/admin/courses?courseId=${courseId}`,
+        `/api/admin/courses?courseId=${courseId}`,
       );
       if (result.success) {
         fetchCourses(pagination.page);
@@ -448,9 +449,9 @@ export default function CourseManagementDashboard() {
 
       let result;
       if (modalMode === "create") {
-        result = await apiClient.post("/admin/courses", data);
+        result = await apiClient.post("/api/admin/courses", data);
       } else {
-        result = await apiClient.patch("/admin/courses", {
+        result = await apiClient.patch("/api/admin/courses", {
           courseId: editingCourseId,
           ...data,
         });
