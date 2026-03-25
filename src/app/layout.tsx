@@ -16,30 +16,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://smart-campus-assistant.vercel.app"),
   title: {
-    default: "Smart Campus Assistant - معهد طيبة",
-    template: "%s | Smart Campus Assistant",
+    default: "بوابة معهد طيبة العالي | Smart Campus Assistant",
+    template: "%s | معهد طيبة العالي",
   },
   description:
-    "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لمعهد طيبة العالي. Attendance, grades, and course management for Thebes Academy.",
+    "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لطلاب وأعضاء هيئة التدريس في معهد طيبة العالي (Thebes Academy).",
   keywords: [
     "معهد طيبة",
     "معهد طيبة العالي",
-    "حضور معهد طيبة",
-    "غياب معهد طيبة",
+    "موقع معهد طيبة",
+    "بوابة معهد طيبة الدخول",
     "نتائج معهد طيبة",
+    "غياب معهد طيبة",
     "جدول محاضرات معهد طيبة",
     "Thebes Academy",
     "Thebes Academy Portal",
     "Smart Campus Assistant",
-    "نظام الحضور والغياب",
-    "المنصة التعليمية معهد طيبة",
+    "نظام الحضور والغياب معهد طيبة",
+    "المنصة التعليمية لمعهد طيبة",
     "Thebes Higher Institute",
-    "Thebes Academy student portal",
     "موقع معهد طيبة الرسمي",
+    "طيبة اكاديمي",
+    "أكاديمية طيبة التعليمية",
   ],
   authors: [{ name: "Smart Campus Team" }],
-  robots: "index, follow",
+  robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+  alternates: {
+    canonical: "/",
+  },
   verification: {
     google: "UtiHpKBI6P-nUzjNeELS3KM4EH8HU5Mi4QQJMQvag-o",
   },
@@ -56,16 +62,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ar_EG",
     url: "https://smart-campus-assistant.vercel.app",
-    title: "Smart Campus Assistant - معهد طيبة",
+    title: "بوابة معهد طيبة العالي | Smart Campus Assistant",
     description:
-      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لمعهد طيبة العالي.",
-    siteName: "Smart Campus Assistant",
+      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لطلاب وأعضاء هيئة التدريس في معهد طيبة العالي.",
+    siteName: "معهد طيبة العالي - Smart Campus",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Smart Campus Assistant - معهد طيبة",
+    title: "بوابة معهد طيبة العالي | Smart Campus Assistant",
     description:
-      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لمعهد طيبة العالي.",
+      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية في معهد طيبة العالي.",
   },
 };
 
@@ -79,8 +85,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: "معهد طيبة العالي - Thebes Academy",
+    alternateName: ["معهد طيبة", "Thebes Higher Institute", "أكاديمية طيبة"],
+    url: "https://smart-campus-assistant.vercel.app",
+    logo: "https://smart-campus-assistant.vercel.app/icon.png",
+    description: "مؤسسة تعليمية رائدة تقدم برامج أكاديمية متنوعة. نظام الحضور والغياب الذكي للطلاب وأعضاء هيئة التدريس.",
+    sameAs: [
+      "https://thebesacademy.edu.eg/" // Main original site if applicable
+    ]
+  };
+
   return (
-    <html lang="en">
+    <html lang="ar" dir="ltr">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

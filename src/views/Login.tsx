@@ -154,7 +154,7 @@ export default function Login() {
                   <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-sm relative w-12 h-12">
                     <Image
                       src={logo}
-                      alt="Smart Campus Logo"
+                      alt="شعار معهد طيبة - Smart Campus Logo"
                       fill
                       className="object-contain"
                     />
@@ -164,14 +164,21 @@ export default function Login() {
                   </span>
                 </div>
 
-                <h2 className="text-4xl font-bold leading-tight mb-4">
-                  Your Academic Journey,
+                {/* H1 for better SEO indexing */}
+                <h1 className="sr-only">
+                  معهد طيبة - معهد طيبة العالي - النظام الذكي للحضور والغياب (Smart Campus Assistant)
+                </h1>
+
+                <h2 className="text-4xl font-bold leading-tight mb-4" lang="ar" dir="rtl">
+                  المنصة التعليمية لـ
                   <br />
-                  <span className="text-blue-200">Simplified.</span>
+                  <span className="text-blue-200">معهد طيبة العالي</span>
                 </h2>
-                <p className="text-blue-100 text-lg max-w-md">
-                  Access your schedule, track attendance, and stay updated with
-                  your courses in one seamless platform.
+                <p className="text-blue-100 text-lg max-w-md" dir="rtl" lang="ar">
+                  النظام الذكي لإدارة الحضور والغياب والمواد الدراسية ومتابعة الأداء الأكاديمي.
+                </p>
+                <p className="text-blue-100/80 text-sm max-w-md mt-2" dir="rtl" lang="ar">
+                  تابع جدولك الدراسي، وسجل حضورك، وابقَ على اطلاع دائم بمقرراتك الدراسية عبر منصة واحدة متكاملة.
                 </p>
               </div>
 
@@ -210,26 +217,29 @@ export default function Login() {
                   <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100/50 relative p-3">
                     <Image
                       src={logo}
-                      alt="Smart Campus Logo"
+                      alt="شعار معهد طيبة - Smart Campus Logo"
                       fill
                       className="object-contain p-2"
                     />
                   </div>
-                  <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight">
+                  <h2 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight" dir="rtl" lang="ar">
+                    معهد طيبة العالي
+                  </h2>
+                  <h3 className="text-lg font-bold text-gray-700 tracking-tight mt-1">
                     Smart Campus
-                  </h1>
-                  <p className="text-sm text-gray-400 font-medium mt-1">Ready for class?</p>
+                  </h3>
+                  <p className="text-sm text-gray-400 font-medium mt-1 text-center" dir="rtl" lang="ar">النظام الذكي لإدارة الحضور والغياب</p>
                 </motion.div>
 
                 {/* Desktop Welcome Back Text */}
-                <h1
+                <h2
                   id="login-title"
                   className="text-3xl font-bold text-gray-900 mb-2 hidden lg:block tracking-tight"
                 >
                   Welcome Back! 👋
-                </h1>
+                </h2>
                 <p className="text-gray-500 text-sm lg:text-base hidden lg:block">
-                  Please sign in to continue to your dashboard.
+                  Please sign in to continue to your dashboard at Thebes Academy.
                 </p>
                 {/* Mobile Welcome Text */}
                 <p className="text-gray-500 text-sm max-w-sm lg:hidden mt-2 text-center">
