@@ -21,6 +21,7 @@ import { useFormValidation } from "../hooks/useFormValidation";
 import { validators, inputMasks } from "../utils/validation.frontend";
 import { apiClient } from "../services/api";
 import logo from "../assets/logo-new.png";
+import thebesLogo from "../assets/thebes-logo.png";
 
 export default function Login() {
   const { login, isLoading, error, clearError } = useAuth();
@@ -150,18 +151,39 @@ export default function Login() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
 
               <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-sm relative w-12 h-12">
+                <div className="flex items-center gap-4 mb-8">
+                  {/* Thebes Official Logo */}
+                  <div className="rounded-full bg-white relative w-16 h-16 overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.4)] border-2 border-white/80 flex-shrink-0 z-10">
+                    <Image
+                      src={thebesLogo}
+                      alt="شعار معهد طيبة الرسمي"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                  
+                  {/* Connection / Divider */}
+                  <div className="h-0.5 w-6 bg-gradient-to-r from-white/80 to-blue-300/50 -mx-6 z-0 hidden sm:block"></div>
+
+                  {/* Smart Campus Logo (Our Logo) */}
+                  <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-sm relative w-14 h-14 border border-white/20 shadow-lg flex-shrink-0 z-10 ml-2 sm:ml-0">
                     <Image
                       src={logo}
-                      alt="شعار معهد طيبة - Smart Campus Logo"
+                      alt="Smart Campus System Logo"
                       fill
                       className="object-contain"
                     />
                   </div>
-                  <span className="text-xl font-bold tracking-tight">
-                    Smart Campus
-                  </span>
+
+                  {/* Text Container */}
+                  <div className="flex flex-col ml-2">
+                    <span className="text-2xl font-bold tracking-tight text-white leading-none mb-1">
+                      Thebes Academy
+                    </span>
+                    <span className="text-sm font-medium text-blue-200 tracking-wide uppercase">
+                      Smart Campus
+                    </span>
+                  </div>
                 </div>
 
                 {/* H1 for better SEO indexing */}
@@ -214,21 +236,38 @@ export default function Login() {
                   transition={{ delay: 0.1, ease: "easeOut" }}
                   className="lg:hidden flex flex-col items-center mb-6"
                 >
-                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100/50 relative p-3">
-                    <Image
-                      src={logo}
-                      alt="شعار معهد طيبة - Smart Campus Logo"
-                      fill
-                      className="object-contain p-2"
-                    />
+                  <div className="flex items-center justify-center mb-4">
+                    {/* Thebes Official Logo */}
+                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-white relative overflow-hidden z-10">
+                      <Image
+                        src={thebesLogo}
+                        alt="شعار معهد طيبة الرسمي"
+                        fill
+                        className="object-contain p-1"
+                      />
+                    </div>
+                    
+                    {/* Connecting line */}
+                    <div className="w-4 border-t-2 border-dashed border-gray-300 -mx-1 z-0"></div>
+
+                    {/* Smart Campus Logo */}
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center shadow-md border border-gray-100 relative p-2 z-10">
+                      <Image
+                        src={logo}
+                        alt="Smart Campus System Logo"
+                        fill
+                        className="object-contain p-1.5"
+                      />
+                    </div>
                   </div>
+                  
                   <h2 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight" dir="rtl" lang="ar">
                     معهد طيبة العالي
                   </h2>
-                  <h3 className="text-lg font-bold text-gray-700 tracking-tight mt-1">
+                  <h3 className="text-lg font-bold text-blue-600 tracking-tight mt-1">
                     Smart Campus
                   </h3>
-                  <p className="text-sm text-gray-400 font-medium mt-1 text-center" dir="rtl" lang="ar">النظام الذكي لإدارة الحضور والغياب</p>
+                  <p className="text-sm text-gray-400 font-medium mt-1 text-center" dir="rtl" lang="ar">المنصة التعليمية والنظام الذكي</p>
                 </motion.div>
 
                 {/* Desktop Welcome Back Text */}
