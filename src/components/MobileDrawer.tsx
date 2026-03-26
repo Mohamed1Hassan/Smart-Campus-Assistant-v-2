@@ -24,7 +24,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import logo from "@/assets/logo-new.png";
+import { Logo } from "./common/Logo";
 import { useLogout } from "../hooks/useLogout";
 import ConfirmModal from "./ConfirmModal";
 import Toast from "./Toast";
@@ -238,13 +238,8 @@ export default function MobileDrawer({
               {/* Header */}
               <div className="p-6 border-b border-white/20 dark:border-gray-800/50 flex items-center justify-between bg-white/20 dark:bg-white/5 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 relative flex items-center justify-center bg-white/50 dark:bg-white/10 rounded-xl border border-white/60 dark:border-white/10 shadow-sm">
-                    <Image
-                      src={logo}
-                      alt="Logo"
-                      className="w-full h-full object-contain p-1.5"
-                      priority
-                    />
+                  <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0">
+                    <Logo className="w-9 h-9" />
                   </div>
                   <div>
                     <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-none tracking-tight">

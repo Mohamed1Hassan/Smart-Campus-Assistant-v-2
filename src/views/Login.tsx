@@ -20,8 +20,7 @@ import { FormField } from "../components/ui/FormField";
 import { useFormValidation } from "../hooks/useFormValidation";
 import { validators, inputMasks } from "../utils/validation.frontend";
 import { apiClient } from "../services/api";
-import logo from "../assets/logo-new.png";
-import thebesLogo from "../assets/thebes-logo.png";
+import { Logo } from "../components/common/Logo";
 
 export default function Login() {
   const { login, isLoading, error, clearError } = useAuth();
@@ -152,31 +151,13 @@ export default function Login() {
 
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-8">
-                  {/* Thebes Official Logo */}
-                  <div className="rounded-full bg-white relative w-16 h-16 overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.4)] border-2 border-white/80 flex-shrink-0 z-10">
-                    <Image
-                      src={thebesLogo}
-                      alt="شعار معهد طيبة الرسمي"
-                      fill
-                      className="object-contain p-1"
-                    />
-                  </div>
-                  
-                  {/* Connection / Divider */}
-                  <div className="h-0.5 w-6 bg-gradient-to-r from-white/80 to-blue-300/50 -mx-6 z-0 hidden sm:block"></div>
-
                   {/* Smart Campus Logo (Our Logo) */}
-                  <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-sm relative w-14 h-14 border border-white/20 shadow-lg flex-shrink-0 z-10 ml-2 sm:ml-0">
-                    <Image
-                      src={logo}
-                      alt="Smart Campus System Logo"
-                      fill
-                      className="object-contain"
-                    />
+                  <div className="rounded-full bg-white relative w-16 h-16 border-2 border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.4)] flex-shrink-0 z-10 flex items-center justify-center overflow-hidden">
+                    <Logo className="w-12 h-12" />
                   </div>
 
                   {/* Text Container */}
-                  <div className="flex flex-col ml-2">
+                  <div className="flex flex-col ml-1">
                     <span className="text-2xl font-bold tracking-tight text-white leading-none mb-1">
                       Thebes Academy
                     </span>
@@ -237,27 +218,9 @@ export default function Login() {
                   className="lg:hidden flex flex-col items-center mb-6"
                 >
                   <div className="flex items-center justify-center mb-4">
-                    {/* Thebes Official Logo */}
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-white relative overflow-hidden z-10">
-                      <Image
-                        src={thebesLogo}
-                        alt="شعار معهد طيبة الرسمي"
-                        fill
-                        className="object-contain p-1"
-                      />
-                    </div>
-                    
-                    {/* Connecting line */}
-                    <div className="w-4 border-t-2 border-dashed border-gray-300 -mx-1 z-0"></div>
-
                     {/* Smart Campus Logo */}
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center shadow-md border border-gray-100 relative p-2 z-10">
-                      <Image
-                        src={logo}
-                        alt="Smart Campus System Logo"
-                        fill
-                        className="object-contain p-1.5"
-                      />
+                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-white relative z-10 overflow-hidden">
+                      <Logo className="w-12 h-12" />
                     </div>
                   </div>
                   

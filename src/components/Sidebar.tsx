@@ -10,6 +10,7 @@ import {
   Radio,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Logo } from "./common/Logo";
 
 interface SidebarProps {
   className?: string;
@@ -37,8 +38,8 @@ export default function Sidebar({ className = "" }: SidebarProps) {
     >
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-white" strokeWidth={2.5} />
+          <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <Logo className="w-8 h-8" />
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-800 dark:text-textDark leading-tight">

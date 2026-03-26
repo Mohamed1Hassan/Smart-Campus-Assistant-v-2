@@ -29,7 +29,7 @@ import Toast from "../Toast";
 import { useLogout } from "../../hooks/useLogout";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useResponsive } from "../../utils/responsive";
-import logo from "@/assets/logo-new.png";
+import { Logo } from "./Logo";
 
 interface UnifiedNavbarProps {
   userName?: string;
@@ -210,14 +210,7 @@ export default function UnifiedNavbar({
             >
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-lg shadow-indigo-500/10 shrink-0 relative group">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Image
-                  src={logo}
-                  alt="Smart Campus Logo"
-                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain relative z-10"
-                  width={36}
-                  height={36}
-                  priority
-                />
+                <Logo className="w-8 h-8 sm:w-9 sm:h-9 relative z-10" />
               </div>
               <div className={`hidden sm:block ${isMobile ? "hidden" : ""}`}>
                 <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-none tracking-tight">
