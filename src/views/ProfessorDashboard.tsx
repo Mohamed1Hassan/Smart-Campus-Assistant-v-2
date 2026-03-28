@@ -484,6 +484,7 @@ export default function ProfessorDashboard() {
               <button
                 onClick={handleRefresh}
                 className={`p-3 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition-all ${isRefreshing ? "animate-spin" : ""}`}
+                aria-label="Refresh dashboard data"
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
@@ -534,9 +535,9 @@ export default function ProfessorDashboard() {
                   <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 {stat.value}
-              </h3>
+              </h2>
               <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
                 {stat.label}
               </p>

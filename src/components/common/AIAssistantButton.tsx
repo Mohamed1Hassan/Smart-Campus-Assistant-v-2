@@ -269,6 +269,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         animate={{ y: 0 }}
         whileHover={{ scale: 1.1, rotate: -5 }}
         whileTap={{ scale: 0.9 }}
+        aria-label="Open AI Assistant"
       >
         {/* Global Float Animation Wrapper */}
         <motion.div

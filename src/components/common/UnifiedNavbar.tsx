@@ -216,7 +216,7 @@ export default function UnifiedNavbar({
                 <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-none tracking-tight">
                   Smart Campus
                 </h1>
-                <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1 opacity-80">
+                <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1">
                   {dashboardTitle}
                 </p>
               </div>
@@ -259,6 +259,8 @@ export default function UnifiedNavbar({
                               handleSubmenuToggle(item.path);
                             }}
                             className="px-2 py-2 rounded-r-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-l border-gray-200/50 dark:border-gray-600/50"
+                            aria-label={`Toggle ${item.Tag} Submenu`}
+                            aria-expanded={isSubmenuOpen}
                           >
                             <ChevronDown
                               className={`w-3 h-3 transition-transform ${isSubmenuOpen ? "rotate-180" : ""}`}
