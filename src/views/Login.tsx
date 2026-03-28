@@ -13,6 +13,7 @@ import {
   Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { FormField } from "../components/ui/FormField";
@@ -145,7 +146,16 @@ export default function Login() {
           >
             {/* Left Side - Illustration/Branding */}
             <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+              <div className="absolute inset-0 mix-blend-overlay opacity-10">
+                <Image
+                  src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                  alt="University Building"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                  fetchPriority="high"
+                />
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
 
               <div className="relative z-10">
@@ -365,7 +375,7 @@ export default function Login() {
                     <div className="flex items-center justify-between text-sm">
                       <label className="flex items-center gap-2 text-gray-600 cursor-pointer select-none group">
                         <div
-                          className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all duration-200 ${rememberMe ? "bg-blue-600 border-blue-600 shadow-sm" : "border-gray-300 bg-white group-hover:border-blue-400"}`}
+                          className={`w-5 h-5 rounded-lg border flex items-center justify-center duration-200 transition-[background-color,border-color,box-shadow,transform] ${rememberMe ? "bg-blue-600 border-blue-600 shadow-sm scale-110" : "border-gray-300 bg-white group-hover:border-blue-400"}`}
                         >
                           {rememberMe && (
                             <Check className="w-3.5 h-3.5 text-white" />
