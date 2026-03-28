@@ -306,6 +306,8 @@ export default function MobileDrawer({
                                   handleSubmenuToggle(item.path);
                                 }}
                                 className="px-4 py-3.5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                                aria-label={`${isSubmenuOpen ? "Close" : "Open"} ${item.Tag} submenu`}
+                                aria-expanded={isSubmenuOpen}
                               >
                                 <ChevronDown
                                   className={`w-4 h-4 transition-transform duration-300 ${isSubmenuOpen ? "rotate-180" : ""}`}

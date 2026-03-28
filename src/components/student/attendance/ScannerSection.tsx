@@ -85,6 +85,7 @@ const ScannerSection = ({
               <button
                 onClick={onStopScan}
                 className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
+                aria-label="Close scanner"
               >
                 <XCircle className="w-6 h-6" />
               </button>

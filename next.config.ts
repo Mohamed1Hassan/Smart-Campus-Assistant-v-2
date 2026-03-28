@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: join(process.cwd(), ".."),
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 };
 
 

@@ -21,7 +21,6 @@ export const Logo = ({
           alt="Smart Campus Assistant Logo"
           fill
           className={`object-contain p-1 ${isAuto ? 'dark:hidden' : (isForcedLight ? 'block' : 'hidden')}`}
-          unoptimized
           priority
         />
       )}
@@ -32,7 +31,6 @@ export const Logo = ({
           alt="Smart Campus Assistant Logo"
           fill
           className={`object-contain p-1 ${isAuto ? 'hidden dark:block' : (isForcedDark ? 'block' : 'hidden')}`}
-          unoptimized
           priority
         />
       )}

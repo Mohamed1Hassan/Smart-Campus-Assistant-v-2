@@ -373,7 +373,7 @@ export default function Login() {
                         </div>
                         <input
                           type="checkbox"
-                          className="hidden"
+                          className="sr-only"
                           checked={rememberMe}
                           onChange={(e) => setRememberMe(e.target.checked)}
                           disabled={isLoading}
