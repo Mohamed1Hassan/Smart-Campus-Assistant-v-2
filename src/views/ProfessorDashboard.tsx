@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { CreateSessionData } from "../services/attendance.service";
 import {
   BookOpen,
@@ -414,8 +415,17 @@ export default function ProfessorDashboard() {
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 text-white shadow-xl">
           {/* Background Image & Overlay */}
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
+              alt="Dashboard Background"
+              fill
+              priority
+              fetchPriority="high"
+              className="object-cover opacity-20 mix-blend-overlay"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-0"></div>
 
           {/* Decorative Blobs */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
