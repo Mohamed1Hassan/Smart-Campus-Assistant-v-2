@@ -499,7 +499,8 @@ export default function MyCourses() {
             </motion.button>
           </motion.div>
         )}
-      </motion.div>
+        </motion.div>
+      </div>
 
       <AddCourseModal
         isOpen={showAddModal}
