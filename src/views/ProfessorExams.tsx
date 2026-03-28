@@ -266,7 +266,7 @@ export default function ProfessorExams() {
                 Command Control
               </span>
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">
+            <p className="text-gray-600 dark:text-gray-400 font-medium">
               Schedule secure exams and monitor live sessions for academic
               integrity.
             </p>
@@ -286,9 +286,9 @@ export default function ProfessorExams() {
           {/* Sidebar Overview */}
           <div className="xl:col-span-1 space-y-6">
             <GlassCard className="p-6">
-              <h3 className="font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest text-xs mb-4">
+              <h2 className="font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest text-xs mb-4">
                 Command Target
-              </h3>
+              </h2>
               <div className="space-y-3">
                 {courses.map((course) => (
                   <button
@@ -326,16 +326,16 @@ export default function ProfessorExams() {
                 <div className="absolute top-0 right-0 p-4 opacity-10 text-red-500 group-hover:scale-110 transition-transform">
                   <ShieldAlert className="w-24 h-24" />
                 </div>
-                <h3 className="font-black text-red-600 dark:text-red-400 flex items-center gap-2 mb-2 text-sm relative z-10">
+                <h2 className="font-black text-red-600 dark:text-red-400 flex items-center gap-2 mb-2 text-sm relative z-10">
                   <AlertTriangle className="w-4 h-4" /> Live Session Threat
                   Level
-                </h3>
+                </h2>
                 <div className="mt-4 space-y-4 relative z-10">
                   <div>
                     <p className="text-3xl font-black text-gray-900 dark:text-white">
                       {localAlerts.filter((a) => a.status === "OPEN").length}
                     </p>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">
                       Active Threats
                     </p>
                   </div>
@@ -362,10 +362,10 @@ export default function ProfessorExams() {
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-3xl mb-6">
                   <Calendar className="w-16 h-16 text-indigo-400" />
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
                   Select a Course to Manage Exams
-                </h3>
-                <p className="text-gray-500 max-w-sm">
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 max-w-sm">
                   Select a course from the sidebar to schedule new assessments
                   or monitor live exam proctoring.
                 </p>
@@ -379,7 +379,7 @@ export default function ProfessorExams() {
                       <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
                       Live Integrity Feed
                     </h2>
-                    <p className="text-sm font-bold text-gray-500 mt-1">
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1">
                       Monitoring active examination for suspicious behavior.
                     </p>
                   </div>
@@ -396,7 +396,7 @@ export default function ProfessorExams() {
                         <p className="font-bold text-gray-900 dark:text-white text-lg">
                           All Systems Secure
                         </p>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                           No integrity violations detected in the current
                           session.
                         </p>
@@ -421,7 +421,7 @@ export default function ProfessorExams() {
                               className={`p-3 rounded-xl ${
                                 alert.status === "OPEN"
                                   ? "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
-                                  : "bg-gray-200 dark:bg-gray-700 text-gray-500"
+                                  : "bg-gray-200 dark:bg-gray-700 text-gray-600"
                               }`}
                             >
                               {alert.status === "OPEN" ? (
@@ -433,11 +433,11 @@ export default function ProfessorExams() {
                             <div>
                               <div className="flex items-center gap-3 mb-1">
                                 <h4
-                                  className={`font-black tracking-tight ${alert.status === "OPEN" ? "text-gray-900 dark:text-white" : "text-gray-500 line-through"}`}
+                                  className={`font-black tracking-tight ${alert.status === "OPEN" ? "text-gray-900 dark:text-white" : "text-gray-600 line-through"}`}
                                 >
                                   {alert.studentName}
                                 </h4>
-                                <span className="text-[10px] font-mono text-gray-500 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
+                                <span className="text-[10px] font-mono text-gray-600 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
                                   {alert.timestamp.toLocaleTimeString()}
                                 </span>
                               </div>
@@ -445,7 +445,7 @@ export default function ProfessorExams() {
                                 className={`text-sm font-bold uppercase tracking-wider ${
                                   alert.status === "OPEN"
                                     ? "text-red-600 dark:text-red-400"
-                                    : "text-gray-500"
+                                    : "text-gray-600"
                                 }`}
                               >
                                 Violation:{" "}
@@ -500,7 +500,7 @@ export default function ProfessorExams() {
                         <div className="space-y-4">
                           <div className="flex items-center gap-3">
                             <div
-                              className={`p-2.5 rounded-xl ${isUpcoming ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400" : "bg-gray-50 dark:bg-gray-800 text-gray-500"}`}
+                              className={`p-2.5 rounded-xl ${isUpcoming ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400" : "bg-gray-50 dark:bg-gray-800 text-gray-600"}`}
                             >
                               <FileText className="w-5 h-5" />
                             </div>
@@ -508,7 +508,7 @@ export default function ProfessorExams() {
                               className={
                                 isUpcoming
                                   ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                                  : "bg-gray-100 dark:bg-gray-800 text-gray-500"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-600"
                               }
                             >
                               {isUpcoming
@@ -518,11 +518,11 @@ export default function ProfessorExams() {
                           </div>
 
                           <div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
                               {exam.title}
-                            </h3>
+                            </h2>
                             {exam.description && (
-                              <p className="text-sm font-medium text-gray-500 mt-1">
+                              <p className="text-sm font-medium text-gray-600 mt-1">
                                 {exam.description}
                               </p>
                             )}
@@ -590,10 +590,10 @@ export default function ProfessorExams() {
                     <div className="inline-flex bg-gray-50 dark:bg-gray-800 p-4 rounded-full mb-4">
                       <ShieldAlert className="w-10 h-10 text-gray-300" />
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                    <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">
                       No Active Exams
-                    </h3>
-                    <p className="text-gray-500 font-medium">
+                    </h2>
+                    <p className="text-gray-600 font-medium">
                       Use the &quot;Create / Schedule Exam&quot; button to set
                       up a new secure exam session.
                     </p>
@@ -617,9 +617,9 @@ export default function ProfessorExams() {
             >
               <div className="p-8 sm:p-10">
                 <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                  <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                     Deploy Assessment
-                  </h3>
+                  </h2>
                   <button
                     onClick={() => setShowScheduleModal(false)}
                     className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-gray-50 dark:bg-gray-800 p-2 rounded-full"

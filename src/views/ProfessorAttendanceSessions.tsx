@@ -762,7 +762,7 @@ export default function ProfessorAttendanceSessions() {
                   >
                     {s.status}
                   </span>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-600">
                     Ends: {new Date(s.endTime).toLocaleString()}
                   </div>
                 </div>
@@ -771,19 +771,19 @@ export default function ProfessorAttendanceSessions() {
             <div className="flex gap-2 mt-6">
               <Button
                 disabled
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-500 cursor-not-allowed"
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-600 cursor-not-allowed"
               >
                 Start (Disabled)
               </Button>
               <Button
                 disabled
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-500 cursor-not-allowed"
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-600 cursor-not-allowed"
               >
                 Pause (Disabled)
               </Button>
               <Button
                 disabled
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-500 cursor-not-allowed"
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-600 cursor-not-allowed"
               >
                 End (Disabled)
               </Button>
@@ -885,7 +885,7 @@ export default function ProfessorAttendanceSessions() {
 
               <div className="flex items-center gap-3">
                 {lastRefreshTime && (
-                  <span className="text-sm text-gray-500 dark:text-mutedDark hidden sm:inline">
+                  <span className="text-sm text-gray-600 dark:text-mutedDark hidden sm:inline">
                     Updated {formatRelativeTime(lastRefreshTime)}
                   </span>
                 )}
@@ -1017,7 +1017,7 @@ export default function ProfessorAttendanceSessions() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   {/* Search */}
                   <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-600" />
                     <input
                       id="search-input"
                       type="text"
@@ -1099,14 +1099,18 @@ export default function ProfessorAttendanceSessions() {
 
                   {/* Course Filter */}
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <label
+                      htmlFor="course-filter-select"
+                      className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5"
+                    >
                       <Calendar className="w-3.5 h-3.5" />
                       Course
                     </label>
                     <select
+                      id="course-filter-select"
                       value={courseFilter}
                       onChange={(e) => setCourseFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cardDark text-gray-900 dark:text-textDark text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cardDark text-gray-900 dark:text-textDark text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
                       aria-label="Filter by course"
                     >
                       <option value="all">All Courses</option>
@@ -1120,16 +1124,20 @@ export default function ProfessorAttendanceSessions() {
 
                   {/* Sort */}
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <label
+                      htmlFor="sort-option-select"
+                      className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5"
+                    >
                       <ArrowUpDown className="w-3.5 h-3.5" />
                       Sort By
                     </label>
                     <select
+                      id="sort-option-select"
                       value={sortOption}
                       onChange={(e) =>
                         setSortOption(e.target.value as SortOption)
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cardDark text-gray-900 dark:text-textDark text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cardDark text-gray-900 dark:text-textDark text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
                       aria-label="Sort sessions"
                     >
                       <option value="created-desc">Created (Newest)</option>
@@ -1273,7 +1281,7 @@ export default function ProfessorAttendanceSessions() {
                         />
                       </div>
                       <div className="flex items-center justify-center pt-6 sm:pt-0">
-                        <span className="text-gray-400 dark:text-gray-500 text-sm">
+                        <span className="text-gray-400 dark:text-gray-600 text-sm">
                           to
                         </span>
                       </div>
@@ -1360,9 +1368,9 @@ export default function ProfessorAttendanceSessions() {
                 <div className="text-center py-16 bg-white dark:bg-cardDark rounded-xl border border-gray-200 dark:border-gray-700">
                   <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
                     {searchTerm || activeFilterCount > 0 ? (
-                      <Search className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                      <Search className="w-12 h-12 text-gray-400 dark:text-gray-600" />
                     ) : (
-                      <Users className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                      <Users className="w-12 h-12 text-gray-400 dark:text-gray-600" />
                     )}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-textDark mb-2">
@@ -1370,7 +1378,7 @@ export default function ProfessorAttendanceSessions() {
                       ? "No sessions match your filters"
                       : "No sessions found"}
                   </h3>
-                  <p className="text-gray-500 dark:text-mutedDark mb-6">
+                  <p className="text-gray-600 dark:text-mutedDark mb-6">
                     {searchTerm || activeFilterCount > 0
                       ? "Try adjusting your search or filters to see more results."
                       : "Create your first attendance session to get started."}
@@ -1640,7 +1648,7 @@ export default function ProfessorAttendanceSessions() {
                               </span>
                             </div>
                             <Progress value={attendanceRate} className="h-2" />
-                            <p className="text-xs text-gray-500 dark:text-mutedDark">
+                            <p className="text-xs text-gray-600 dark:text-mutedDark">
                               {session.presentStudents}/{session.totalStudents}{" "}
                               students
                             </p>
@@ -1794,7 +1802,7 @@ export default function ProfessorAttendanceSessions() {
 
             {/* Results Count */}
             {!isLoading && filteredAndSortedSessions.length > 0 && (
-              <div className="text-center text-sm text-gray-500 dark:text-mutedDark">
+              <div className="text-center text-sm text-gray-600 dark:text-mutedDark">
                 Showing {filteredAndSortedSessions.length} of{" "}
                 {apiSessions.length} session
                 {apiSessions.length !== 1 ? "s" : ""}

@@ -548,7 +548,7 @@ export default function ProfessorDashboard() {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 {stat.value}
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm">
                 {stat.label}
               </p>
             </div>
@@ -582,7 +582,7 @@ export default function ProfessorDashboard() {
                             ?.courseName
                         }
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1 text-sm md:text-base">
+                      <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 mt-1 text-sm md:text-base">
                         <MapPin className="w-4 h-4" />
                         {attendanceSessions.find((s) => s.status === "ACTIVE")
                           ?.location?.name || "Main Hall"}
@@ -604,7 +604,7 @@ export default function ProfessorDashboard() {
                             ?.presentStudents
                         }
                       </div>
-                      <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider font-medium mt-1">
+                      <div className="text-[10px] md:text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider font-medium mt-1">
                         Present
                       </div>
                     </div>
@@ -615,7 +615,7 @@ export default function ProfessorDashboard() {
                             ?.totalStudents
                         }
                       </div>
-                      <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider font-medium mt-1">
+                      <div className="text-[10px] md:text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider font-medium mt-1">
                         Total
                       </div>
                     </div>
@@ -737,7 +737,7 @@ export default function ProfessorDashboard() {
                             <h3 className="font-bold text-gray-900 dark:text-white text-lg">
                               {cls.course}
                             </h3>
-                            <p className="text-gray-500 text-sm flex items-center gap-2 mt-1">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
                               <Clock className="w-3 h-3" /> {cls.time}
                               <span className="w-1 h-1 bg-gray-300 rounded-full" />
                               <MapPin className="w-3 h-3" /> {cls.room}
@@ -765,7 +765,7 @@ export default function ProfessorDashboard() {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                       No classes today
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       You don&apos;t have any classes scheduled for today.
                     </p>
                   </div>
@@ -847,14 +847,14 @@ export default function ProfessorDashboard() {
                         <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2">
                           {activity.message || activity.title}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                           {activity.time}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500 text-sm">
+                  <div className="text-center py-8 text-gray-600 dark:text-gray-400 text-sm">
                     No recent activity
                   </div>
                 )}
@@ -875,8 +875,9 @@ export default function ProfessorDashboard() {
           </DialogHeader>
           <form onSubmit={handleQuickCreateSubmit} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label>Course</Label>
+              <Label htmlFor="quick-course-select">Course</Label>
               <select
+                id="quick-course-select"
                 className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent dark:text-white"
                 value={quickCreateForm.course}
                 onChange={(e) =>
@@ -897,8 +898,9 @@ export default function ProfessorDashboard() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label>Title (Optional)</Label>
+              <Label htmlFor="quick-title-input">Title (Optional)</Label>
               <input
+                id="quick-title-input"
                 type="text"
                 className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent dark:text-white"
                 placeholder="e.g. Lecture 5"
@@ -912,8 +914,9 @@ export default function ProfessorDashboard() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Duration (minutes)</Label>
+              <Label htmlFor="quick-duration-input">Duration (minutes)</Label>
               <input
+                id="quick-duration-input"
                 type="number"
                 className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent dark:text-white"
                 placeholder="60"
