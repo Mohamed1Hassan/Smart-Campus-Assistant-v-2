@@ -22,6 +22,7 @@ export const Logo = ({
           fill
           className={`object-contain p-1 ${isAuto ? 'dark:hidden' : (isForcedLight ? 'block' : 'hidden')}`}
           priority
+          fetchPriority="high"
         />
       )}
       {/* Dark Mode Logo */}
@@ -32,6 +33,7 @@ export const Logo = ({
           fill
           className={`object-contain p-1 ${isAuto ? 'hidden dark:block' : (isForcedDark ? 'block' : 'hidden')}`}
           priority
+          fetchPriority="high"
         />
       )}
     </div>

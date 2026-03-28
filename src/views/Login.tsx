@@ -374,13 +374,24 @@ export default function Login() {
 
                     <div className="flex items-center justify-between text-sm">
                       <label className="flex items-center gap-2 text-gray-600 cursor-pointer select-none group">
-                        <div
-                          className={`w-5 h-5 rounded-lg border flex items-center justify-center duration-200 transition-[background-color,border-color,box-shadow,transform] ${rememberMe ? "bg-blue-600 border-blue-600 shadow-sm scale-110" : "border-gray-300 bg-white group-hover:border-blue-400"}`}
+                        <motion.div
+                          animate={{
+                            backgroundColor: rememberMe ? "#2563eb" : "#ffffff",
+                            borderColor: rememberMe ? "#2563eb" : "#d1d5db",
+                            scale: rememberMe ? 1.1 : 1,
+                          }}
+                          transition={{ duration: 0.2 }}
+                          className="w-5 h-5 rounded-lg border flex items-center justify-center shadow-sm"
                         >
                           {rememberMe && (
-                            <Check className="w-3.5 h-3.5 text-white" />
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                            >
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            </motion.div>
                           )}
-                        </div>
+                        </motion.div>
                         <input
                           type="checkbox"
                           className="sr-only"
