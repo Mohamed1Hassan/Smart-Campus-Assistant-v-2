@@ -13,7 +13,6 @@ import {
   Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { FormField } from "../components/ui/FormField";
@@ -130,7 +129,7 @@ export default function Login() {
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-400/30 rounded-full blur-[120px] animate-pulse-slow"></div>
           <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-400/30 rounded-full blur-[120px] animate-pulse-slow delay-1000"></div>
           {/* Grid Pattern Overlay */}
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20"></div>
         </div>
 
         <main

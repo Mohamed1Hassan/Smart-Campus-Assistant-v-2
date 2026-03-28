@@ -581,7 +581,7 @@ class ApiClient {
       err.code === "ERR_CANCELED" ||
       errorWithPossibleName?.name === "CanceledError" ||
       errorWithPossibleName?.name === "AbortError" ||
-      (axios as any).isCancel?.(error);
+      (axios as unknown as { isCancel: (value: unknown) => boolean }).isCancel?.(error);
 
     if (isCanceled) {
       apiError.code = "ABORT_ERROR";

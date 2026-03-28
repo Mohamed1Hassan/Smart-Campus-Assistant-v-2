@@ -21,7 +21,6 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Logo } from "./common/Logo";
