@@ -36,7 +36,7 @@ export default function ProfessorAcademicSummary({
             </div>
           </div>
           <Link
-            href="/professor-courses"
+            href="/dashboard/professor/courses"
             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 mt-2 group"
           >
             View My Courses
@@ -61,7 +61,7 @@ export default function ProfessorAcademicSummary({
             </div>
           </div>
           <Link
-            href="/professor-attendance"
+            href="/dashboard/professor/attendance"
             className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center gap-1 mt-2 group"
           >
             View Student Records
@@ -86,7 +86,7 @@ export default function ProfessorAcademicSummary({
             </div>
           </div>
           <Link
-            href="/professor-dashboard"
+            href="/dashboard/professor"
             className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium flex items-center gap-1 mt-2 group"
           >
             View Research Dashboard

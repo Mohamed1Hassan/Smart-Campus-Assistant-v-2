@@ -8,29 +8,41 @@ import {
   User,
   BookOpen,
   Radio,
+  LogOut,
+  Layout
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Logo } from "./common/Logo";
+import { useAuth } from "../contexts/AuthContext";
 
 interface SidebarProps {
   className?: string;
 }
 
-const menuItems = [
-  { icon: Home, Tag: "Dashboard", path: "/student-dashboard" },
-  { icon: Calendar, Tag: "My Schedule", path: "/schedule" },
-  { icon: UserCheck, Tag: "Attendance", path: "/attendance" },
-  { icon: Bot, Tag: "AI Assistant", path: "/student-ai-assistant" },
-  { icon: User, Tag: "Profile", path: "/profile" },
-];
-
-const bottomMenuItems = [
-  { icon: BookOpen, Tag: "Reshbr.", path: "/reshbr" },
-  { icon: Radio, Tag: "OVVP", path: "/ovvp" },
-];
-
 export default function Sidebar({ className = "" }: SidebarProps) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  
+  const role = user?.role?.toLowerCase() || "student";
+  const dashboardPath = `/dashboard/${role}`;
+
+  const menuItems = role === "professor" ? [
+    { icon: Home, Tag: "Dashboard", path: dashboardPath },
+    { icon: BookOpen, Tag: "My Courses", path: `${dashboardPath}/courses` },
+    { icon: UserCheck, Tag: "Attendance", path: `${dashboardPath}/attendance` },
+    { icon: Bot, Tag: "AI Assistant", path: `${dashboardPath}/chatbot` },
+    { icon: User, Tag: "Profile", path: `${dashboardPath}/profile` },
+  ] : [
+    { icon: Home, Tag: "Dashboard", path: dashboardPath },
+    { icon: Calendar, Tag: "My Schedule", path: `${dashboardPath}/schedule` },
+    { icon: UserCheck, Tag: "Attendance", path: `${dashboardPath}/attendance` },
+    { icon: Bot, Tag: "AI Assistant", path: `${dashboardPath}/ai-assistant` },
+    { icon: User, Tag: "Profile", path: `${dashboardPath}/profile` },
+  ];
+
+  const bottomMenuItems = [
+    { icon: Layout, Tag: "Admin Portal", path: "/dashboard/admin", hidden: role !== "admin" },
+  ].filter(item => !item.hidden);
 
   return (
     <aside
@@ -46,16 +58,16 @@ export default function Sidebar({ className = "" }: SidebarProps) {
               Smart Campus
             </h1>
             <p className="text-sm text-gray-600 dark:text-mutedDark">
-              Assistant
+              {role.charAt(0).toUpperCase() + role.slice(1)} Portal
             </p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.path;
+          const isActive = pathname === item.path || (item.path !== dashboardPath && pathname.startsWith(item.path));
 
           return (
             <Link
@@ -63,11 +75,11 @@ export default function Sidebar({ className = "" }: SidebarProps) {
               href={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold shadow-sm"
                   : "text-gray-700 dark:text-textDark hover:bg-gray-50 dark:hover:bg-gray-700/50"
               }`}
             >
-              <Icon className="w-5 h-5" strokeWidth={2} />
+              <Icon className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />
               <span className="font-medium">{item.Tag}</span>
             </Link>
           );
@@ -94,6 +106,14 @@ export default function Sidebar({ className = "" }: SidebarProps) {
             </Link>
           );
         })}
+        
+        <button
+          onClick={() => logout()}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-200 mt-2"
+        >
+          <LogOut className="w-5 h-5" strokeWidth={2} />
+          <span className="font-medium">Logout</span>
+        </button>
       </div>
     </aside>
   );

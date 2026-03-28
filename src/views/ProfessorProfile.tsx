@@ -390,7 +390,7 @@ export default function ProfessorProfile() {
 
           <div className="absolute top-6 left-6 lg:left-8 z-10">
             <Link
-              href="/professor-dashboard"
+              href="/dashboard/professor"
               className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-black/30"
             >
               <ArrowLeft className="w-5 h-5" />

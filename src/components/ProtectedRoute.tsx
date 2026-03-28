@@ -36,9 +36,9 @@ export function ProtectedRoute({
     if (!isAuthenticated || !user) {
       shouldRedirect = "/login";
     } else if (!isAllowed) {
-      if (userRole === "student") shouldRedirect = "/student-dashboard";
+      if (userRole === "student") shouldRedirect = "/dashboard/student";
       else if (userRole === "professor" || userRole === "admin")
-        shouldRedirect = "/professor-dashboard";
+        shouldRedirect = "/dashboard/professor";
       else shouldRedirect = "/login";
     }
   }
