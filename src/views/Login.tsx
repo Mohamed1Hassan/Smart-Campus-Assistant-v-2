@@ -221,9 +221,9 @@ export default function Login() {
               {/* Intelligent Responsive Header for Mobile */}
               <div className="mb-8 text-center lg:text-left flex flex-col items-center lg:items-start">
                 <motion.div 
-                  initial={{ scale: 0.9, opacity: 0 }}
+                  initial={{ scale: 0.9, opacity: 1 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.1, ease: "easeOut" }}
+                  transition={{ ease: "easeOut" }}
                   className="lg:hidden flex flex-col items-center mb-6"
                 >
                   <div className="flex items-center justify-center mb-4">
