@@ -177,9 +177,9 @@ export default function CourseCard({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute bottom-3 left-6 z-20">
-            <h3 className="text-lg font-bold text-white leading-tight shadow-black/50 drop-shadow-md">
+            <h2 className="text-lg font-bold text-white leading-tight shadow-black/50 drop-shadow-md">
               {course.name}
-            </h3>
+            </h2>
             <p className="text-sm text-gray-200 font-mono">{course.code}</p>
           </div>
 
@@ -192,6 +192,8 @@ export default function CourseCard({
                   setShowQuickActions(!showQuickActions);
                 }}
                 className="p-1.5 text-white/80 hover:text-white hover:bg-black/20 rounded-lg transition-colors"
+                aria-label="Quick actions"
+                aria-expanded={showQuickActions}
               >
                 <MoreVertical className="w-5 h-5" />
               </button>
@@ -261,9 +263,9 @@ export default function CourseCard({
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-textDark group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-textDark group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                 {course.name}
-              </h3>
+              </h2>
               <p className="text-sm text-gray-500 dark:text-mutedDark font-mono">
                 {course.code}
               </p>
@@ -284,6 +286,8 @@ export default function CourseCard({
                   setShowQuickActions(!showQuickActions);
                 }}
                 className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Quick actions"
+                aria-expanded={showQuickActions}
               >
                 <MoreVertical className="w-5 h-5" />
               </button>

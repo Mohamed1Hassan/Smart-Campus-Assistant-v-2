@@ -259,12 +259,14 @@ export default function MyCourses() {
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                aria-label="Grid view"
               >
                 <LayoutGrid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                aria-label="List view"
               >
                 <List className="w-5 h-5" />
               </button>
@@ -352,14 +354,15 @@ export default function MyCourses() {
                               handleDeleteCourse(course.id);
                             }}
                             className="p-2.5 bg-black/40 backdrop-blur-md rounded-xl text-white/90 hover:bg-red-500 transition-colors"
+                            aria-label={`Delete ${course.name}`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
-                      <h3 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-200 transition-colors">
+                      <h2 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-200 transition-colors">
                         {course.name}
-                      </h3>
+                      </h2>
                     </div>
                   </div>
                 )}
@@ -378,9 +381,9 @@ export default function MyCourses() {
                         {course.code.substring(0, 2)}
                       </div>
                       <div>
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {course.name}
-                        </h3>
+                        </h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                           {course.code} • {course.semester}{" "}
                           {course.academicYear}
@@ -447,7 +450,10 @@ export default function MyCourses() {
                         Manage Course
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
-                      <button className="p-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors border border-gray-100 dark:border-gray-700 shadow-sm">
+                      <button 
+                        className="p-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors border border-gray-100 dark:border-gray-700 shadow-sm"
+                        aria-label={`Edit ${course.name}`}
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
                     </div>
@@ -485,9 +491,9 @@ export default function MyCourses() {
             <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <BookOpen className="w-10 h-10 text-blue-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               No courses found
-            </h3>
+            </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
               Get started by creating your first course. You can manage
               students, attendance, and materials.
