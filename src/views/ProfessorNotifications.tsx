@@ -625,12 +625,7 @@ export default function ProfessorNotifications() {
             aria-labelledby="notifications-header"
             className="relative z-10"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8"
-            >
+            <div className="mb-8">
               <div className="flex items-center gap-6 mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <Bell className="w-9 h-9 text-white" />
@@ -695,9 +690,7 @@ export default function ProfessorNotifications() {
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 {notifications.length > 0 && (
                   <>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <button
                       onClick={handleMarkAllAsRead}
                       disabled={unreadCount === 0}
                       className={`
@@ -712,35 +705,29 @@ export default function ProfessorNotifications() {
                     >
                       <CheckCheck className="w-4 h-4" />
                       Mark All as Read
-                    </motion.button>
+                    </button>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <button
                       onClick={handleClearAll}
                       className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-all duration-200"
                       aria-label="Clear all notifications"
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear All
-                    </motion.button>
+                    </button>
                   </>
                 )}
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={() => setShowComposeModal(true)}
                   className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/20 transition-all duration-200"
                   aria-label="Compose new notification"
                 >
                   <Bell className="w-4 h-4" />
                   Compose
-                </motion.button>
+                </button>
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={async () => {
                     setIsAutoRefreshing(true);
                     await handleRefresh();
@@ -755,10 +742,9 @@ export default function ProfessorNotifications() {
                     className={`w-4 h-4 ${isAutoRefreshing ? "animate-spin" : ""}`}
                   />
                   Refresh
-                </motion.button>
+                </button>
               </div>
-            </motion.div>
-          </section>
+            </section>
 
           {/* Filter Bar */}
           <FilterBar
@@ -813,11 +799,7 @@ export default function ProfessorNotifications() {
         {/* Compose Modal */}
         {showComposeModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-gray-800"
-            >
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-gray-800">
               <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Compose Notification
@@ -942,9 +924,8 @@ export default function ProfessorNotifications() {
                   className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 transition-all disabled:opacity-50"
                 >
                   {isSending ? "Sending..." : "Send Notification"}
-                </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
       </DashboardLayout>
