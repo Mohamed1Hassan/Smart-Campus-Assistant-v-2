@@ -1,21 +1,36 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { Bell, CheckCheck, Trash2, RefreshCw, Search } from "lucide-react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import { sendBulkNotificationAction } from "../actions/notification.actions";
 import { getAllCoursesAction } from "../actions/course.actions";
-import FilterBar, {
-  FilterType,
-} from "../components/professor/notifications/FilterBar";
-import NotificationsList from "../components/professor/notifications/NotificationsList";
-import EmptyState from "../components/professor/notifications/EmptyState";
+import { FilterType } from "../components/professor/notifications/FilterBar";
 import { NotificationItem } from "../components/professor/notifications/NotificationCard";
 import { NotificationType, NotificationCategory } from "@/types/notification.types";
 import { useToast } from "../components/common/ToastProvider";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { apiClient } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  mockNotifications,
+  parseTimestamp,
+  isToday,
+  isYesterday,
+  isThisWeek,
+  formatRelativeTime,
+} from "../components/professor/notifications/constants";
+
+// Dynamic imports for secondary components to reduce initial bundle size
+const FilterBar = dynamic(() => import("../components/professor/notifications/FilterBar"), {
+  ssr: false,
+});
+const NotificationsList = dynamic(() => import("../components/professor/notifications/NotificationsList"), {
+  ssr: false,
+});
+const EmptyState = dynamic(() => import("../components/professor/notifications/EmptyState"), {
+  ssr: false,
+});
 
 const DEV = process.env.NODE_ENV === "development";
 
@@ -30,185 +45,7 @@ const NotificationSkeleton = () => (
   </div>
 );
 
-// Mock notification data for professors
-const mockNotifications: NotificationItem[] = [
-  {
-    id: "1",
-    type: "submission",
-    title: "New Assignment Submitted",
-    description: "Ahmed Hassan submitted AI Project - Final FileText.",
-    timestamp: "5 minutes ago",
-    read: false,
-    studentName: "Ahmed Hassan",
-    courseName: "AI Project",
-  },
-  {
-    id: "2",
-    type: "message",
-    title: "New Message Received",
-    description:
-      "Sara Mohamed asked a question about the Machine Learning assignment.",
-    timestamp: "15 minutes ago",
-    read: false,
-    studentName: "Sara Mohamed",
-    courseName: "Machine Learning",
-  },
-  {
-    id: "3",
-    type: "assignment",
-    title: "Assignment Reminder",
-    description: "Data Structures Project deadline is in 2 days.",
-    timestamp: "1 hour ago",
-    read: true,
-    courseName: "Data Structures",
-  },
-  {
-    id: "4",
-    type: "schedule",
-    title: "Class Schedule Update",
-    description: "Operating Systems class moved from Room 205 to Room 301.",
-    timestamp: "2 hours ago",
-    read: false,
-    courseName: "Operating Systems",
-  },
-  {
-    id: "5",
-    type: "system",
-    title: "System Maintenance Alert",
-    description: "LMS will be under maintenance tonight from 11 PM to 2 AM.",
-    timestamp: "3 hours ago",
-    read: true,
-  },
-  {
-    id: "6",
-    type: "submission",
-    title: "Lab FileText Submitted",
-    description: "Omar Ali submitted Database Systems Lab FileText #3.",
-    timestamp: "4 hours ago",
-    read: true,
-    studentName: "Omar Ali",
-    courseName: "Database Systems",
-  },
-  {
-    id: "7",
-    type: "message",
-    title: "Question About Grading",
-    description: "Fatima Ahmed has a question about her recent quiz grade.",
-    timestamp: "6 hours ago",
-    read: false,
-    studentName: "Fatima Ahmed",
-    courseName: "Software Engineering",
-  },
-  {
-    id: "8",
-    type: "assignment",
-    title: "Assignment Deadline Extended",
-    description: "Machine Learning Project deadline extended by 2 days.",
-    timestamp: "1 day ago",
-    read: true,
-    courseName: "Machine Learning",
-  },
-  {
-    id: "9",
-    type: "submission",
-    title: "Quiz Completed",
-    description: "Youssef Ibrahim completed the Linear Algebra Quiz #3.",
-    timestamp: "2 days ago",
-    read: false,
-    studentName: "Youssef Ibrahim",
-    courseName: "Linear Algebra",
-  },
-  {
-    id: "10",
-    type: "message",
-    title: "Office Hours Request",
-    description:
-      "Nour Hassan requested an office hours appointment for next week.",
-    timestamp: "3 days ago",
-    read: true,
-    studentName: "Nour Hassan",
-    courseName: "Data Structures",
-  },
-];
-
-// Helper to parse timestamp
-const parseTimestamp = (ts: string): Date => {
-  // Try ISO format first
-  const isoDate = new Date(ts);
-  if (!isNaN(isoDate.getTime())) {
-    return isoDate;
-  }
-
-  // Parse relative time like "5 minutes ago", "1 hour ago", "2 days ago"
-  const now = new Date();
-  const matches = ts.match(/(\d+)\s+(minute|hour|day|week|month)s?\s+ago/i);
-  if (matches) {
-    const amount = parseInt(matches[1]);
-    const unit = matches[2].toLowerCase();
-    const date = new Date(now);
-
-    switch (unit) {
-      case "minute":
-        date.setMinutes(date.getMinutes() - amount);
-        break;
-      case "hour":
-        date.setHours(date.getHours() - amount);
-        break;
-      case "day":
-        date.setDate(date.getDate() - amount);
-        break;
-      case "week":
-        date.setDate(date.getDate() - amount * 7);
-        break;
-      case "month":
-        date.setMonth(date.getMonth() - amount);
-        break;
-    }
-    return date;
-  }
-
-  return now;
-};
-
-const isToday = (date: Date): boolean => {
-  const today = new Date();
-  return (
-    date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear()
-  );
-};
-
-const isYesterday = (date: Date): boolean => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return (
-    date.getDate() === yesterday.getDate() &&
-    date.getMonth() === yesterday.getMonth() &&
-    date.getFullYear() === yesterday.getFullYear()
-  );
-};
-
-const isThisWeek = (date: Date): boolean => {
-  const now = new Date();
-  const weekAgo = new Date(now);
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  return date > weekAgo && !isToday(date) && !isYesterday(date);
-};
-
-const formatRelativeTime = (date: Date): string => {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-
-  if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
-  if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
-  if (days < 7) return `${days} day${days !== 1 ? "s" : ""} ago`;
-  return date.toLocaleDateString();
-};
+// No content needed here as helpers moved to constants.ts
 
 interface NotificationGroup {
   label: string;
@@ -795,20 +632,11 @@ export default function ProfessorNotifications() {
               className="mb-8"
             >
               <div className="flex items-center gap-6 mb-6">
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="w-16 h-16 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg"
-                >
+                <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <Bell className="w-9 h-9 text-white" />
-                </motion.div>
+                </div>
                 <div className="flex-1">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="inline-flex items-center gap-3 mb-2"
-                  >
+                  <div className="inline-flex items-center gap-3 mb-2">
                     <h1
                       id="notifications-header"
                       className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-textDark"
@@ -816,22 +644,12 @@ export default function ProfessorNotifications() {
                       Notifications
                     </h1>
                     {unreadCount > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.1, type: "spring" }}
-                        className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-xs font-bold"
-                        aria-label={`${unreadCount} unread notifications`}
-                      >
+                      <span className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-xs font-bold">
                         {unreadCount}
-                      </motion.span>
+                      </span>
                     )}
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-4"
-                  >
+                  </div>
+                  <div className="flex items-center gap-4">
                     <p className="text-gray-700 dark:text-gray-300 text-lg lg:text-xl font-medium">
                       Stay updated with your latest course and student
                       activities
@@ -846,7 +664,7 @@ export default function ProfessorNotifications() {
                         <span>Last synced: {formatRelativeTime(lastSync)}</span>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
               </div>
 
