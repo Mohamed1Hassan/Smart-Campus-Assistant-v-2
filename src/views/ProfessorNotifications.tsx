@@ -805,9 +805,8 @@ export default function ProfessorNotifications() {
                 </motion.div>
                 <div className="flex-1">
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     className="inline-flex items-center gap-3 mb-2"
                   >
                     <h1
@@ -829,9 +828,8 @@ export default function ProfessorNotifications() {
                     )}
                   </motion.div>
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     className="flex items-center gap-4"
                   >
                     <p className="text-gray-700 dark:text-gray-300 text-lg lg:text-xl font-medium">
