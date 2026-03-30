@@ -744,7 +744,8 @@ export default function ProfessorNotifications() {
                   Refresh
                 </button>
               </div>
-            </section>
+            </div>
+          </section>
 
           {/* Filter Bar */}
           <FilterBar
@@ -924,9 +925,11 @@ export default function ProfessorNotifications() {
                   className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 transition-all disabled:opacity-50"
                 >
                   {isSending ? "Sending..." : "Send Notification"}
+                </button>
               </div>
             </div>
           </div>
+        </div>
         )}
       </DashboardLayout>
     </ErrorBoundary>
