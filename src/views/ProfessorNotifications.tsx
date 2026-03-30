@@ -776,12 +776,6 @@ export default function ProfessorNotifications() {
         userType="professor"
       >
         <div className="max-w-4xl mx-auto relative">
-          {/* Background Gradients */}
-          <div className="fixed inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl opacity-50" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-600/5 rounded-full blur-3xl opacity-50" />
-          </div>
-
           {/* A11y: Screen reader announcements */}
           <div aria-live="polite" aria-atomic="true" className="sr-only">
             {unreadCount > 0
@@ -826,8 +820,8 @@ export default function ProfessorNotifications() {
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.4, type: "spring" }}
-                        className="px-2 py-0.5 rounded-full bg-violet-500 text-white text-xs font-semibold"
+                        transition={{ delay: 0.1, type: "spring" }}
+                        className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-xs font-bold"
                         aria-label={`${unreadCount} unread notifications`}
                       >
                         {unreadCount}
@@ -844,7 +838,7 @@ export default function ProfessorNotifications() {
                       Stay updated with your latest course and student
                       activities
                     </p>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-gray-800 dark:text-gray-200 font-medium">
                       {isAutoRefreshing ? (
                         <span className="flex items-center gap-1">
                           <RefreshCw className="w-3 h-3 animate-spin" />
