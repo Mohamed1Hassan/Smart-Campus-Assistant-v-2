@@ -1,5 +1,17 @@
+import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useParams } from "next/navigation";
+import {
+  Layout,
+  Clock,
+  MapPin,
+  Shield,
+  ArrowLeft,
+  ChevronRight,
+  RefreshCw,
+  Sparkles,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import DashboardLayout from "../components/common/DashboardLayout";
 import { useAuth } from "../contexts/AuthContext";
 import { useAttendanceSessions } from "../hooks/useAttendanceSessions";
