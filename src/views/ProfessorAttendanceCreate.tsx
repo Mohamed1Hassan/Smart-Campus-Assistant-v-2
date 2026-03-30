@@ -334,6 +334,7 @@ export default function ProfessorAttendanceCreate() {
           <button
             onClick={() => router.back()}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+            aria-label="Go back to attendance list"
           >
             <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </button>
@@ -341,7 +342,7 @@ export default function ProfessorAttendanceCreate() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               {isEditMode ? "Edit Session" : "Create Session"}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {isEditMode
                 ? "Modify existing attendance session"
                 : "Configure a new attendance session"}
@@ -363,9 +364,17 @@ export default function ProfessorAttendanceCreate() {
                     className={`flex items-center gap-2 cursor-pointer group ${
                       index <= currentStep
                         ? "text-purple-600 dark:text-purple-400"
-                        : "text-gray-400"
+                        : "text-gray-600"
                     }`}
                     onClick={() => setCurrentStep(index)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Step ${index + 1}: ${step.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setCurrentStep(index);
+                      }
+                    }}
                   >
                     <div
                       className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all ${
@@ -405,16 +414,20 @@ export default function ProfessorAttendanceCreate() {
                     className="space-y-6"
                   >
                     <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                         Session Details
-                      </h3>
+                      </h2>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label 
+                            htmlFor="course-select"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                          >
                             Course
                           </label>
                           <select
+                            id="course-select"
                             value={formData.courseId}
                             onChange={(e) =>
                               handleInputChange("courseId", e.target.value)
@@ -440,10 +453,14 @@ export default function ProfessorAttendanceCreate() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label 
+                            htmlFor="session-title"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                          >
                             Title
                           </label>
                           <input
+                            id="session-title"
                             type="text"
                             value={formData.title}
                             onChange={(e) =>
@@ -464,10 +481,14 @@ export default function ProfessorAttendanceCreate() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label 
+                            htmlFor="session-description"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                          >
                             Description (Optional)
                           </label>
                           <textarea
+                            id="session-description"
                             value={formData.description}
                             onChange={(e) =>
                               handleInputChange("description", e.target.value)
@@ -491,13 +512,16 @@ export default function ProfessorAttendanceCreate() {
                     className="space-y-6"
                   >
                     <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                         Timing
-                      </h3>
+                      </h2>
 
                       <div className="space-y-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label 
+                            htmlFor="session-start-time"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                          >
                             Start Time
                           </label>
                           <div className="flex flex-wrap gap-2 mb-3">
@@ -521,6 +545,7 @@ export default function ProfessorAttendanceCreate() {
                             </button>
                           </div>
                           <input
+                            id="session-start-time"
                             type="datetime-local"
                             value={formData.startTime}
                             onChange={(e) =>
@@ -540,11 +565,15 @@ export default function ProfessorAttendanceCreate() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label 
+                            htmlFor="session-duration-range"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                          >
                             Duration (Hours)
                           </label>
                           <div className="flex items-center gap-4">
                             <input
+                              id="session-duration-range"
                               type="range"
                               min="0.5"
                               max="4"
@@ -557,6 +586,7 @@ export default function ProfessorAttendanceCreate() {
                                 )
                               }
                               className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                              aria-label={`Duration: ${formData.duration} hours`}
                             />
                             <span className="w-16 text-center font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg">
                               {formData.duration}h
@@ -578,9 +608,9 @@ export default function ProfessorAttendanceCreate() {
                   >
                     <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                           Location Settings
-                        </h3>
+                        </h2>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
                             type="checkbox"
@@ -592,6 +622,7 @@ export default function ProfessorAttendanceCreate() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Require location geofencing"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
@@ -790,9 +821,9 @@ export default function ProfessorAttendanceCreate() {
                     className="space-y-6"
                   >
                     <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
+                      <h2 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
                         Security Measures
-                      </h3>
+                      </h2>
 
                       <div className="space-y-6">
                         {[
@@ -827,7 +858,7 @@ export default function ProfessorAttendanceCreate() {
                                 <p className="font-medium text-gray-900 dark:text-white">
                                   {item.label}
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
                                   {item.desc}
                                 </p>
                               </div>
@@ -904,9 +935,9 @@ export default function ProfessorAttendanceCreate() {
           {/* Right Column - Live Preview */}
           <div className="hidden lg:block w-[380px] flex-shrink-0">
             <div className="sticky top-6">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+              <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">
                 Live Preview
-              </h3>
+              </h2>
 
               <div className="bg-white dark:bg-cardDark rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
                 {/* Phone Frame / Card Preview */}
@@ -934,7 +965,7 @@ export default function ProfessorAttendanceCreate() {
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         Time
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {formData.startTime
                           ? new Date(formData.startTime).toLocaleString([], {
                               dateStyle: "medium",
@@ -942,7 +973,7 @@ export default function ProfessorAttendanceCreate() {
                             })
                           : "Not set"}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-gray-600 mt-0.5">
                         {formData.duration} hours duration
                       </p>
                     </div>
@@ -956,11 +987,11 @@ export default function ProfessorAttendanceCreate() {
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         Location
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {formData.location.name || "No location set"}
                       </p>
                       {formData.security.isLocationRequired && (
-                        <p className="text-xs text-green-600 mt-0.5 flex items-center gap-1">
+                        <p className="text-xs text-green-700 dark:text-green-500 mt-0.5 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" /> Geofencing Active
                         </p>
                       )}
@@ -968,7 +999,7 @@ export default function ProfessorAttendanceCreate() {
                   </div>
 
                   <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs font-medium text-gray-500 mb-3">
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
                       Security Features
                     </p>
                     <div className="flex gap-2 flex-wrap">
