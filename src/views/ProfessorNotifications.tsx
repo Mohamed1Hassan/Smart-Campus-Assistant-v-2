@@ -19,6 +19,17 @@ import { useAuth } from "../contexts/AuthContext";
 
 const DEV = process.env.NODE_ENV === "development";
 
+const NotificationSkeleton = () => (
+  <div className="space-y-4 animate-pulse">
+    {[1, 2, 3].map((i) => (
+      <div
+        key={i}
+        className="h-32 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700"
+      />
+    ))}
+  </div>
+);
+
 // Mock notification data for professors
 const mockNotifications: NotificationItem[] = [
   {
@@ -238,6 +249,7 @@ export default function ProfessorNotifications() {
     category: NotificationCategory.ANNOUNCEMENT,
   });
   const [isSending, setIsSending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Load state from localStorage
   useEffect(() => {
@@ -280,6 +292,7 @@ export default function ProfessorNotifications() {
     if (!isAuthenticated) return;
     
     const loadRawNotifications = async () => {
+      setLoading(true);
       try {
         const res = await apiClient.get(
           "/api/notifications?userType=professor",
@@ -288,8 +301,7 @@ export default function ProfessorNotifications() {
           // Standardize response: handle either { data: [...] } or { data: { notifications: [...] } }
           const notificationsData = Array.isArray(res.data)
             ? res.data
-            :  
-              res.data &&
+            : res.data &&
                 typeof res.data === "object" &&
                 "notifications" in res.data &&
                 Array.isArray(
@@ -301,16 +313,13 @@ export default function ProfessorNotifications() {
           if (notificationsData) {
             setNotifications(notificationsData as NotificationItem[]);
             setLastSync(new Date());
-            if (DEV)
-              console.log(
-                "Notifications loaded from API:",
-                notificationsData.length,
-              );
             return;
           }
         }
       } catch {
         if (DEV) console.warn("Failed to load from API, using fallback");
+      } finally {
+        setLoading(false);
       }
 
       const savedNotifications = localStorage.getItem(
@@ -769,8 +778,8 @@ export default function ProfessorNotifications() {
         <div className="max-w-4xl mx-auto relative">
           {/* Background Gradients */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl opacity-50" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-600/5 rounded-full blur-3xl opacity-50" />
           </div>
 
           {/* A11y: Screen reader announcements */}
@@ -831,7 +840,7 @@ export default function ProfessorNotifications() {
                     transition={{ delay: 0.4 }}
                     className="flex items-center gap-4"
                   >
-                    <p className="text-gray-600 dark:text-mutedDark text-lg lg:text-xl">
+                    <p className="text-gray-700 dark:text-gray-300 text-lg lg:text-xl font-medium">
                       Stay updated with your latest course and student
                       activities
                     </p>
@@ -949,8 +958,14 @@ export default function ProfessorNotifications() {
           />
 
           {/* Notifications Content */}
-          <section aria-live="polite" aria-label="Notifications list">
-            {notifications.length === 0 ? (
+          <section
+            aria-live="polite"
+            aria-label="Notifications list"
+            className="min-h-[400px]"
+          >
+            {loading ? (
+              <NotificationSkeleton />
+            ) : notifications.length === 0 ? (
               <EmptyState onRefresh={handleRefresh} type="empty" />
             ) : processedNotifications.length === 0 ? (
               <EmptyState

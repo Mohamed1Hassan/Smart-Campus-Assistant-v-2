@@ -35,20 +35,20 @@ export default function EmptyState({
           <SearchX className="w-12 h-12 text-gray-400 dark:text-gray-500" />
         </motion.div>
 
-        <motion.h3
+        <motion.h2
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3"
+          className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3"
         >
           No notifications match your filters
-        </motion.h3>
+        </motion.h2>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto"
+          className="text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto font-medium"
         >
           Try adjusting your search or filter settings to see more
           notifications.
@@ -106,20 +106,20 @@ export default function EmptyState({
         <Bell className="w-12 h-12 text-blue-600 dark:text-blue-400" />
       </motion.div>
 
-      <motion.h3
+      <motion.h2
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3"
+        className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3"
       >
-        No new notifications 🎉
-      </motion.h3>
+        No new notifications 🥳
+      </motion.h2>
 
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
-        className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto"
+        className="text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto font-medium"
       >
         You&apos;re all caught up! When you receive new notifications about
         student submissions, messages, or system updates, they&apos;ll appear
