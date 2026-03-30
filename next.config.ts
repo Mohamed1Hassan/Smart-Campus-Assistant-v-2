@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: join(process.cwd(), ".."),
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

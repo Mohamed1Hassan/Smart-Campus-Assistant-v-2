@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import {
   Search,
   Plus,
@@ -15,14 +16,26 @@ import {
   TrendingUp,
   AlertTriangle,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  XAxis,
-} from "recharts";
+
+const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), {
+  ssr: false,
+});
+const Bar = dynamic(() => import("recharts").then((mod) => mod.Bar), {
+  ssr: false,
+});
+const Cell = dynamic(() => import("recharts").then((mod) => mod.Cell), {
+  ssr: false,
+});
+const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), {
+  ssr: false,
+});
+const ResponsiveContainer = dynamic(
+  () => import("recharts").then((mod) => mod.ResponsiveContainer),
+  { ssr: false },
+);
+const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), {
+  ssr: false,
+});
 import DashboardLayout from "../components/common/DashboardLayout";
 import {
   getCourseGradesAction,
@@ -54,6 +67,12 @@ interface CourseEnrollment {
 }
 
 // --- Components ---
+
+const Skeleton = ({ className }: { className: string }) => (
+  <div
+    className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded-xl ${className}`}
+  />
+);
 
 const GlassCard = ({
   children,
@@ -242,7 +261,7 @@ export default function ProfessorGrades() {
                 Intelligence
               </span>
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">
+            <p className="text-gray-700 dark:text-gray-300 font-medium">
               Class performance distribution and at-risk student tracking.
             </p>
           </div>
@@ -264,9 +283,9 @@ export default function ProfessorGrades() {
           {/* Sidebar - Course Selection */}
           <div className="xl:col-span-1 space-y-6">
             <GlassCard className="p-6">
-              <h3 className="font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest text-xs mb-4">
+              <h2 className="font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest text-xs mb-4">
                 Active Modules
-              </h3>
+              </h2>
               <div className="space-y-3">
                 {courses.map(
                   (course: {
@@ -287,7 +306,7 @@ export default function ProfessorGrades() {
                         {course.courseName}
                       </p>
                       <p
-                        className={`text-[10px] uppercase tracking-widest mt-1 ${selectedCourse === course.id ? "text-indigo-200" : "text-gray-400"}`}
+                        className={`text-[10px] uppercase tracking-widest mt-1 font-bold ${selectedCourse === course.id ? "text-indigo-200" : "text-gray-600 dark:text-gray-400"}`}
                       >
                         {course.courseCode}
                       </p>
@@ -300,9 +319,9 @@ export default function ProfessorGrades() {
             {/* At-Risk Warning Panel */}
             {classAnalytics && classAnalytics.atRiskStudents.length > 0 && (
               <GlassCard variant="danger" className="p-6">
-                <h3 className="font-black text-red-600 dark:text-red-400 flex items-center gap-2 mb-4 text-sm">
+                <h2 className="font-black text-red-700 dark:text-red-400 flex items-center gap-2 mb-4 text-sm uppercase tracking-widest">
                   <AlertTriangle className="w-4 h-4" /> Critical Watchlist
-                </h3>
+                </h2>
                 <div className="space-y-3">
                   {classAnalytics.atRiskStudents.slice(0, 5).map((student) => (
                     <div
@@ -313,7 +332,7 @@ export default function ProfessorGrades() {
                         <p className="text-xs font-bold text-gray-900 dark:text-white truncate">
                           {student.name}
                         </p>
-                        <p className="text-[10px] text-gray-500">
+                        <p className="text-[10px] text-gray-700 dark:text-gray-300 font-bold">
                           {student.id}
                         </p>
                       </div>
@@ -338,10 +357,10 @@ export default function ProfessorGrades() {
             {selectedCourse ? (
               <>
                 {/* Analytics Row */}
-                {classAnalytics && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {classAnalytics ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[220px]">
                     <GlassCard className="p-8 flex flex-col justify-center">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                      <p className="text-[10px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest mb-2">
                         Class Median Performance
                       </p>
                       <div className="flex items-end gap-4">
@@ -361,14 +380,14 @@ export default function ProfessorGrades() {
                           )}
                         </div>
                       </div>
-                      <p className="text-xs font-medium text-gray-500 mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
                         Based on {grades.length} recorded assessments across{" "}
                         {classAnalytics.totalAssessed} students.
                       </p>
                     </GlassCard>
 
                     <GlassCard className="p-8">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
+                      <p className="text-[10px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest mb-6">
                         Performance Distribution (Bell Curve)
                       </p>
                       <div className="h-32 w-full">
@@ -415,15 +434,27 @@ export default function ProfessorGrades() {
                       </div>
                     </GlassCard>
                   </div>
-                )}
+                ) : isLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[220px]">
+                     <GlassCard className="p-8">
+                        <Skeleton className="h-4 w-32 mb-4" />
+                        <Skeleton className="h-16 w-48 mb-4" />
+                        <Skeleton className="h-12 w-full" />
+                     </GlassCard>
+                     <GlassCard className="p-8">
+                        <Skeleton className="h-4 w-32 mb-4" />
+                        <Skeleton className="h-28 w-full" />
+                     </GlassCard>
+                  </div>
+                ) : null}
 
                 {/* Grade Master Ledger */}
-                <GlassCard className="overflow-hidden">
+                <GlassCard className="overflow-hidden min-h-[400px]">
                   <div className="p-6 border-b border-gray-100 dark:border-gray-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h3 className="font-black text-gray-900 dark:text-white flex items-center gap-2">
+                    <h2 className="font-black text-gray-900 dark:text-white flex items-center gap-2">
                       <BookOpen className="w-5 h-5 text-indigo-500" />
                       Master Grade Ledger
-                    </h3>
+                    </h2>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
@@ -438,16 +469,16 @@ export default function ProfessorGrades() {
                     <table className="w-full text-left">
                       <thead className="bg-gray-50/50 dark:bg-gray-800/30">
                         <tr>
-                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
                             Student Profile
                           </th>
-                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
                             Assessment Focus
                           </th>
-                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
                             Metric Score
                           </th>
-                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
                             Timestamp
                           </th>
                         </tr>
@@ -473,7 +504,7 @@ export default function ProfessorGrades() {
                                       {grade.student.firstName}{" "}
                                       {grade.student.lastName}
                                     </p>
-                                    <p className="text-[10px] text-gray-400 font-mono mt-0.5">
+                                    <p className="text-[10px] text-gray-700 dark:text-gray-300 font-bold font-mono mt-0.5">
                                       {grade.student.universityId}
                                     </p>
                                   </div>
@@ -481,10 +512,10 @@ export default function ProfessorGrades() {
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-2">
-                                  <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-[10px] font-black uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded text-[10px] font-black uppercase tracking-wider">
                                     {grade.type}
                                   </span>
-                                  <span className="text-gray-600 dark:text-gray-400 font-medium text-xs">
+                                  <span className="text-gray-700 dark:text-gray-300 font-bold text-xs">
                                     {grade.quiz?.title || "General Activity"}
                                   </span>
                                 </div>
@@ -502,12 +533,12 @@ export default function ProfessorGrades() {
                                   >
                                     {grade.score} / {grade.maxScore}
                                   </div>
-                                  <span className="text-[10px] font-bold text-gray-400 hidden sm:inline-block">
+                                  <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 hidden sm:inline-block">
                                     ({percentage.toFixed(0)}%)
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-6 py-4 text-gray-400 text-xs font-medium">
+                              <td className="px-6 py-4 text-gray-700 dark:text-gray-300 text-xs font-black">
                                 {new Date(grade.createdAt).toLocaleDateString(
                                   undefined,
                                   {
@@ -520,16 +551,26 @@ export default function ProfessorGrades() {
                             </tr>
                           );
                         })}
+                        {isLoading && grades.length === 0 && (
+                           [1,2,3,4,5].map(i => (
+                             <tr key={i}>
+                               <td className="px-6 py-4"><Skeleton className="h-8 w-48" /></td>
+                               <td className="px-6 py-4"><Skeleton className="h-6 w-32" /></td>
+                               <td className="px-6 py-4"><Skeleton className="h-8 w-24" /></td>
+                               <td className="px-6 py-4"><Skeleton className="h-6 w-16" /></td>
+                             </tr>
+                           ))
+                        )}
                         {grades.length === 0 && !isLoading && (
                           <tr>
                             <td colSpan={4} className="px-6 py-16 text-center">
                               <div className="inline-flex bg-gray-50 dark:bg-gray-800 p-4 rounded-full mb-4">
-                                <AlertCircle className="w-8 h-8 text-gray-400" />
+                                <AlertCircle className="w-8 h-8 text-gray-600" />
                               </div>
-                              <p className="text-gray-500 font-bold">
+                              <p className="text-gray-700 dark:text-gray-300 font-black">
                                 Awaiting Assessment Data
                               </p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mt-1">
                                 Click &quot;Log Assessment&quot; above to record
                                 student performance.
                               </p>
@@ -546,10 +587,10 @@ export default function ProfessorGrades() {
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-3xl mb-6">
                   <BarChart3 className="w-16 h-16 text-indigo-400" />
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
                   Select a Course to Manage Grades
-                </h3>
-                <p className="text-gray-500 max-w-sm">
+                </h2>
+                <p className="text-gray-700 dark:text-gray-300 font-medium max-w-sm">
                   Select a course from the sidebar to view student performance,
                   track at-risk students, and log new grades.
                 </p>
@@ -586,7 +627,7 @@ export default function ProfessorGrades() {
 
                   <div className="space-y-6">
                     <div>
-                      <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                      <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                         Student Identifier
                       </label>
                       <select
@@ -613,7 +654,7 @@ export default function ProfessorGrades() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                        <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                           Achieved Score
                         </label>
                         <input
@@ -630,7 +671,7 @@ export default function ProfessorGrades() {
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                        <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                           Maximum Score
                         </label>
                         <input
@@ -648,7 +689,7 @@ export default function ProfessorGrades() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                      <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                         Assessment Category
                       </label>
                       <div className="grid grid-cols-3 gap-2">

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -20,11 +21,19 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/common/DashboardLayout";
-import AttendanceTable from "../components/professor/AttendanceTable";
-import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../components/common/ToastProvider";
 import { useAttendanceSessions } from "../hooks/useAttendanceSessions";
+
+// Dynamic imports for secondary/interactive components to reduce initial bundle size
+const AttendanceTable = dynamic(() => import("../components/professor/AttendanceTable"), {
+  loading: () => <div className="h-64 bg-gray-50 dark:bg-gray-800/50 animate-pulse rounded-2xl" />,
+  ssr: false
+});
+
+const ConfirmModal = dynamic(() => import("../components/ConfirmModal"), {
+  ssr: false
+});
 
 // Session types
 interface AttendanceSession {
@@ -215,39 +224,31 @@ export default function ProfessorAttendance() {
     <DashboardLayout
       userName={user ? `${user.firstName} ${user.lastName}` : "Professor"}
       userType="professor"
+      title="Attendance Management"
+      subtitle="Manage your class sessions and track student attendance in real-time."
     >
       <div className="max-w-7xl mx-auto space-y-8 pb-12">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 lg:gap-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-1 lg:mb-2">
-              Attendance Management
-            </h1>
-            <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
-              Manage your class sessions and track student attendance in
-              real-time.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 w-full lg:w-auto">
-            <button
-              onClick={() => loadSessions()}
-              className="p-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-              aria-label="Refresh sessions"
-            >
-              <RefreshCw
-                className={`w-5 h-5 ${isLoadingSessions ? "animate-spin" : ""}`}
-              />
-            </button>
-            <button
-              onClick={() =>
-                router.push("/dashboard/professor/attendance/create")
-              }
-              className="flex-1 lg:flex-none justify-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 font-medium flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Create Session
-            </button>
-          </div>
+        {/* Header Actions (Button is now separate from title for better LCP) */}
+        <div className="flex justify-end gap-3 -mt-4 lg:-mt-12 mb-8 relative z-10">
+          <button
+            onClick={() => loadSessions()}
+            className="p-2.5 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-xl transition-all"
+            aria-label="Refresh sessions"
+          >
+            <RefreshCw
+              className={`w-5 h-5 ${isLoadingSessions ? "animate-spin" : ""}`}
+            />
+          </button>
+          <button
+            onClick={() =>
+              router.push("/dashboard/professor/attendance/create")
+            }
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-600/20 font-semibold flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Create Session</span>
+            <span className="sm:hidden">Create</span>
+          </button>
         </div>
 
         {/* Stats Grid */}
@@ -280,9 +281,9 @@ export default function ProfessorAttendance() {
           ].map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
               className="bg-white dark:bg-cardDark p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden group"
             >
               <div
@@ -339,7 +340,7 @@ export default function ProfessorAttendance() {
                   placeholder="Search sessions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-400"
                   aria-label="Search sessions"
                 />
               </div>
@@ -352,7 +353,7 @@ export default function ProfessorAttendance() {
                         e.target.value as typeof sessionsStatusFilter,
                       )
                     }
-                    className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none font-medium text-gray-700 dark:text-gray-200"
                     aria-label="Filter sessions by status"
                   >
                   <option value="all">All Status</option>
@@ -370,9 +371,9 @@ export default function ProfessorAttendance() {
           {activeTab === "sessions" ? (
             <motion.div
               key="sessions"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              exit={{ opacity: 0, y: -10 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {filteredSessions.map((session) => (
@@ -535,10 +536,10 @@ export default function ProfessorAttendance() {
           ) : (
             <motion.div
               key="records"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-white dark:bg-cardDark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-white dark:bg-cardDark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-[400px]"
             >
               <AttendanceTable
                 records={[]}
@@ -549,30 +550,32 @@ export default function ProfessorAttendance() {
           )}
         </AnimatePresence>
 
-        <ConfirmModal
-          isOpen={showDeleteSessionModal}
-          onCancel={() => {
-            setShowDeleteSessionModal(false);
-            setSessionToDelete(null);
-          }}
-          onConfirm={async () => {
-            if (sessionToDelete) {
-              const session = sessions.find((s) => s.id === sessionToDelete);
-              const apiSessionId = session?.id || sessionToDelete;
-              if (await deleteSessionAPI(apiSessionId)) {
-                success("Session deleted successfully");
-                setShowDeleteSessionModal(false);
-                setSessionToDelete(null);
-                loadSessions();
-              } else {
-                showError("Failed to delete session");
+        {showDeleteSessionModal && (
+          <ConfirmModal
+            isOpen={showDeleteSessionModal}
+            onCancel={() => {
+              setShowDeleteSessionModal(false);
+              setSessionToDelete(null);
+            }}
+            onConfirm={async () => {
+              if (sessionToDelete) {
+                const session = sessions.find((s) => s.id === sessionToDelete);
+                const apiSessionId = session?.id || sessionToDelete;
+                if (await deleteSessionAPI(apiSessionId)) {
+                  success("Session deleted successfully");
+                  setShowDeleteSessionModal(false);
+                  setSessionToDelete(null);
+                  loadSessions();
+                } else {
+                  showError("Failed to delete session");
+                }
               }
-            }
-          }}
-          title="Delete Session"
-          message="Are you sure you want to delete this session? This action cannot be undone."
-          confirmText="Delete"
-        />
+            }}
+            title="Delete Session"
+            message="Are you sure you want to delete this session? This action cannot be undone."
+            confirmText="Delete"
+          />
+        )}
       </div>
     </DashboardLayout>
   );

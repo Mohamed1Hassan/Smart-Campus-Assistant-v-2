@@ -71,13 +71,13 @@ export default function ChatInput({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={isLoading}
-            className="w-full px-4 py-3 pr-12 bg-gray-50 dark:bg-darkBg border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-textDark placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none min-h-[48px] max-h-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 pr-12 bg-gray-50 dark:bg-darkBg border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-textDark placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none min-h-[48px] max-h-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
             rows={1}
           />
 
           {/* Character count */}
           {message.length > 0 && (
-            <div className="absolute bottom-1 right-3 text-xs text-gray-400 dark:text-gray-500">
+            <div className="absolute bottom-1 right-3 text-xs text-gray-600 dark:text-gray-300 font-medium">
               {message.length}/1000
             </div>
           )}
@@ -88,7 +88,8 @@ export default function ChatInput({
           disabled={!message.trim() || isLoading}
           whileHover={{ scale: isLoading ? 1 : 1.05 }}
           whileTap={{ scale: isLoading ? 1 : 0.95 }}
-          className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white rounded-xl transition-all duration-200 flex items-center justify-center min-w-[48px] disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+          aria-label="Send message"
+          className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 dark:disabled:bg-gray-600 text-white rounded-xl transition-all duration-200 flex items-center justify-center min-w-[48px] disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
         >
           {isLoading ? (
             <motion.div
@@ -104,7 +105,7 @@ export default function ChatInput({
       </form>
 
       {/* Helper text */}
-      <p className="text-xs text-gray-500 dark:text-mutedDark mt-2 text-center">
+      <p className="text-xs text-gray-700 dark:text-gray-300 font-medium mt-2 text-center">
         Press Enter to send, Shift+Enter for new line
       </p>
     </motion.div>

@@ -241,41 +241,32 @@ export default function ProfessorAttendanceSettings() {
     <DashboardLayout
       userName={user ? `${user.firstName} ${user.lastName}` : "Professor"}
       userType="professor"
+      title="Security Settings"
+      subtitle="Configure attendance policies and security."
     >
       <div className="max-w-7xl mx-auto h-auto lg:h-[calc(100vh-8rem)] flex flex-col pb-20 lg:pb-0">
-        {/* Header */}
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push("/professor-attendance")}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Security Settings
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Configure attendance policies and security.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="w-full sm:w-auto px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200 dark:shadow-none"
-            >
-              {isSaving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              Save Changes
-            </button>
-          </div>
+        {/* Header Actions (Button is now separate from title for better LCP) */}
+        <div className="flex justify-end gap-3 -mt-4 lg:-mt-12 mb-8 relative z-10">
+          <button
+            onClick={() => router.push("/dashboard/professor/attendance/sessions")}
+            className="p-2.5 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-xl transition-all"
+            aria-label="Go back to sessions"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            aria-label={isSaving ? "Saving changes..." : "Save changes"}
+            className="px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200 dark:shadow-none"
+          >
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            Save
+          </button>
         </div>
 
         <div className="flex-1 flex flex-col lg:flex-row gap-6 lg:gap-8 min-h-0">
@@ -301,7 +292,7 @@ export default function ProfessorAttendanceSettings() {
             </div>
 
             <div className="mt-4 lg:mt-8 px-0 lg:px-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 hidden lg:block">
+              <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-3 hidden lg:block">
                 Quick Presets
               </p>
               <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 no-scrollbar">
@@ -323,12 +314,12 @@ export default function ProfessorAttendanceSettings() {
                             className={`w-4 h-4 text-${preset.color}-600 dark:text-${preset.color}-400`}
                           />
                           <span
-                            className={`text-sm font-medium text-${preset.color}-900 dark:text-${preset.color}-100`}
+                            className={`text-sm font-semibold text-${preset.color}-900 dark:text-${preset.color}-100`}
                           >
                             {preset.name}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1">
                           {preset.description}
                         </p>
                       </button>
@@ -346,16 +337,17 @@ export default function ProfessorAttendanceSettings() {
                 {activeSection === "security" && (
                   <motion.div
                     key="security"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
                     className="space-y-8"
                   >
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                         General Security
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
                         Configure base security parameters for all sessions.
                       </p>
                     </div>
@@ -363,15 +355,17 @@ export default function ProfessorAttendanceSettings() {
                     <div className="space-y-6">
                       <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Grace Period
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Time allowed after session start before marked late
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
+                          <label htmlFor="grace-period" className="sr-only">Grace Period (minutes)</label>
                           <input
+                            id="grace-period"
                             type="range"
                             min="0"
                             max="30"
@@ -383,9 +377,9 @@ export default function ProfessorAttendanceSettings() {
                                 parseInt(e.target.value),
                               )
                             }
-                            className="w-32 accent-purple-600"
+                            className="w-32 accent-purple-600 cursor-pointer"
                           />
-                          <span className="w-16 text-center font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                          <span className="w-16 text-center font-mono font-bold bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-400">
                             {settings.security.defaultGracePeriod}m
                           </span>
                         </div>
@@ -393,15 +387,17 @@ export default function ProfessorAttendanceSettings() {
 
                       <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Risk Threshold
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Minimum confidence score to accept attendance
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
+                          <label htmlFor="risk-threshold" className="sr-only">Risk Threshold (%)</label>
                           <input
+                            id="risk-threshold"
                             type="range"
                             min="0"
                             max="100"
@@ -413,9 +409,9 @@ export default function ProfessorAttendanceSettings() {
                                 parseInt(e.target.value),
                               )
                             }
-                            className="w-32 accent-purple-600"
+                            className="w-32 accent-purple-600 cursor-pointer"
                           />
-                          <span className="w-16 text-center font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                          <span className="w-16 text-center font-mono font-bold bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-400">
                             {settings.security.defaultRiskThreshold}%
                           </span>
                         </div>
@@ -427,16 +423,17 @@ export default function ProfessorAttendanceSettings() {
                 {activeSection === "location" && (
                   <motion.div
                     key="location"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
                     className="space-y-8"
                   >
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                         Location & Geofencing
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
                         Manage location-based restrictions.
                       </p>
                     </div>
@@ -444,26 +441,27 @@ export default function ProfessorAttendanceSettings() {
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Enable Geofencing
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Restrict attendance to specific coordinates
                           </p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={settings.location.enableGeofencing}
-                            onChange={(e) =>
-                              handleSettingChange(
-                                "location",
-                                "enableGeofencing",
-                                e.target.checked,
-                              )
-                            }
-                            className="sr-only peer"
-                          />
+                            <input
+                              type="checkbox"
+                              checked={settings.location.enableGeofencing}
+                              onChange={(e) =>
+                                handleSettingChange(
+                                  "location",
+                                  "enableGeofencing",
+                                  e.target.checked,
+                                )
+                              }
+                              className="sr-only peer"
+                              aria-label="Enable Geofencing"
+                            />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
                       </div>
@@ -473,15 +471,17 @@ export default function ProfessorAttendanceSettings() {
                       >
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">
+                            <p className="font-semibold text-gray-900 dark:text-white">
                               Default Radius
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                               Allowed distance from session location
                             </p>
                           </div>
                           <div className="flex items-center gap-4">
+                            <label htmlFor="default-radius" className="sr-only">Default Radius (meters)</label>
                             <input
+                              id="default-radius"
                               type="range"
                               min="10"
                               max="500"
@@ -494,9 +494,9 @@ export default function ProfessorAttendanceSettings() {
                                   parseInt(e.target.value),
                                 )
                               }
-                              className="w-32 accent-purple-600"
+                              className="w-32 accent-purple-600 cursor-pointer"
                             />
-                            <span className="w-16 text-center font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                            <span className="w-16 text-center font-mono font-bold bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-400">
                               {settings.location.defaultRadius}m
                             </span>
                           </div>
@@ -510,26 +510,27 @@ export default function ProfessorAttendanceSettings() {
                 {activeSection === "device" && (
                   <motion.div
                     key="device"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
                     className="space-y-8"
                   >
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                         Device Restrictions
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
                         Prevent fraud using device fingerprinting.
                       </p>
                     </div>
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Device Fingerprinting
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Identify unique devices to prevent sharing
                           </p>
                         </div>
@@ -545,6 +546,7 @@ export default function ProfessorAttendanceSettings() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Enable Device Fingerprinting"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
@@ -556,26 +558,27 @@ export default function ProfessorAttendanceSettings() {
                 {activeSection === "photo" && (
                   <motion.div
                     key="photo"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
                     className="space-y-8"
                   >
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                         Photo Verification
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
                         Configure photo requirements for attendance.
                       </p>
                     </div>
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Require Photo
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Students must take a selfie to mark attendance
                           </p>
                         </div>
@@ -591,6 +594,7 @@ export default function ProfessorAttendanceSettings() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Require Photo Verification"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
@@ -600,10 +604,10 @@ export default function ProfessorAttendanceSettings() {
                       >
                         <div className="flex items-center justify-between mt-4">
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">
+                            <p className="font-semibold text-gray-900 dark:text-white">
                               Face Detection
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                               Verify that a face is present in the photo
                             </p>
                           </div>
@@ -619,6 +623,7 @@ export default function ProfessorAttendanceSettings() {
                                 )
                               }
                               className="sr-only peer"
+                              aria-label="Enable Face Detection"
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                           </label>
@@ -631,26 +636,27 @@ export default function ProfessorAttendanceSettings() {
                 {activeSection === "notifications" && (
                   <motion.div
                     key="notifications"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
                     className="space-y-8"
                   >
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                         Notifications
                       </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
                         Manage alert preferences.
                       </p>
                     </div>
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Email Notifications
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Receive summaries via email
                           </p>
                         </div>
@@ -668,16 +674,17 @@ export default function ProfessorAttendanceSettings() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Enable Email Notifications"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Push Notifications
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Real-time alerts on your device
                           </p>
                         </div>
@@ -695,16 +702,17 @@ export default function ProfessorAttendanceSettings() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Enable Push Notifications"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white">
                             Fraud Alerts
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Get notified when suspicious activity is detected
                           </p>
                         </div>
@@ -722,6 +730,7 @@ export default function ProfessorAttendanceSettings() {
                               )
                             }
                             className="sr-only peer"
+                            aria-label="Notify on Fraud Detection"
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>

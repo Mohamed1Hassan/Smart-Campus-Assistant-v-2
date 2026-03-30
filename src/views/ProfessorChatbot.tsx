@@ -492,12 +492,14 @@ export default function ProfessorChatbot() {
                           onClick={handleNewSession}
                           className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
                           title="New Chat"
+                          aria-label="Create new chat"
                         >
                           <Plus className="w-5 h-5" />
                         </button>
                         <button
                           onClick={() => setShowSessionsPanel(false)}
                           className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
+                          aria-label="Close history"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -552,7 +554,7 @@ export default function ProfessorChatbot() {
                                 >
                                   {session.name}
                                 </h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                                   {new Date(
                                     session.updatedAt,
                                   ).toLocaleDateString()}{" "}
@@ -569,8 +571,9 @@ export default function ProfessorChatbot() {
                                     onClick={() =>
                                       startRenamingSession(session)
                                     }
-                                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-gray-500"
+                                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-gray-600"
                                     title="Rename"
+                                    aria-label="Rename chat"
                                   >
                                     <Edit2 className="w-3 h-3" />
                                   </button>
@@ -578,6 +581,7 @@ export default function ProfessorChatbot() {
                                     onClick={() => deleteSession(session.id)}
                                     className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-red-500"
                                     title="Delete"
+                                    aria-label="Delete chat"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </button>
@@ -601,7 +605,8 @@ export default function ProfessorChatbot() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setShowSessionsPanel(!showSessionsPanel)}
-                  className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-600"
+                  className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-700"
+                  aria-label="Toggle sessions history"
                 >
                   <Menu className="w-5 h-5" />
                 </button>
@@ -614,7 +619,7 @@ export default function ProfessorChatbot() {
                     <h1 className="font-bold text-gray-900 dark:text-white leading-tight">
                       AI Assistant
                     </h1>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-medium flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                       Online
                     </p>
@@ -631,7 +636,7 @@ export default function ProfessorChatbot() {
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                         language === lang
                           ? "bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm"
-                          : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-200"
+                          : "text-gray-700 hover:text-gray-900 dark:hover:text-gray-200"
                       }`}
                     >
                       {lang === "auto" ? "Auto" : lang.toUpperCase()}
@@ -643,8 +648,9 @@ export default function ProfessorChatbot() {
 
                 <button
                   onClick={handleClearChat}
-                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg transition-colors"
+                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-600 hover:text-red-500 rounded-lg transition-colors"
                   title="Clear Chat"
+                  aria-label="Clear chat history"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -665,7 +671,7 @@ export default function ProfessorChatbot() {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                       How can I help you today?
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md">
+                    <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-md">
                       I can help you create quizzes, summarize lectures, draft
                       emails to students, or brainstorm assignment ideas.
                     </p>
@@ -697,7 +703,7 @@ export default function ProfessorChatbot() {
                           <span className="text-xl mb-2 block">
                             {prompt.icon}
                           </span>
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                          <span className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">
                             {prompt.text}
                           </span>
                         </button>
@@ -712,7 +718,7 @@ export default function ProfessorChatbot() {
                           {groupIndex > 0 && (
                             <div className="flex items-center gap-4 my-8">
                               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                              <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                              <span className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                 {formatDate(new Date(dateKey))}
                               </span>
                               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
@@ -781,7 +787,7 @@ export default function ProfessorChatbot() {
 
                                       {/* Actions */}
                                       <div
-                                        className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${isAi ? "text-gray-400" : "text-purple-200"}`}
+                                        className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${isAi ? "text-gray-600" : "text-purple-100"}`}
                                       >
                                         <button
                                           onClick={() =>
@@ -789,6 +795,7 @@ export default function ProfessorChatbot() {
                                           }
                                           className="p-1 hover:bg-black/5 rounded"
                                           title="Copy"
+                                          aria-label="Copy message"
                                         >
                                           <Copy className="w-3 h-3" />
                                         </button>
@@ -798,6 +805,7 @@ export default function ProfessorChatbot() {
                                           }
                                           className="p-1 hover:bg-black/5 rounded"
                                           title="Delete"
+                                          aria-label="Delete message"
                                         >
                                           <Trash className="w-3 h-3" />
                                         </button>
@@ -806,6 +814,7 @@ export default function ProfessorChatbot() {
                                             onClick={retryLast}
                                             className="p-1 hover:bg-black/5 rounded"
                                             title="Regenerate"
+                                            aria-label="Regenerate response"
                                           >
                                             <RotateCcw className="w-3 h-3" />
                                           </button>
@@ -861,7 +870,7 @@ export default function ProfessorChatbot() {
                   isLoading={isLoading}
                   placeholder="Type your message..."
                 />
-                <p className="text-center text-[10px] lg:text-xs text-gray-400 mt-2 hidden sm:block">
+                <p className="text-center text-[10px] lg:text-xs text-gray-700 dark:text-gray-300 font-medium mt-2 hidden sm:block">
                   AI can make mistakes. Please review generated content.
                 </p>
               </div>

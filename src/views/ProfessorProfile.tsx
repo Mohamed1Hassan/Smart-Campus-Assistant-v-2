@@ -384,8 +384,15 @@ export default function ProfessorProfile() {
     >
       <div className="max-w-7xl mx-auto pb-12">
         {/* Cover Image Section */}
-        <div className="relative h-64 rounded-b-3xl bg-gradient-to-r from-indigo-600 to-purple-700 overflow-hidden shadow-lg -mt-6 -mx-6 lg:-mx-8 mb-20">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
+        <div className="relative h-64 rounded-b-3xl bg-indigo-600 dark:bg-indigo-900 overflow-hidden shadow-lg -mt-6 -mx-6 lg:-mx-8 mb-20">
+          <Image
+            src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
+            alt="Faculty Building"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover opacity-20 mix-blend-overlay"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
           <div className="absolute top-6 left-6 lg:left-8 z-10">
@@ -509,10 +516,10 @@ export default function ProfessorProfile() {
             {/* Left Column - Personal Info & Contact */}
             <div className="space-y-8">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <User className="w-5 h-5 text-blue-600" />
                   Personal Information
-                </h3>
+                </h2>
 
                 <div className="space-y-6">
                   {isEditing ? (
@@ -636,10 +643,10 @@ export default function ProfessorProfile() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
 
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 relative z-10">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2 relative z-10">
                   <Award className="w-5 h-5" />
                   Achievements
-                </h3>
+                </h2>
 
                 <div className="flex flex-wrap gap-2 relative z-10">
                   {achievements.map((achievement, index) => (
@@ -669,9 +676,9 @@ export default function ProfessorProfile() {
 
               {isEditing && (
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
                     Additional Details
-                  </h3>
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -754,9 +761,9 @@ export default function ProfessorProfile() {
               )}
 
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
                   Account Settings
-                </h3>
+                </h2>
                 <AccountSettings
                   notificationsEnabled={displayProfile.notificationsEnabled}
                   onNotificationToggle={handleNotificationToggle}
@@ -769,7 +776,7 @@ export default function ProfessorProfile() {
                   </h4>
                   <button
                     onClick={() => setShowDeleteModal(true)}
-                    className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-all text-sm font-medium border border-red-200 dark:border-red-800 flex items-center gap-2"
+                    className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-all text-sm font-medium border border-red-200 dark:border-red-800 flex items-center gap-2"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete Account

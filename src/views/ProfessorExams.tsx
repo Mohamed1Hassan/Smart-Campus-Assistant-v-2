@@ -52,6 +52,12 @@ const EMPTY_ARRAY: never[] = [];
 
 // --- Components ---
 
+const Skeleton = ({ className }: { className: string }) => (
+  <div
+    className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded-xl ${className}`}
+  />
+);
+
 const GlassCard = ({
   children,
   className = "",
@@ -266,7 +272,7 @@ export default function ProfessorExams() {
                 Command Control
               </span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 font-medium">
+            <p className="text-gray-700 dark:text-gray-300 font-medium">
               Schedule secure exams and monitor live sessions for academic
               integrity.
             </p>
@@ -286,7 +292,7 @@ export default function ProfessorExams() {
           {/* Sidebar Overview */}
           <div className="xl:col-span-1 space-y-6">
             <GlassCard className="p-6">
-              <h2 className="font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest text-xs mb-4">
+              <h2 className="font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest text-xs mb-4">
                 Command Target
               </h2>
               <div className="space-y-3">
@@ -308,7 +314,7 @@ export default function ProfessorExams() {
                       {course.courseName}
                     </p>
                     <p
-                      className={`text-[10px] uppercase tracking-widest mt-1 ${selectedCourse === course.id ? "text-indigo-200" : "text-gray-400"}`}
+                      className={`text-[10px] uppercase tracking-widest mt-1 font-bold ${selectedCourse === course.id ? "text-indigo-200" : "text-gray-600 dark:text-gray-400"}`}
                     >
                       {course.courseCode}
                     </p>
@@ -335,7 +341,7 @@ export default function ProfessorExams() {
                     <p className="text-3xl font-black text-gray-900 dark:text-white">
                       {localAlerts.filter((a) => a.status === "OPEN").length}
                     </p>
-                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    <p className="text-xs font-black text-red-700 dark:text-red-300 uppercase tracking-wider">
                       Active Threats
                     </p>
                   </div>
@@ -356,7 +362,7 @@ export default function ProfessorExams() {
           </div>
 
           {/* Main Area */}
-          <div className="xl:col-span-3 space-y-6">
+          <div className="xl:col-span-3 space-y-6 min-h-[500px]">
             {!selectedCourse ? (
               <GlassCard className="flex flex-col items-center justify-center py-32 text-center border-dashed border-2">
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-3xl mb-6">
@@ -365,7 +371,7 @@ export default function ProfessorExams() {
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
                   Select a Course to Manage Exams
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 max-w-sm">
+                <p className="text-gray-700 dark:text-gray-300 font-bold max-w-sm">
                   Select a course from the sidebar to schedule new assessments
                   or monitor live exam proctoring.
                 </p>
@@ -379,7 +385,7 @@ export default function ProfessorExams() {
                       <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
                       Live Integrity Feed
                     </h2>
-                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm font-black text-gray-700 dark:text-gray-300 mt-1">
                       Monitoring active examination for suspicious behavior.
                     </p>
                   </div>
@@ -396,7 +402,7 @@ export default function ProfessorExams() {
                         <p className="font-bold text-gray-900 dark:text-white text-lg">
                           All Systems Secure
                         </p>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        <p className="text-gray-700 dark:text-gray-300 font-bold text-sm mt-1">
                           No integrity violations detected in the current
                           session.
                         </p>
@@ -437,15 +443,15 @@ export default function ProfessorExams() {
                                 >
                                   {alert.studentName}
                                 </h4>
-                                <span className="text-[10px] font-mono text-gray-600 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
+                                <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
                                   {alert.timestamp.toLocaleTimeString()}
                                 </span>
                               </div>
                               <p
-                                className={`text-sm font-bold uppercase tracking-wider ${
+                                className={`text-sm font-black uppercase tracking-wider ${
                                   alert.status === "OPEN"
-                                    ? "text-red-600 dark:text-red-400"
-                                    : "text-gray-600"
+                                    ? "text-red-700 dark:text-red-400"
+                                    : "text-gray-700 dark:text-gray-300 font-bold"
                                 }`}
                               >
                                 Violation:{" "}
@@ -459,7 +465,7 @@ export default function ProfessorExams() {
                             <div className="flex w-full sm:w-auto gap-3">
                               <button
                                 onClick={() => handleDismiss(alert.id)}
-                                className="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                className="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                               >
                                 Dismiss
                               </button>
@@ -472,7 +478,7 @@ export default function ProfessorExams() {
                             </div>
                           )}
                           {alert.status !== "OPEN" && (
-                            <span className="text-xs font-bold uppercase tracking-widest text-gray-400 border border-gray-200 dark:border-gray-700 px-3 py-1 rounded-full">
+                            <span className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 px-3 py-1 rounded-full">
                               {alert.status}
                             </span>
                           )}
@@ -485,6 +491,24 @@ export default function ProfessorExams() {
             ) : (
               /* Scheduled Exams List Area */
               <div className="grid grid-cols-1 gap-6">
+                {isLoading && exams.length === 0 && (
+                  [1,2,3].map(i => (
+                    <GlassCard key={i} className="p-8">
+                       <div className="flex gap-4">
+                          <Skeleton className="w-12 h-12" />
+                          <div className="space-y-4 flex-1">
+                             <Skeleton className="h-4 w-32" />
+                             <Skeleton className="h-8 w-64" />
+                             <div className="flex gap-4">
+                                <Skeleton className="h-8 w-24" />
+                                <Skeleton className="h-8 w-24" />
+                                <Skeleton className="h-8 w-24" />
+                             </div>
+                          </div>
+                       </div>
+                    </GlassCard>
+                  ))
+                )}
                 {exams.map((exam: Exam) => {
                   const isUpcoming = new Date(exam.startTime) > new Date();
 
@@ -507,8 +531,8 @@ export default function ProfessorExams() {
                             <Badge
                               className={
                                 isUpcoming
-                                  ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                                  : "bg-gray-100 dark:bg-gray-800 text-gray-600"
+                                  ? "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                               }
                             >
                               {isUpcoming
@@ -522,13 +546,13 @@ export default function ProfessorExams() {
                               {exam.title}
                             </h2>
                             {exam.description && (
-                              <p className="text-sm font-medium text-gray-600 mt-1">
+                              <p className="text-sm font-black text-gray-700 dark:text-gray-300 mt-1">
                                 {exam.description}
                               </p>
                             )}
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-4 text-sm font-bold text-gray-600 dark:text-gray-400 pt-2">
+                          <div className="flex flex-wrap items-center gap-4 text-sm font-black text-gray-700 dark:text-gray-300 pt-2">
                             <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-700">
                               <Calendar className="w-4 h-4 text-indigo-500" />
                               {new Date(exam.startTime).toLocaleDateString(
@@ -576,7 +600,7 @@ export default function ProfessorExams() {
                             )}
                           </button>
                           {!isUpcoming && (
-                            <button className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/50">
+                            <button className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/50">
                               Security Audit
                             </button>
                           )}
@@ -593,7 +617,7 @@ export default function ProfessorExams() {
                     <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">
                       No Active Exams
                     </h2>
-                    <p className="text-gray-600 font-medium">
+                    <p className="text-gray-700 dark:text-gray-300 font-bold">
                       Use the &quot;Create / Schedule Exam&quot; button to set
                       up a new secure exam session.
                     </p>
@@ -629,7 +653,7 @@ export default function ProfessorExams() {
                 </div>
                 <div className="space-y-6">
                   <div>
-                    <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                    <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                       Assessment Title
                     </label>
                     <input
@@ -644,7 +668,7 @@ export default function ProfessorExams() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                      <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                         Initialization Time
                       </label>
                       <input
@@ -660,7 +684,7 @@ export default function ProfessorExams() {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                      <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                         Termination Time
                       </label>
                       <input
@@ -674,7 +698,7 @@ export default function ProfessorExams() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">
+                    <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
                       Room Designation
                     </label>
                     <input

@@ -1,26 +1,16 @@
-"use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowLeft,
-  MapPin,
-  Clock,
-  Shield,
-  Camera,
-  Smartphone,
-  CheckCircle,
-  RefreshCw,
-  Navigation2,
-  ChevronRight,
-  Sparkles,
-  Layout,
-} from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter, useParams } from "next/navigation";
 import DashboardLayout from "../components/common/DashboardLayout";
 import { useAuth } from "../contexts/AuthContext";
 import { useAttendanceSessions } from "../hooks/useAttendanceSessions";
 import { apiClient } from "../services/api";
 import { useToast } from "../components/common/ToastProvider";
+
+// Dynamically import heavy components
+const ScheduleStep = dynamic(() => import("../components/professor/attendance/ScheduleStep"), { ssr: false });
+const LocationStep = dynamic(() => import("../components/professor/attendance/LocationStep"), { ssr: false });
+const SecurityStep = dynamic(() => import("../components/professor/attendance/SecurityStep"), { ssr: false });
+const AttendanceLivePreview = dynamic(() => import("../components/professor/attendance/AttendanceLivePreview"), { ssr: false });
 
 interface Course {
   id: number;
@@ -42,7 +32,20 @@ interface FormErrors {
   gracePeriod?: string;
   maxAttempts?: string;
   riskThreshold?: string;
+  [key: string]: string | undefined;
 }
+
+// Hook to detect desktop screens for conditional rendering
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isDesktop;
+};
 
 export default function ProfessorAttendanceCreate() {
   const { user } = useAuth();
@@ -50,6 +53,7 @@ export default function ProfessorAttendanceCreate() {
   const params = useParams();
   const sessionId = params?.id as string;
   const isEditMode = !!sessionId;
+  const isDesktop = useIsDesktop();
 
   const { success, error: showError, info, warning: showWarning } = useToast();
 
@@ -64,7 +68,7 @@ export default function ProfessorAttendanceCreate() {
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
-  void isLoadingCourses; // suppress unused warning - used only in setIsLoadingCourses setter
+  void isLoadingCourses;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -139,7 +143,6 @@ export default function ProfessorAttendanceCreate() {
       const durationHours =
         (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
-      // Format date for datetime-local input
       const formattedStart = new Date(
         start.getTime() - start.getTimezoneOffset() * 60000,
       )
@@ -174,8 +177,6 @@ export default function ProfessorAttendanceCreate() {
     }
   }, [isEditMode, selectedSession]);
 
-  // Validation
-   
   const validateField = useCallback(
     (field: string, value: unknown): string | undefined => {
       switch (field) {
@@ -198,7 +199,6 @@ export default function ProfessorAttendanceCreate() {
     [],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInputChange = (field: string, value: any) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
@@ -218,19 +218,12 @@ export default function ProfessorAttendanceCreate() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleBlur = (field: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     const fieldParts = field.split(".");
     const value =
       fieldParts.length > 1
-        ?  
-          (
-            formData[fieldParts[0] as keyof typeof formData] as Record<
-              string,
-              unknown
-            >
-          )[fieldParts[1]]
+        ? (formData[fieldParts[0] as keyof typeof formData] as Record<string, unknown>)[fieldParts[1]]
         : (formData as Record<string, unknown>)[field];
     setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
   };
@@ -245,7 +238,6 @@ export default function ProfessorAttendanceCreate() {
       targetDate.setHours(9, 0, 0, 0);
     }
 
-    // Format: YYYY-MM-DDTHH:mm
     const formatted = new Date(
       targetDate.getTime() - targetDate.getTimezoneOffset() * 60000,
     )
@@ -257,37 +249,24 @@ export default function ProfessorAttendanceCreate() {
   const handleSubmit = async () => {
     const newErrors: FormErrors = {};
     ["courseId", "title", "startTime", "duration"].forEach((field) => {
-      const error = validateField(
-        field,
-        formData[field as keyof typeof formData],
-      );
-      if (error) newErrors[field as keyof FormErrors] = error;
+      const error = validateField(field, formData[field as keyof typeof formData]);
+      if (error) newErrors[field] = error;
     });
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      setTouched({
-        courseId: true,
-        title: true,
-        startTime: true,
-        duration: true,
-      });
+      setTouched({ courseId: true, title: true, startTime: true, duration: true });
       showError("Please fix validation errors");
       return;
     }
 
     const sessionData = {
       courseId: parseInt(formData.courseId),
-      courseName:
-        courses.find((c) => c.id === parseInt(formData.courseId))?.courseName ||
-        "",
+      courseName: courses.find((c) => c.id === parseInt(formData.courseId))?.courseName || "",
       title: formData.title,
       description: formData.description,
       startTime: new Date(formData.startTime),
-      endTime: new Date(
-        new Date(formData.startTime).getTime() +
-          formData.duration * 60 * 60 * 1000,
-      ),
+      endTime: new Date(new Date(formData.startTime).getTime() + formData.duration * 60 * 60 * 1000),
       location: {
         latitude: parseFloat(formData.location.latitude) || 0,
         longitude: parseFloat(formData.location.longitude) || 0,
@@ -303,11 +282,7 @@ export default function ProfessorAttendanceCreate() {
       : await createSession(sessionData);
 
     if (result) {
-      success(
-        isEditMode
-          ? "Session updated successfully"
-          : "Session created successfully",
-      );
+      success(isEditMode ? "Session updated successfully" : "Session created successfully");
       router.push("/dashboard/professor/attendance/sessions");
     }
   };
@@ -319,15 +294,10 @@ export default function ProfessorAttendanceCreate() {
     { id: 3, title: "Security", icon: Shield },
   ];
 
-  const selectedCourse = courses.find(
-    (c) => c.id === parseInt(formData.courseId),
-  );
+  const selectedCourse = courses.find((c) => c.id === parseInt(formData.courseId));
 
   return (
-    <DashboardLayout
-      userName={user ? `${user.firstName} ${user.lastName}` : "Professor"}
-      userType="professor"
-    >
+    <DashboardLayout userName={user ? `${user.firstName} ${user.lastName}` : "Professor"} userType="professor">
       <div className="max-w-7xl mx-auto h-[calc(100vh-5rem)] md:h-[calc(100vh-8rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6 flex-shrink-0">
@@ -343,9 +313,7 @@ export default function ProfessorAttendanceCreate() {
               {isEditMode ? "Edit Session" : "Create Session"}
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {isEditMode
-                ? "Modify existing attendance session"
-                : "Configure a new attendance session"}
+              {isEditMode ? "Modify existing attendance session" : "Configure a new attendance session"}
             </p>
           </div>
         </div>
@@ -356,16 +324,9 @@ export default function ProfessorAttendanceCreate() {
             {/* Stepper */}
             <div className="flex items-center justify-between mb-6 md:mb-8 px-1 md:px-2 flex-shrink-0">
               {steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className="flex items-center flex-1 last:flex-none"
-                >
+                <div key={step.id} className="flex items-center flex-1 last:flex-none">
                   <div
-                    className={`flex items-center gap-2 cursor-pointer group ${
-                      index <= currentStep
-                        ? "text-purple-600 dark:text-purple-400"
-                        : "text-gray-600"
-                    }`}
+                    className={`flex items-center gap-2 cursor-pointer group ${index <= currentStep ? "text-purple-600 dark:text-purple-400" : "text-gray-600"}`}
                     onClick={() => setCurrentStep(index)}
                     role="button"
                     tabIndex={0}
@@ -377,25 +338,15 @@ export default function ProfessorAttendanceCreate() {
                     }}
                   >
                     <div
-                      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                        index <= currentStep
-                          ? "border-purple-600 bg-purple-50 dark:bg-purple-900/20"
-                          : "border-gray-200 dark:border-gray-700"
-                      }`}
+                      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all ${index <= currentStep ? "border-purple-600 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"}`}
                     >
                       <step.icon className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
-                    <span className="font-medium hidden md:block text-sm md:text-base">
-                      {step.title}
-                    </span>
+                    <span className="font-medium hidden md:block text-sm md:text-base">{step.title}</span>
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`h-0.5 flex-1 mx-2 md:mx-4 transition-colors ${
-                        index < currentStep
-                          ? "bg-purple-200 dark:bg-purple-900"
-                          : "bg-gray-100 dark:bg-gray-800"
-                      }`}
+                      className={`h-0.5 flex-1 mx-2 md:mx-4 transition-colors ${index < currentStep ? "bg-purple-200 dark:bg-purple-900" : "bg-gray-100 dark:bg-gray-800"}`}
                     />
                   )}
                 </div>
@@ -414,29 +365,18 @@ export default function ProfessorAttendanceCreate() {
                     className="space-y-6"
                   >
                     <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                        Session Details
-                      </h2>
-
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Session Details</h2>
                       <div className="space-y-4">
                         <div>
-                          <label 
-                            htmlFor="course-select"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                          >
+                          <label htmlFor="course-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Course
                           </label>
                           <select
                             id="course-select"
                             value={formData.courseId}
-                            onChange={(e) =>
-                              handleInputChange("courseId", e.target.value)
-                            }
-                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${
-                              errors.courseId
-                                ? "border-red-300 focus:ring-red-200"
-                                : "border-gray-200 dark:border-gray-700"
-                            }`}
+                            onChange={(e) => handleInputChange("courseId", e.target.value)}
+                            onBlur={() => handleBlur("courseId")}
+                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${errors.courseId ? "border-red-300 focus:ring-red-200" : "border-gray-200 dark:border-gray-700"}`}
                           >
                             <option value="">Select a course...</option>
                             {courses.map((course) => (
@@ -445,54 +385,31 @@ export default function ProfessorAttendanceCreate() {
                               </option>
                             ))}
                           </select>
-                          {errors.courseId && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.courseId}
-                            </p>
-                          )}
+                          {errors.courseId && <p className="text-red-500 text-xs mt-1">{errors.courseId}</p>}
                         </div>
-
                         <div>
-                          <label 
-                            htmlFor="session-title"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                          >
+                          <label htmlFor="session-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Title
                           </label>
                           <input
                             id="session-title"
                             type="text"
                             value={formData.title}
-                            onChange={(e) =>
-                              handleInputChange("title", e.target.value)
-                            }
+                            onChange={(e) => handleInputChange("title", e.target.value)}
+                            onBlur={() => handleBlur("title")}
                             placeholder="e.g. Week 5: Neural Networks"
-                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${
-                              errors.title
-                                ? "border-red-300 focus:ring-red-200"
-                                : "border-gray-200 dark:border-gray-700"
-                            }`}
+                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${errors.title ? "border-red-300 focus:ring-red-200" : "border-gray-200 dark:border-gray-700"}`}
                           />
-                          {errors.title && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.title}
-                            </p>
-                          )}
+                          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
                         </div>
-
                         <div>
-                          <label 
-                            htmlFor="session-description"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                          >
+                          <label htmlFor="session-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Description (Optional)
                           </label>
                           <textarea
                             id="session-description"
                             value={formData.description}
-                            onChange={(e) =>
-                              handleInputChange("description", e.target.value)
-                            }
+                            onChange={(e) => handleInputChange("description", e.target.value)}
                             placeholder="Brief description of the session topics..."
                             rows={4}
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
@@ -504,389 +421,26 @@ export default function ProfessorAttendanceCreate() {
                 )}
 
                 {currentStep === 1 && (
-                  <motion.div
-                    key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-6"
-                  >
-                    <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                        Timing
-                      </h2>
-
-                      <div className="space-y-6">
-                        <div>
-                          <label 
-                            htmlFor="session-start-time"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                          >
-                            Start Time
-                          </label>
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            <button
-                              onClick={() => handleQuickTimeSelect("now")}
-                              className="px-3 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-xs rounded-full hover:bg-purple-100 transition-colors"
-                            >
-                              Starts in 5 min
-                            </button>
-                            <button
-                              onClick={() => handleQuickTimeSelect("today")}
-                              className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              Today 2:00 PM
-                            </button>
-                            <button
-                              onClick={() => handleQuickTimeSelect("tomorrow")}
-                              className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              Tomorrow 9:00 AM
-                            </button>
-                          </div>
-                          <input
-                            id="session-start-time"
-                            type="datetime-local"
-                            value={formData.startTime}
-                            onChange={(e) =>
-                              handleInputChange("startTime", e.target.value)
-                            }
-                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${
-                              errors.startTime
-                                ? "border-red-300 focus:ring-red-200"
-                                : "border-gray-200 dark:border-gray-700"
-                            }`}
-                          />
-                          {errors.startTime && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.startTime}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label 
-                            htmlFor="session-duration-range"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                          >
-                            Duration (Hours)
-                          </label>
-                          <div className="flex items-center gap-4">
-                            <input
-                              id="session-duration-range"
-                              type="range"
-                              min="0.5"
-                              max="4"
-                              step="0.5"
-                              value={formData.duration}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "duration",
-                                  parseFloat(e.target.value),
-                                )
-                              }
-                              className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
-                              aria-label={`Duration: ${formData.duration} hours`}
-                            />
-                            <span className="w-16 text-center font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg">
-                              {formData.duration}h
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                  <ScheduleStep
+                    formData={formData}
+                    errors={errors}
+                    handleInputChange={handleInputChange}
+                    handleQuickTimeSelect={handleQuickTimeSelect}
+                  />
                 )}
 
                 {currentStep === 2 && (
-                  <motion.div
-                    key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-6"
-                  >
-                    <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Location Settings
-                        </h2>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.security.isLocationRequired}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "security.isLocationRequired",
-                                e.target.checked,
-                              )
-                            }
-                            className="sr-only peer"
-                            aria-label="Require location geofencing"
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-                        </label>
-                      </div>
-
-                      <div
-                        className={`space-y-4 transition-opacity ${!formData.security.isLocationRequired ? "opacity-50 pointer-events-none" : ""}`}
-                      >
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Location Name
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.location.name}
-                            onChange={(e) =>
-                              handleInputChange("location.name", e.target.value)
-                            }
-                            placeholder="e.g. Building A, Room 101"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Latitude
-                            </label>
-                            <input
-                              type="number"
-                              value={formData.location.latitude}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "location.latitude",
-                                  e.target.value,
-                                )
-                              }
-                              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Longitude
-                            </label>
-                            <input
-                              type="number"
-                              value={formData.location.longitude}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "location.longitude",
-                                  e.target.value,
-                                )
-                              }
-                              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
-                            />
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={async () => {
-                            if (!navigator.geolocation) {
-                              showError(
-                                "Geolocation is not supported by your browser",
-                              );
-                              return;
-                            }
-
-                            const getAccuratePosition = (
-                              options: PositionOptions,
-                              targetAccuracy = 50,
-                              timeoutMs = 15000,
-                            ): Promise<GeolocationPosition> => {
-                              return new Promise((resolve, reject) => {
-                                let bestPosition: GeolocationPosition | null =
-                                  null;
-                                info(
-                                  "Locating... Please wait up to 15s for best signal.",
-                                );
-
-                                const watchId =
-                                  navigator.geolocation.watchPosition(
-                                    (pos) => {
-                                      if (
-                                        !bestPosition ||
-                                        pos.coords.accuracy <
-                                          bestPosition.coords.accuracy
-                                      ) {
-                                        bestPosition = pos;
-                                      }
-
-                                      if (
-                                        pos.coords.accuracy <= targetAccuracy
-                                      ) {
-                                        navigator.geolocation.clearWatch(
-                                          watchId,
-                                        );
-                                        resolve(pos);
-                                      }
-                                    },
-                                    (err) => {
-                                      console.warn("GPS Watch Error:", err);
-                                    },
-                                    options,
-                                  );
-
-                                setTimeout(() => {
-                                  navigator.geolocation.clearWatch(watchId);
-                                  if (bestPosition) {
-                                    resolve(bestPosition);
-                                  } else {
-                                    reject(
-                                      new Error(
-                                        "Timeout: Could not get any location",
-                                      ),
-                                    );
-                                  }
-                                }, timeoutMs);
-                              });
-                            };
-
-                            try {
-                              const pos = await getAccuratePosition(
-                                {
-                                  enableHighAccuracy: true,
-                                  timeout: 20000,
-                                  maximumAge: 0,
-                                },
-                                50,
-                                15000,
-                              );
-
-                              handleInputChange(
-                                "location.latitude",
-                                pos.coords.latitude,
-                              );
-                              handleInputChange(
-                                "location.longitude",
-                                pos.coords.longitude,
-                              );
-
-                              const acc = Math.round(pos.coords.accuracy);
-
-                              if (acc > 2000) {
-                                showWarning(
-                                  `Weak Signal (${acc}m). This looks like an IP-based location. For best results, use a mobile phone with GPS enabled.`,
-                                );
-                              } else if (acc > 100) {
-                                showWarning(
-                                  `Location set, but accuracy is low (${acc}m). Consider entering coordinates manually.`,
-                                );
-                              } else {
-                                success(`Location updated (Accuracy: ${acc}m)`);
-                              }
-                            } catch (error: unknown) {
-                              console.error("Location error:", error);
-                              let message = "Failed to get location.";
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              const locError = error as any;
-                              if (locError.code === 1)
-                                message =
-                                  "Location permission denied. Please allow access.";
-                              else if (locError.code === 2)
-                                message = "Location unavailable. Check GPS.";
-                              else if (locError.code === 3)
-                                message = "Location timed out.";
-                              showError(message);
-                            }
-                          }}
-                          className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
-                        >
-                          <MapPin className="w-4 h-4" /> Use Current Location
-                        </button>
-
-                        {formData.location.latitude &&
-                          formData.location.longitude && (
-                            <a
-                              href={`https://www.google.com/maps?q=${formData.location.latitude},${formData.location.longitude}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 ml-4"
-                            >
-                              <Navigation2 className="w-4 h-4" /> View on Map
-                            </a>
-                          )}
-                      </div>
-                    </div>
-                  </motion.div>
+                  <LocationStep
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                    showError={showError}
+                    showWarning={showWarning}
+                    info={info}
+                    success={success}
+                  />
                 )}
 
-                {currentStep === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-6"
-                  >
-                    <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h2 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
-                        Security Measures
-                      </h2>
-
-                      <div className="space-y-6">
-                        {[
-                          {
-                            key: "isPhotoRequired",
-                            label: "Require Photo Verification",
-                            icon: Camera,
-                            desc: "Students must take a selfie to check in",
-                          },
-                          {
-                            key: "isDeviceCheckRequired",
-                            label: "Device Fingerprinting",
-                            icon: Smartphone,
-                            desc: "Prevent checking in from multiple accounts on one device",
-                          },
-                          {
-                            key: "fraudDetectionEnabled",
-                            label: "AI Fraud Detection",
-                            icon: Shield,
-                            desc: "Analyze patterns to detect suspicious behavior",
-                          },
-                        ].map((item) => (
-                          <div
-                            key={item.key}
-                            className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 shadow-sm">
-                                <item.icon className="w-5 h-5" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-gray-900 dark:text-white">
-                                  {item.label}
-                                </p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  {item.desc}
-                                </p>
-                              </div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={Boolean(
-                                  formData.security[
-                                    item.key as keyof typeof formData.security
-                                  ],
-                                )}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    `security.${item.key}`,
-                                    e.target.checked,
-                                  )
-                                }
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+                {currentStep === 3 && <SecurityStep formData={formData} handleInputChange={handleInputChange} />}
               </AnimatePresence>
             </div>
 
@@ -895,22 +449,14 @@ export default function ProfessorAttendanceCreate() {
               <button
                 onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
                 disabled={currentStep === 0}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${
-                  currentStep === 0
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                }`}
+                className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${currentStep === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"}`}
               >
                 Back
               </button>
 
               {currentStep < steps.length - 1 ? (
                 <button
-                  onClick={() =>
-                    setCurrentStep((prev) =>
-                      Math.min(steps.length - 1, prev + 1),
-                    )
-                  }
+                  onClick={() => setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))}
                   className="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
                 >
                   Next Step <ChevronRight className="w-4 h-4" />
@@ -919,111 +465,24 @@ export default function ProfessorAttendanceCreate() {
                 <button
                   onClick={handleSubmit}
                   disabled={isCreating || isUpdating}
-                  className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center gap-2"
+                  className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center gap-1"
                 >
-                  {isCreating || isUpdating ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4" />
-                  )}
+                  {isCreating || isUpdating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                   {isEditMode ? "Update Session" : "Create Session"}
                 </button>
               )}
             </div>
           </div>
 
-          {/* Right Column - Live Preview */}
-          <div className="hidden lg:block w-[380px] flex-shrink-0">
-            <div className="sticky top-6">
-              <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">
-                Live Preview
-              </h2>
-
-              <div className="bg-white dark:bg-cardDark rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
-                {/* Phone Frame / Card Preview */}
-                <div className="h-40 bg-gradient-to-br from-purple-600 to-indigo-600 p-6 text-white relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
-                  <div className="relative z-10">
-                    <span className="inline-block px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-medium mb-3">
-                      {selectedCourse?.courseCode || "CS-101"}
-                    </span>
-                    <h2 className="text-xl font-bold leading-tight mb-1">
-                      {formData.title || "Session Title"}
-                    </h2>
-                    <p className="text-purple-100 text-sm truncate">
-                      {selectedCourse?.courseName || "Select a course"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-6">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
-                      <Clock className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Time
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {formData.startTime
-                          ? new Date(formData.startTime).toLocaleString([], {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            })
-                          : "Not set"}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-0.5">
-                        {formData.duration} hours duration
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
-                      <MapPin className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Location
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {formData.location.name || "No location set"}
-                      </p>
-                      {formData.security.isLocationRequired && (
-                        <p className="text-xs text-green-700 dark:text-green-500 mt-0.5 flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3" /> Geofencing Active
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
-                      Security Features
-                    </p>
-                    <div className="flex gap-2 flex-wrap">
-                      {formData.security.isPhotoRequired && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                          <Camera className="w-3 h-3" /> Photo
-                        </span>
-                      )}
-                      {formData.security.isDeviceCheckRequired && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                          <Smartphone className="w-3 h-3" /> Device
-                        </span>
-                      )}
-                      {formData.security.fraudDetectionEnabled && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                          <Shield className="w-3 h-3" /> AI Fraud
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+          {/* Right Column - Live Preview (Rendered conditionally based on screen size for performance) */}
+          {isDesktop && (
+            <div className="w-[380px] flex-shrink-0">
+              <div className="sticky top-6">
+                <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">Live Preview</h2>
+                <AttendanceLivePreview formData={formData} selectedCourse={selectedCourse} />
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

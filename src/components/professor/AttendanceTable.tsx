@@ -1,4 +1,4 @@
-"use client";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 import { Edit2, Trash2, User, Calendar, BookOpen } from "lucide-react";
 
@@ -17,11 +17,11 @@ interface AttendanceTableProps {
   onDelete: (record: AttendanceRecord) => void;
 }
 
-export default function AttendanceTable({
+const AttendanceTable = memo(({
   records,
   onEdit,
   onDelete,
-}: AttendanceTableProps) {
+}: AttendanceTableProps) => {
   const getStatusBadge = (status: AttendanceRecord["status"]) => {
     const styles = {
       Present:
@@ -260,4 +260,6 @@ export default function AttendanceTable({
       </div>
     </motion.div>
   );
-}
+});
+
+export default AttendanceTable;

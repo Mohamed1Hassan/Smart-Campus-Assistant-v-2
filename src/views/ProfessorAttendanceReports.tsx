@@ -175,8 +175,9 @@ export default function ProfessorAttendanceReports() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.push("/professor-attendance")}
+              onClick={() => router.push("/dashboard/professor/attendance/sessions")}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+              aria-label="Go back to sessions"
             >
               <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </button>
@@ -184,14 +185,18 @@ export default function ProfessorAttendanceReports() {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Attendance Reports
               </h1>
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+              <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
                 Analytics and insights for your classes.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3 w-full lg:w-auto">
             <div className="relative group w-full lg:w-auto">
-              <button className="w-full lg:w-auto px-4 py-2 bg-white dark:bg-cardDark border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium flex items-center justify-center gap-2 shadow-sm">
+              <button 
+                className="w-full lg:w-auto px-4 py-2 bg-white dark:bg-cardDark border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium flex items-center justify-center gap-2 shadow-sm"
+                aria-label="Export report menu"
+                aria-haspopup="true"
+              >
                 <Download className="w-4 h-4" />
                 Export Report
                 <ChevronDown className="w-4 h-4" />
@@ -265,10 +270,10 @@ export default function ProfessorAttendanceReports() {
                 >
                   <stat.icon className="w-5 h-5" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                   {stat.value}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   {stat.label}
                 </p>
               </div>
@@ -288,15 +293,19 @@ export default function ProfessorAttendanceReports() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                 Attendance Trend
               </h3>
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="w-full sm:w-auto px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm outline-none focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="week">Last 7 Days</option>
-                <option value="month">Last 30 Days</option>
-                <option value="semester">This Semester</option>
-              </select>
+              <div className="flex items-center gap-2">
+                <label htmlFor="period-select" className="sr-only">Select period</label>
+                <select
+                  id="period-select"
+                  value={selectedPeriod}
+                  onChange={(e) => setSelectedPeriod(e.target.value)}
+                  className="w-full sm:w-auto px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 dark:text-gray-200"
+                >
+                  <option value="week">Last 7 Days</option>
+                  <option value="month">Last 30 Days</option>
+                  <option value="semester">This Semester</option>
+                </select>
+              </div>
             </div>
             <div className="w-full h-[300px]">
               {trendData.length > 0 ? (
@@ -424,7 +433,7 @@ export default function ProfessorAttendanceReports() {
                       <p className="text-3xl font-bold text-gray-900 dark:text-white">
                         {stats.avgAttendance}%
                       </p>
-                      <p className="text-xs text-gray-500">Average</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Average</p>
                     </div>
                   </div>
                 </>
@@ -450,13 +459,16 @@ export default function ProfessorAttendanceReports() {
                 <input
                   type="text"
                   placeholder="Search reports..."
+                  aria-label="Search reports"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-cardDark focus:ring-2 focus:ring-purple-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-cardDark focus:ring-2 focus:ring-purple-500 outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
+                aria-label="Toggle filter options"
+                aria-expanded={showFilters}
                 className={`p-2 rounded-xl border transition-colors flex-shrink-0 ${
                   showFilters
                     ? "bg-purple-50 border-purple-200 text-purple-600"
@@ -477,14 +489,15 @@ export default function ProfessorAttendanceReports() {
                 className="overflow-hidden"
               >
                 <div className="bg-white dark:bg-cardDark p-4 rounded-xl border border-gray-200 dark:border-gray-700 mb-4 flex flex-wrap gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Course
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="course-select" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Filter by Course
                     </label>
                     <select
+                      id="course-select"
                       value={selectedCourse}
                       onChange={(e) => setSelectedCourse(e.target.value)}
-                      className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm outline-none"
+                      className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 dark:text-gray-200"
                     >
                       <option value="all">All Courses</option>
                       {uniqueCourses.map((c) => (
@@ -514,7 +527,7 @@ export default function ProfessorAttendanceReports() {
                     <h4 className="font-bold text-gray-900 dark:text-white line-clamp-1">
                       {report.sessionTitle}
                     </h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       {report.courseName}
                     </p>
                   </div>
@@ -562,10 +575,13 @@ export default function ProfessorAttendanceReports() {
                 </div>
 
                 <div className="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <button className="text-sm font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                  <button className="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
                     View Details
                   </button>
-                  <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
+                  <button 
+                    aria-label="Report options"
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
+                  >
                     <MoreVertical className="w-4 h-4" />
                   </button>
                 </div>
@@ -577,10 +593,10 @@ export default function ProfessorAttendanceReports() {
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                   No reports found
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-300">
                   Try adjusting your filters or search terms.
                 </p>
               </div>
