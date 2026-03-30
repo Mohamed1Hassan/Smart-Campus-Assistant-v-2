@@ -231,8 +231,8 @@ export default function ProfessorAttendance() {
           <div className="flex items-center gap-3 w-full lg:w-auto">
             <button
               onClick={() => loadSessions()}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-              title="Refresh"
+              className="p-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              aria-label="Refresh sessions"
             >
               <RefreshCw
                 className={`w-5 h-5 ${isLoadingSessions ? "animate-spin" : ""}`}
@@ -294,10 +294,10 @@ export default function ProfessorAttendance() {
                 >
                   <stat.icon className="w-4 h-4 md:w-5 md:h-5" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                   {stat.value}
-                </h3>
-                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                </h2>
+                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                   {stat.label}
                 </p>
               </div>
@@ -314,7 +314,7 @@ export default function ProfessorAttendance() {
                 className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === "sessions"
                     ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800"
                 }`}
               >
                 Sessions
@@ -324,7 +324,7 @@ export default function ProfessorAttendance() {
                 className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === "records"
                     ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800"
                 }`}
               >
                 Records
@@ -336,22 +336,25 @@ export default function ProfessorAttendance() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Search sessions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  aria-label="Search sessions"
                 />
               </div>
               {activeTab === "sessions" && (
-                <select
-                  value={sessionsStatusFilter}
-                  onChange={(e) =>
-                    setSessionsStatusFilter(
-                      e.target.value as typeof sessionsStatusFilter,
-                    )
-                  }
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
-                >
+                  <select
+                    id="status-filter"
+                    value={sessionsStatusFilter}
+                    onChange={(e) =>
+                      setSessionsStatusFilter(
+                        e.target.value as typeof sessionsStatusFilter,
+                      )
+                    }
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                    aria-label="Filter sessions by status"
+                  >
                   <option value="all">All Status</option>
                   <option value="ACTIVE">Active</option>
                   <option value="SCHEDULED">Scheduled</option>
@@ -406,7 +409,7 @@ export default function ProfessorAttendance() {
                         <div className="relative">
                           <button
                             onClick={(e) => toggleMenu(e, session.id)}
-                            className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors ${openMenuId === session.id ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white" : "text-gray-500"}`}
+                            className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors ${openMenuId === session.id ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white" : "text-gray-600"}`}
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
@@ -451,10 +454,10 @@ export default function ProfessorAttendance() {
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-1">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-1">
                       {session.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-1">
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-1">
                       {session.courseName}
                     </p>
 
@@ -493,13 +496,13 @@ export default function ProfessorAttendance() {
                         {[...Array(3)].map((_, i) => (
                           <div
                             key={i}
-                            className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-medium text-gray-500"
+                            className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-medium text-gray-600"
                           >
                             {String.fromCharCode(65 + i)}
                           </div>
                         ))}
                         {session.presentStudents > 3 && (
-                          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-medium text-gray-500">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-medium text-gray-600">
                             +{session.presentStudents - 3}
                           </div>
                         )}
@@ -522,7 +525,7 @@ export default function ProfessorAttendance() {
                 </div>
               ))}
               {filteredSessions.length === 0 && (
-                <div className="col-span-full flex flex-col items-center justify-center py-12 text-gray-500">
+                <div className="col-span-full flex flex-col items-center justify-center py-12 text-gray-600">
                   <Calendar className="w-12 h-12 mb-4 opacity-20" />
                   <p className="text-lg font-medium">No sessions found</p>
                   <p className="text-sm">Create a new session to get started</p>

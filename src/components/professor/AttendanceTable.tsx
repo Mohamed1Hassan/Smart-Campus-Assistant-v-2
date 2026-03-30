@@ -65,12 +65,12 @@ export default function AttendanceTable({
         className="bg-white dark:bg-cardDark rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center"
       >
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+          <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-600" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-textDark mb-2">
           No attendance records found
         </h3>
-        <p className="text-gray-500 dark:text-mutedDark">
+        <p className="text-gray-600 dark:text-mutedDark">
           Start by adding attendance records for your students
         </p>
       </motion.div>
@@ -89,7 +89,7 @@ export default function AttendanceTable({
         <h3 className="text-lg font-semibold text-gray-900 dark:text-textDark">
           Attendance Records
         </h3>
-        <p className="text-sm text-gray-500 dark:text-mutedDark">
+        <p className="text-sm text-gray-600 dark:text-mutedDark">
           {records.length} record{records.length !== 1 ? "s" : ""} found
         </p>
       </div>
@@ -99,22 +99,22 @@ export default function AttendanceTable({
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-800/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Student
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Student ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Course
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-mutedDark uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-mutedDark uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -147,7 +147,7 @@ export default function AttendanceTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-600" />
                     <div className="text-sm text-gray-900 dark:text-textDark">
                       {record.course}
                     </div>
@@ -168,6 +168,7 @@ export default function AttendanceTable({
                       whileTap={{ scale: 0.95 }}
                       onClick={() => onEdit(record)}
                       className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                      aria-label={`Edit record for ${record.studentName}`}
                       title="Edit Record"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -177,6 +178,7 @@ export default function AttendanceTable({
                       whileTap={{ scale: 0.95 }}
                       onClick={() => onDelete(record)}
                       className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      aria-label={`Delete record for ${record.studentName}`}
                       title="Delete Record"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -208,7 +210,7 @@ export default function AttendanceTable({
                   <div className="text-sm font-bold text-gray-900 dark:text-textDark">
                     {record.studentName}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-mutedDark font-mono">
+                  <div className="text-xs text-gray-600 dark:text-mutedDark font-mono">
                     {record.studentId}
                   </div>
                 </div>
@@ -218,7 +220,7 @@ export default function AttendanceTable({
 
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg">
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-mutedDark mb-1">
+                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-mutedDark mb-1">
                   <BookOpen className="w-3 h-3" />
                   Course
                 </div>
@@ -227,7 +229,7 @@ export default function AttendanceTable({
                 </div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg">
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-mutedDark mb-1">
+                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-mutedDark mb-1">
                   <Calendar className="w-3 h-3" />
                   Date
                 </div>
