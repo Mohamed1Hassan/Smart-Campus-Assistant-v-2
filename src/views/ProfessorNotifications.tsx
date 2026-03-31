@@ -929,7 +929,6 @@ export default function ProfessorNotifications() {
               </div>
             </div>
           </div>
-        </div>
         )}
       </DashboardLayout>
     </ErrorBoundary>
