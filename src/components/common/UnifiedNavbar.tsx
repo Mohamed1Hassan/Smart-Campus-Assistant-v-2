@@ -19,7 +19,7 @@ import {
   BarChart3,
   Settings,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import DarkModeToggle from "../DarkModeToggle";
@@ -112,6 +112,15 @@ export default function UnifiedNavbar({
   const router = useRouter();
   const pathname = usePathname();
   const { isMobile } = useResponsive();
+  const [mounted, setMounted] = useState(false);
+
+  useState(() => {
+    // This runs during initialization which is safe for simple states
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { stats, notifications, loading, error } = useNotifications({
     realTime: true,
@@ -189,7 +198,7 @@ export default function UnifiedNavbar({
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
           {/* Left Section: Logo & Mobile Menu */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {isMobile && onMenuToggle && (
+            {mounted && isMobile && onMenuToggle && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={onMenuToggle}
@@ -212,7 +221,7 @@ export default function UnifiedNavbar({
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Logo className="w-8 h-8 sm:w-9 sm:h-9 relative z-10" />
               </div>
-              <div className={`hidden sm:block ${isMobile ? "hidden" : ""}`}>
+              <div className={`hidden sm:block ${mounted && isMobile ? "hidden" : ""}`}>
                 <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-none tracking-tight">
                   Smart Campus
                 </h1>
@@ -323,7 +332,7 @@ export default function UnifiedNavbar({
               >
                 <div className="w-full h-full bg-white dark:bg-gray-950 rounded-[14px] overflow-hidden relative group">
                   <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {userAvatar ? (
+                  {userAvatar && mounted ? (
                     <Image
                       src={userAvatar}
                       alt={userName}
@@ -333,7 +342,7 @@ export default function UnifiedNavbar({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm relative z-10">
-                      {userName.charAt(0)}
+                      {(mounted ? userName : "S").charAt(0)}
                     </div>
                   )}
                 </div>

@@ -89,9 +89,9 @@ export default function AnnouncementsList({
             <Megaphone className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               University News
-            </h3>
+            </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
               Latest updates
             </p>
@@ -128,11 +128,11 @@ export default function AnnouncementsList({
                       <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {announcement.title}
                       </h4>
-                      <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full">
                         {announcement.timestamp}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed line-clamp-2">
                       {announcement.message}
                     </p>
                   </div>

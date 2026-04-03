@@ -246,11 +246,11 @@ export default function SchedulePreview({
               <Calendar className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Today&apos;s Lectures
-              </h3>
+              </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
-                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-bold whitespace-nowrap">
                   {todayDate.english}
                 </p>
                 <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
@@ -389,16 +389,16 @@ export default function SchedulePreview({
                 <table className="w-full">
                 <thead className="sticky top-0 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm z-10">
                   <tr className="border-b border-gray-200/50 dark:border-gray-700/50">
-                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                       Course
                     </th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                       Time
                     </th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                       Room
                     </th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-4 px-6 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                       Status
                     </th>
                     <th className="text-right py-4 px-6 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">

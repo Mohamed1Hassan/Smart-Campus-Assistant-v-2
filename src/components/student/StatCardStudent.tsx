@@ -37,15 +37,15 @@ export default function StatCardStudent({
 
       <div className="relative flex items-center justify-between z-10">
         <div className="flex-1">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 tracking-wide uppercase">
+          <h2 className="text-sm font-bold text-gray-600 dark:text-gray-300 mb-1 tracking-wide uppercase">
             {title}
-          </h3>
+          </h2>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
               {value}
             </span>
             {subtitle && (
-              <span className="text-[10px] sm:text-xs font-medium text-gray-400 dark:text-gray-500">
+              <span className="text-[10px] sm:text-xs font-semibold text-gray-500 dark:text-gray-400">
                 {subtitle}
               </span>
             )}

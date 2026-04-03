@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   GraduationCap,
   BookOpen,
@@ -80,6 +80,7 @@ interface NotificationItem {
 
 // Helper to format time ago
 const formatTimeAgo = (date: string | Date) => {
+  if (typeof window === "undefined") return "Earlier"; // Return static during SSR
   const d = new Date(date);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
@@ -400,42 +401,33 @@ export default function StudentDashboard() {
     }
   }, [isAuthenticated, statsLoading, stats, showInfo, user?.firstName]);
 
-  const containerVariants = {
+  // Fix hydration mismatch (#418) for LCP element
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05, // Reduced from 0.1
+        staggerChildren: 0.05,
       },
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 8 }, // Reduced from 20
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3,
-        ease: "easeOut" as const,
+        duration: 0.4,
+        ease: "easeOut",
       },
     },
   };
-
-  if (statsLoading && !stats) {
-    return (
-      <DashboardLayout userName={user?.firstName} userType="student">
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-          <StatsSkeleton />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
-            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout userName={user?.firstName} userType="student">
@@ -446,16 +438,16 @@ export default function StudentDashboard() {
         style={{ willChange: "transform, opacity" }}
         className="space-y-6 sm:space-y-8 pb-32 sm:pb-24"
       >
-        {/* Header Section */}
+        {/* Header Section - Always render for LCP (Largest Contentful Paint) */}
         <motion.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
               className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
               <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
@@ -464,8 +456,8 @@ export default function StudentDashboard() {
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 Dashboard
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
-                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 font-bold">{user?.firstName}</span> 👋
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold min-h-[1.5rem]">
+                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{mounted ? user?.firstName : "Student"}</span> 👋
               </p>
             </div>
           </div>
@@ -496,87 +488,98 @@ export default function StudentDashboard() {
           </div>
         </motion.div>
 
-        {/* Stats Grid - 2 Columns on Mobile, 4 on Desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          <StatCardStudent
-            title="Predicted GPA"
-            value={
-              stats?.attendancePercentage
-                ? ((stats.attendancePercentage / 100) * 4).toFixed(2)
-                : "0.00"
-            }
-            icon={GraduationCap}
-            color="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
-            delay={0.1}
-            subtitle="Based on Attendance"
-          />
-          <StatCardStudent
-            title="Credits"
-            value={stats?.totalCredits ?? 0}
-            icon={BookOpen}
-            color="bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
-            delay={0.2}
-            subtitle="Earned"
-          />
-          <StatCardStudent
-            title="Attendance"
-            value={`${stats?.attendancePercentage ?? 0}%`}
-            icon={Timer}
-            color="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
-            delay={0.3}
-            subtitle="Overall"
-          />
-          <StatCardStudent
-            title="Assignments"
-            value={stats?.pendingAssignments ?? 0}
-            icon={FileText}
-            color="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
-            delay={0.4}
-            subtitle="Pending"
-          />
-        </div>
+        {/* Stats Grid */}
+        {statsLoading && !stats ? (
+          <StatsSkeleton />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <StatCardStudent
+              title="Predicted GPA"
+              value={
+                stats?.attendancePercentage
+                  ? ((stats.attendancePercentage / 100) * 4).toFixed(2)
+                  : "0.00"
+              }
+              icon={GraduationCap}
+              color="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
+              delay={0.1}
+              subtitle="Based on Attendance"
+            />
+            <StatCardStudent
+              title="Credits"
+              value={stats?.totalCredits ?? 0}
+              icon={BookOpen}
+              color="bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+              delay={0.2}
+              subtitle="Earned"
+            />
+            <StatCardStudent
+              title="Attendance"
+              value={`${stats?.attendancePercentage ?? 0}%`}
+              icon={Timer}
+              color="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
+              delay={0.3}
+              subtitle="Overall"
+            />
+            <StatCardStudent
+              title="Assignments"
+              value={stats?.pendingAssignments ?? 0}
+              icon={FileText}
+              color="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
+              delay={0.4}
+              subtitle="Pending"
+            />
+          </div>
+        )}
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Schedule */}
-          <motion.div
-            variants={itemVariants}
-            className="lg:col-span-2 space-y-6"
-          >
-            <SchedulePreview classes={todaySchedule} />
+        {statsLoading && !stats ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column: Schedule */}
+            <motion.div
+              variants={itemVariants}
+              className="lg:col-span-2 space-y-6"
+            >
+              <SchedulePreview classes={todaySchedule} />
 
-            {/* Quick Actions (Mobile Only) */}
-            <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
-              <button
-                onClick={() => router.push("/dashboard/student/ai-assistant")}
-                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-3xl text-white shadow-lg shadow-indigo-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
-                  <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Ask AI</span>
-              </button>
-              
-              <button
-                onClick={() => router.push("/dashboard/student/schedule")}
-                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-400 rounded-3xl text-white shadow-lg shadow-blue-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
-                  <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
-              </button>
-            </div>
-          </motion.div>
+              {/* Quick Actions (Mobile Only) */}
+              <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
+                <button
+                  onClick={() => router.push("/dashboard/student/ai-assistant")}
+                  className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-3xl text-white shadow-lg shadow-indigo-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
+                >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
+                  <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Ask AI</span>
+                </button>
+                
+                <button
+                  onClick={() => router.push("/dashboard/student/schedule")}
+                  className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-400 rounded-3xl text-white shadow-lg shadow-blue-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
+                >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                    <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
+                  <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
+                </button>
+              </div>
+            </motion.div>
 
-          {/* Right Column: Announcements */}
-          <motion.div variants={itemVariants} className="space-y-6">
-            <ChatbotCard href="/dashboard/student/ai-assistant" />
-            <AnnouncementsList announcements={announcements} />
-          </motion.div>
-        </div>
+            {/* Right Column: Announcements */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              <ChatbotCard href="/dashboard/student/ai-assistant" />
+              <AnnouncementsList announcements={announcements} />
+            </motion.div>
+          </div>
+        )}
       </motion.div>
       {/* AI Assistant Button */}
       <AIAssistantButton userType="student" />

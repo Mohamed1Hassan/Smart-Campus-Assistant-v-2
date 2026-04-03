@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   BookOpen,
@@ -40,6 +40,12 @@ export default function StudentCourses() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [imgErrors, setImgErrors] = useState<{ [key: string]: boolean }>({});
+  
+  // Fix hydration mismatch (#418)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     data: courses = [],
@@ -124,7 +130,7 @@ export default function StudentCourses() {
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 My Courses
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold">
                 Access your course materials.
               </p>
             </div>
@@ -137,13 +143,13 @@ export default function StudentCourses() {
           className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
         >
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 dark:text-gray-300" />
             <input
               type="text"
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-bold placeholder:text-gray-500"
             />
           </div>
 
@@ -176,9 +182,9 @@ export default function StudentCourses() {
             <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <ExternalLink className="w-8 h-8 text-red-500" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               Failed to load courses
-            </h3>
+            </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
               We couldn&apos;t fetch your courses. This might be due to a
               network issue or server timeout.
@@ -257,9 +263,9 @@ export default function StudentCourses() {
                           {course.code} • {course.semester}
                         </span>
                       </div>
-                      <h3 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-indigo-200 transition-colors">
+                      <h2 className="text-xl font-extrabold text-white line-clamp-2 leading-tight drop-shadow-lg group-hover:text-indigo-200 transition-colors">
                         {course.name}
-                      </h3>
+                      </h2>
                     </div>
                   </div>
                 )}
@@ -278,10 +284,10 @@ export default function StudentCourses() {
                         {course.code.substring(0, 2)}
                       </div>
                       <div>
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {course.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                        </h2>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 font-bold mt-0.5">
                           {course.code} • {course.semester}{" "}
                           {course.academicYear}
                         </p>
@@ -297,7 +303,7 @@ export default function StudentCourses() {
                     }`}
                   >
                     <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
-                      <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                      <div className="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 font-bold shrink-0">
                         <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
                           <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                         </div>
@@ -310,7 +316,7 @@ export default function StudentCourses() {
 
                     {course.scheduleTime && (
                       <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
-                        <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                        <div className="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 font-bold shrink-0">
                           <div className="p-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                             <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                           </div>
@@ -349,10 +355,10 @@ export default function StudentCourses() {
             <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <BookOpen className="w-10 h-10 text-indigo-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               No courses found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300 max-w-md mx-auto">
               {searchTerm
                 ? "Try adjusting your search terms."
                 : "You are not enrolled in any courses yet."}
