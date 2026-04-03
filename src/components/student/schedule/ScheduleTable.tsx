@@ -242,7 +242,7 @@ export default function ScheduleTable({
                       </td>
                       <td className="py-5 px-6">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                          <div className="w-16 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-500 dark:text-gray-400 px-2">
+                          <div className="w-16 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300 px-2">
                             {cls.room}
                           </div>
                         </div>

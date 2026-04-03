@@ -81,9 +81,9 @@ export default function ScheduleStats({
                   <Icon className={`w-6 h-6 ${item.color}`} />
                 </div>
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
                 {item.value}
-              </h3>
+              </p>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 {item.label}
               </p>
