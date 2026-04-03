@@ -1,7 +1,8 @@
 "use client";
 import { ReactNode, useState } from "react";
 import UnifiedNavbar from "./UnifiedNavbar";
-import MobileDrawer from "../MobileDrawer";
+import dynamic from "next/dynamic";
+const MobileDrawer = dynamic(() => import("../MobileDrawer"), { ssr: false });
 
 interface DashboardLayoutProps {
   children: ReactNode;
