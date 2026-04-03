@@ -33,7 +33,11 @@ interface Course {
   coverImage?: string;
 }
 
-export default function StudentCourses() {
+interface StudentCoursesProps {
+  initialCourses?: Course[];
+}
+
+export default function StudentCourses({ initialCourses = [] }: StudentCoursesProps) {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
 
@@ -48,19 +52,19 @@ export default function StudentCourses() {
   }, []);
 
   const {
-    data: courses = [] as Course[],
+    data: courses = initialCourses.length > 0 ? initialCourses : ([] as Course[]),
     isLoading,
     isError,
     refetch,
   } = useQuery({
     queryKey: ["student-courses", user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return initialCourses;
       const response = await apiClient.get("/api/courses/student/enrolled");
 
       if (response.success && Array.isArray(response.data)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return response.data.map((course: any): Course => ({
+        const mappedCourses = response.data.map((course: any): Course => ({
           id: String(course.id),
           name: course.name,
           code: course.code,
@@ -72,9 +76,11 @@ export default function StudentCourses() {
           description: course.description,
           coverImage: course.coverImage,
         }));
+        return mappedCourses;
       }
-      throw new Error("Failed to fetch courses");
+      return initialCourses;
     },
+    initialData: initialCourses.length > 0 ? initialCourses : undefined,
     enabled: !!user && isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
