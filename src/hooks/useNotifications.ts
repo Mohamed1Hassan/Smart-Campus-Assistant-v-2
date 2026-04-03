@@ -67,6 +67,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
           'broadcast',
           { event: `user:${user.id}:notification` },
           (payload: any) => {
+            if (!payload) return;
             console.log('[useNotifications] New notification received:', payload);
             // Handle both wrapped { payload: data } and direct data
             const notificationData = payload?.payload || payload;
