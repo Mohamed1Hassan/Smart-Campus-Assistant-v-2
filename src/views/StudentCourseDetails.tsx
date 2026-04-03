@@ -141,14 +141,14 @@ export default function StudentCourseDetails() {
                   <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded text-xs font-bold">
                     {course.courseCode}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">
                     {course.credits} Credits
                   </span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                   {course.courseName}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-gray-700 dark:text-gray-300 mt-1">
                   {/* Aggregate professors from course and schedules */}
                   Professor:{" "}
                   {(() => {
@@ -221,10 +221,10 @@ export default function StudentCourseDetails() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white dark:bg-cardDark p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-indigo-500" />
                   Schedule
-                </h3>
+                </h2>
                 <div className="space-y-3">
                   {course.schedules && course.schedules.length > 0 ? (
                     course.schedules.map((schedule, index) => (
@@ -235,7 +235,7 @@ export default function StudentCourseDetails() {
                         <span className="font-medium">
                           {dayNames[schedule.dayOfWeek]}
                         </span>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
                           {schedule.startTime} - {schedule.endTime}
                           <span className="mx-2">›</span>
                           {schedule.room || "TBA"}
@@ -249,10 +249,10 @@ export default function StudentCourseDetails() {
               </div>
 
               <div className="bg-white dark:bg-cardDark p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-green-500" />
                   Description
-                </h3>
+                </h2>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {course.description || "No description available."}
                 </p>
@@ -263,10 +263,10 @@ export default function StudentCourseDetails() {
           <TabsContent value="resources" className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Course Materials
-                </h3>
-                <p className="text-gray-500 text-sm">
+                </h2>
+                <p className="text-gray-600 text-sm">
                   Download lecture notes and view resources.
                 </p>
               </div>

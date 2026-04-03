@@ -4,7 +4,7 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import {
   GraduationCap,
   TrendingUp,
@@ -89,7 +89,7 @@ const GPASimulator = ({
   }, [targetGPA, currentGPA, totalCredits, futureCredits]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 50 }}
@@ -100,14 +100,15 @@ const GPASimulator = ({
         <div className="absolute -top-20 -right-20 h-40 w-40 bg-indigo-500/10 blur-[80px] rounded-full" />
         
         <div className="flex justify-between items-center mb-10 relative z-10">
-          <h3 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
             <div className="p-2.5 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-200">
               <Calculator className="w-6 h-6 text-white" />
             </div>
             Simulator
-          </h3>
+          </h2>
           <button
             onClick={onHide}
+            aria-label="Close Simulator"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors group"
           >
             <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
@@ -142,6 +143,7 @@ const GPASimulator = ({
               </div>
               <input
                 type="range"
+                aria-label="Target GPA"
                 min="0"
                 max="4"
                 step="0.05"
@@ -162,6 +164,7 @@ const GPASimulator = ({
               </div>
               <input
                 type="range"
+                aria-label="Future Credits"
                 min="3"
                 max="21"
                 step="3"
@@ -182,6 +185,7 @@ const GPASimulator = ({
               </div>
               <input
                 type="range"
+                aria-label="Completed Credits"
                 min="0"
                 max="150"
                 step="5"
@@ -202,7 +206,7 @@ const GPASimulator = ({
           </div>
         </div>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -266,13 +270,16 @@ export default function Grades() {
   if (isLoading) {
     return (
       <DashboardLayout userType="student">
+<LazyMotion features={domAnimation}>
         <StatsSkeleton />
-      </DashboardLayout>
+      </LazyMotion>
+</DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout userType="student">
+      <LazyMotion features={domAnimation}>
       <div className={`space-y-8 pb-32 transition-all duration-500 ${showSimulator ? "xl:mr-[340px]" : ""}`}>
         {/* Premium Floating Header */}
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 p-8 shadow-2xl">
@@ -282,14 +289,14 @@ export default function Grades() {
 
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-4">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full text-xs font-bold uppercase tracking-wider"
               >
                 <Award className="w-3.5 h-3.5" />
                 Elite Academic Status
-              </motion.div>
+              </m.div>
               
               <div className="space-y-1">
                 <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
@@ -303,7 +310,7 @@ export default function Grades() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <motion.div 
+              <m.div 
                 whileHover={{ scale: 1.02 }}
                 className="px-8 py-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-xl flex items-center gap-5 min-w-[220px]"
               >
@@ -318,7 +325,7 @@ export default function Grades() {
                     {stats.gpa.toFixed(2)}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
 
               {!showSimulator && (
                 <button
@@ -339,15 +346,15 @@ export default function Grades() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full" />
             
             <div className="flex items-center justify-between mb-8 relative z-10">
-              <h3 className="font-bold flex items-center gap-3 text-gray-900 dark:text-white text-lg">
+              <h2 className="font-bold flex items-center gap-3 text-gray-900 dark:text-white text-lg">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
                   <BarChart3 className="w-5 h-5 text-indigo-500" />
                 </div>
                 Performance Tracking
-              </h3>
+              </h2>
               <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
                 <BarChart3 className="w-4 h-4 text-gray-400" />
-                <select className="bg-transparent text-xs font-bold text-gray-500 dark:text-gray-400 outline-none border-none cursor-pointer">
+                <select aria-label="Filter courses by term" className="bg-transparent text-xs font-bold text-gray-500 dark:text-gray-400 outline-none border-none cursor-pointer">
                   <option>Current Semester</option>
                   <option>Academic Year</option>
                 </select>
@@ -418,9 +425,9 @@ export default function Grades() {
                 <Target className="w-12 h-12 text-white" />
               </div>
               
-              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-3">
+              <h2 className="text-xl font-black text-gray-900 dark:text-white mb-3">
                 Broadcaster Matrix
-              </h3>
+              </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium max-w-[200px] mx-auto leading-relaxed">
                 Advanced skill-mapping analytics will be available once more data is collected.
               </p>
@@ -477,7 +484,7 @@ export default function Grades() {
               const themeColor = colorClass === 'emerald' ? '#10b981' : colorClass === 'amber' ? '#f59e0b' : '#ef4444';
 
               return (
-                <motion.div
+                <m.div
                   key={grade.id}
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -517,9 +524,9 @@ export default function Grades() {
                     </div>
 
                     <div className="space-y-1 mb-8 relative z-10">
-                      <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors line-clamp-1">
+                      <h2 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors line-clamp-1">
                         {grade.course.courseName}
-                      </h3>
+                      </h2>
                       <p className="text-[11px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest flex items-center gap-2">
                         <Target className="w-3.5 h-3.5" />
                         {grade.quiz?.title || "Standard Assessment"}
@@ -534,7 +541,7 @@ export default function Grades() {
                         </p>
                       </div>
                       <div className="w-full bg-gray-100 dark:bg-gray-900 rounded-full h-2.5 p-0.5 shadow-inner">
-                        <motion.div
+                        <m.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percentage}%` }}
                           transition={{ duration: 1, delay: 0.5 }}
@@ -559,7 +566,7 @@ export default function Grades() {
                       </button>
                     </div>
                   </GlassCard>
-                </motion.div>
+                </m.div>
               );
             })}
           </AnimatePresence>
@@ -571,9 +578,9 @@ export default function Grades() {
             <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-dashed border-gray-200 dark:border-gray-700">
               <AlertCircle className="w-12 h-12 text-gray-300" />
             </div>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
               Shadow Records Empty
-            </h3>
+            </h2>
             <p className="text-gray-500 font-medium max-w-sm mx-auto">
               No matching grade descriptors found for your current search
               parameters. System idle.
@@ -591,6 +598,7 @@ export default function Grades() {
           />
         )}
       </AnimatePresence>
-    </DashboardLayout>
+    </LazyMotion>
+</DashboardLayout>
   );
 }

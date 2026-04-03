@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import {
   BookOpen,
@@ -44,12 +44,6 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [imgErrors, setImgErrors] = useState<{ [key: string]: boolean }>({});
-  
-  // Fix hydration mismatch (#418)
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const {
     data: courses = initialCourses.length > 0 ? initialCourses : ([] as Course[]),
@@ -156,7 +150,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-bold placeholder:text-gray-600 dark:placeholder:text-gray-400"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-bold placeholder:text-gray-700 dark:placeholder:text-gray-400"
             />
           </div>
 
@@ -164,7 +158,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             <div className="flex bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-700 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"}`}
                 aria-label="Grid view"
               >
                 <LayoutGrid className="w-5 h-5" />

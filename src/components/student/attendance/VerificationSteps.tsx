@@ -3,7 +3,7 @@
 import React from "react";
 import { CheckCircle, XCircle, QrCode, MapPin, Smartphone, Camera, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface SecurityVerification {
   step: number;
@@ -39,7 +39,7 @@ const getStepIcon = (step: string) => {
 
 const VerificationSteps = ({ steps }: VerificationStepsProps) => {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -54,7 +54,7 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
             <h2 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-400 dark:to-teal-400">
               Verification
             </h2>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
               Security checks
             </p>
           </div>
@@ -86,8 +86,8 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
                       : step.status === "FAILED"
                         ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-4 ring-red-50 dark:ring-red-900/10"
                         : step.status === "SKIPPED"
-                          ? "bg-gray-100 text-gray-400 dark:bg-gray-700/50 dark:text-gray-500 line-through opacity-60"
-                          : "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
+                          ? "bg-gray-100 text-gray-500 dark:bg-gray-700/50 dark:text-gray-500 line-through opacity-60"
+                          : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-500"
                 }`}
               >
                 {step.status === "COMPLETED" ? (
@@ -127,7 +127,7 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
                     {step.status}
                   </Badge>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   {step.isRequired ? "Required" : "Optional"}
                 </p>
               </div>
@@ -135,7 +135,7 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

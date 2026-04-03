@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import {
   Trash2,
   Bot,
@@ -402,7 +402,7 @@ export default function StudentAIAssistant() {
         : new Date(message.timestamp);
 
       return (
-        <motion.div
+        <m.div
           initial={isInitialLoadRef.current ? false : { opacity: 0, y: 20 }}
           animate={isInitialLoadRef.current ? false : { opacity: 1, y: 0 }}
           key={message.id}
@@ -433,7 +433,7 @@ export default function StudentAIAssistant() {
                 </div>
               </div>
               <div className={`flex items-center gap-3 px-2 ${isAi ? "justify-start" : "justify-end"}`}>
-                <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-tighter">
+                <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tighter">
                   {timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
                 {!isAi && (
@@ -444,7 +444,7 @@ export default function StudentAIAssistant() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       );
     })
   ), [messages, detectLanguage, deleteMessage]);
@@ -454,12 +454,13 @@ export default function StudentAIAssistant() {
   return (
     <ErrorBoundary>
       <DashboardLayout userName={user ? `${user.firstName} ${user.lastName}` : "Student"} userType="student">
-        <div className="flex h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)] gap-6 max-w-7xl mx-auto pb-0 lg:pb-6 relative">
+        <LazyMotion features={domAnimation}>
+          <div className="flex h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)] gap-6 max-w-7xl mx-auto pb-0 lg:pb-6 relative">
           <AnimatePresence mode="wait">
             {showSessionsPanel && (
               <>
                 {isMobile && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -467,7 +468,7 @@ export default function StudentAIAssistant() {
                     className="absolute inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden rounded-[2rem]"
                   />
                 )}
-                <motion.div
+                <m.div
                   initial={{ width: 0, opacity: 0 }}
                   animate={{ width: 320, opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
@@ -508,7 +509,7 @@ export default function StudentAIAssistant() {
                       ))}
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               </>
             )}
           </AnimatePresence>
@@ -559,7 +560,7 @@ export default function StudentAIAssistant() {
                 <>
                   {memoizedMessages}
                   {isLoading && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
+                    <m.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
                       <div className="flex gap-4 max-w-[85%]">
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md mt-1">
                           <Bot className="w-4 h-4 text-white" />
@@ -570,7 +571,7 @@ export default function StudentAIAssistant() {
                           <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
                         </div>
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
                 </>
               )}
@@ -594,7 +595,7 @@ export default function StudentAIAssistant() {
                 )}
                 <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} chromeless />
                 <div className="text-center sm:mt-3 px-2">
-                  <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest leading-tight">
+                  <p className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-500 tracking-widest leading-tight">
                     AI can make mistakes. Verify important information.
                   </p>
                 </div>
@@ -612,6 +613,7 @@ export default function StudentAIAssistant() {
             animation: float 6s ease-in-out infinite;
           }
         `}</style>
+              </LazyMotion>
       </DashboardLayout>
     </ErrorBoundary>
   );

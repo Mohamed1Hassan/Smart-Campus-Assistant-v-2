@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import { AlertCircle, CalendarDays } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "../components/common/DashboardLayout";
@@ -234,22 +234,23 @@ export default function Schedule() {
 
   return (
     <DashboardLayout>
+      <LazyMotion features={domAnimation}>
       <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 sm:gap-6 p-5 md:p-0 bg-white/60 md:bg-transparent dark:bg-gray-800/60 md:dark:bg-transparent rounded-3xl md:rounded-none border border-white/40 dark:border-gray-700/40 md:border-transparent shadow-sm md:shadow-none backdrop-blur-xl mb-4 sm:mb-6">
-          <motion.div
+          <m.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 shrink-0"
           >
             <CalendarDays className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-          </motion.div>
+          </m.div>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
               My Class Schedule
             </h1>
-            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 font-medium">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-0.5 sm:mt-1 font-medium">
               Manage your weekly classes and view details
             </p>
           </div>
@@ -258,7 +259,7 @@ export default function Schedule() {
         {/* Day Switcher - Mobile/Tablet Optimized */}
         <div className="flex overflow-x-auto pb-4 gap-2 sm:gap-3 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           {dayOptions.slice(1).map((day) => (
-            <motion.button
+            <m.button
               key={day}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -273,9 +274,9 @@ export default function Schedule() {
               `}
             >
               {day}
-            </motion.button>
+            </m.button>
           ))}
-          <motion.button
+          <m.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setFilters({ ...filters, day: "Days" })}
@@ -289,7 +290,7 @@ export default function Schedule() {
             `}
           >
             All Days
-          </motion.button>
+          </m.button>
         </div>
 
         {/* Loading State */}
@@ -325,9 +326,9 @@ export default function Schedule() {
         {!loading && !authLoading && error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
+            <h2 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
               Failed to load schedule
-            </h3>
+            </h2>
             <p className="text-red-600 dark:text-red-300 mb-4">
               {error instanceof Error
                 ? error.message
@@ -351,10 +352,10 @@ export default function Schedule() {
                   <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CalendarDays className="w-10 h-10 text-gray-400" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     No Classes Scheduled
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
                     You don&apos;t have any classes scheduled for this semester
                     yet, or there might be an issue retrieving your schedule.
                   </p>
@@ -395,6 +396,7 @@ export default function Schedule() {
           </>
         )}
       </div>
+          </LazyMotion>
     </DashboardLayout>
   );
 }

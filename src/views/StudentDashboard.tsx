@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion, Variants } from "framer-motion";
+import { m, LazyMotion, domAnimation, Variants } from "framer-motion";
 import {
   GraduationCap,
   BookOpen,
@@ -410,12 +410,7 @@ export default function StudentDashboard() {
     }
   }, [isAuthenticated, statsLoading, stats, showInfo, user?.firstName]);
 
-  // Fix hydration mismatch (#418) for LCP element
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  // --- Variants ---
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -440,7 +435,8 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout userName={user?.firstName} userType="student">
-      <motion.div
+      <LazyMotion features={domAnimation}>
+      <m.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -448,25 +444,25 @@ export default function StudentDashboard() {
         className="space-y-6 sm:space-y-8 pb-32 sm:pb-24"
       >
         {/* Header Section - Always render for LCP (Largest Contentful Paint) */}
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <motion.div
+            <m.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
               className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
               <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-            </motion.div>
+            </m.div>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 Dashboard
               </h1>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold min-h-[1.5rem]">
-                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{mounted ? user?.firstName : "Student"}</span> 👋
+              <p className="text-sm sm:text-base text-gray-800 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold min-h-[1.5rem]">
+                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{user?.firstName || "Student"}</span> 👋
               </p>
             </div>
           </div>
@@ -483,19 +479,19 @@ export default function StudentDashboard() {
               onClick={handleRefresh}
               disabled={isRefreshing}
               className={`p-2.5 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:shadow-md active:scale-95 ${isRefreshing ? "animate-spin text-indigo-600" : ""}`}
-              title="Refresh Dashboard"
+              aria-label="Refresh Dashboard" title="Refresh Dashboard"
             >
               <RefreshCw className="w-5 h-5" />
             </button>
             <button
               onClick={handleHardRefresh}
               className="p-2.5 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700 text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 transition-all hover:shadow-md active:scale-95 group"
-              title="Force Update / Fix Issues"
+              aria-label="Force Update / Fix Issues" title="Force Update / Fix Issues"
             >
               <Zap className="w-5 h-5 fill-current group-hover:animate-pulse" />
             </button>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Stats Grid */}
         {statsLoading && !stats ? (
@@ -550,7 +546,7 @@ export default function StudentDashboard() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Schedule */}
-            <motion.div
+            <m.div
               variants={itemVariants}
               className="lg:col-span-2 space-y-6"
             >
@@ -580,18 +576,19 @@ export default function StudentDashboard() {
                   <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
                 </button>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Right Column: Announcements */}
-            <motion.div variants={itemVariants} className="space-y-6">
+            <m.div variants={itemVariants} className="space-y-6">
               <ChatbotCard href="/dashboard/student/ai-assistant" />
               <AnnouncementsList announcements={announcements} />
-            </motion.div>
+            </m.div>
           </div>
         )}
-      </motion.div>
+      </m.div>
       {/* AI Assistant Button */}
       <AIAssistantButton userType="student" />
+          </LazyMotion>
     </DashboardLayout>
   );
 }

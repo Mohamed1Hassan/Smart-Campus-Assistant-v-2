@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import {
   Plus,
   BookOpen,
@@ -196,7 +196,8 @@ export default function MyCourses() {
       userName={user ? `${user.firstName} ${user.lastName}` : "Professor"}
       userType="professor"
     >
-      <div className="max-w-7xl mx-auto space-y-8 pb-12">
+      <LazyMotion features={domAnimation}>
+        <div className="max-w-7xl mx-auto space-y-8 pb-12">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl">
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
@@ -207,7 +208,7 @@ export default function MyCourses() {
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-1">
                 My Courses
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 font-medium">
                 Manage your curriculum and students.
               </p>
             </div>
@@ -224,18 +225,18 @@ export default function MyCourses() {
         </div>
 
         {/* Filters & Search */}
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="space-y-8"
         >
-          <motion.div
+          <m.div
             variants={itemVariants}
             className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
           >
           <div className="relative flex-1 sm:w-96 sm:flex-none">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
             <input
               type="text"
               placeholder="Search courses..."
@@ -249,25 +250,25 @@ export default function MyCourses() {
             <div className="flex bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-600 hover:text-gray-800 dark:hover:text-gray-300"}`}
                 aria-label="Grid view"
               >
                 <LayoutGrid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-600 hover:text-gray-800 dark:hover:text-gray-300"}`}
                 aria-label="List view"
               >
                 <List className="w-5 h-5" />
               </button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Error State */}
         {isError ? (
-          <motion.div
+          <m.div
             variants={itemVariants}
             className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-900/20"
           >
@@ -277,7 +278,7 @@ export default function MyCourses() {
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               Failed to load courses
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+            <p className="text-gray-500 dark:text-gray-600 max-w-md mx-auto mb-6">
               We couldn&apos;t fetch your courses. This might be due to a
               network issue or server timeout.
             </p>
@@ -287,7 +288,7 @@ export default function MyCourses() {
             >
               Try Again
             </button>
-          </motion.div>
+          </m.div>
         ) : isEffectiveLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -306,7 +307,7 @@ export default function MyCourses() {
             }
           >
             {filteredCourses.map((course: Course) => (
-              <motion.div
+              <m.div
                 key={course.id}
                 variants={itemVariants}
                 initial="hidden"
@@ -375,7 +376,7 @@ export default function MyCourses() {
                         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {course.name}
                         </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-0.5">
                           {course.code} • {course.semester}{" "}
                           {course.academicYear}
                         </p>
@@ -391,7 +392,7 @@ export default function MyCourses() {
                     }`}
                   >
                     <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
-                      <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                      <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300 font-medium shrink-0">
                         <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                           <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         </div>
@@ -404,7 +405,7 @@ export default function MyCourses() {
 
                     {course.scheduleTime && (
                       <div className="flex items-center justify-between text-sm w-full sm:w-auto gap-4">
-                        <div className="flex items-center gap-2.5 text-gray-500 dark:text-gray-400 font-medium shrink-0">
+                        <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300 font-medium shrink-0">
                           <div className="p-1.5 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg">
                             <Clock className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                           </div>
@@ -442,7 +443,7 @@ export default function MyCourses() {
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                       <button 
-                        className="p-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors border border-gray-100 dark:border-gray-700 shadow-sm"
+                        className="p-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-600 dark:hover:text-gray-200 transition-colors border border-gray-100 dark:border-gray-700 shadow-sm"
                         aria-label={`Edit ${course.name}`}
                       >
                         <Edit className="w-4 h-4" />
@@ -471,11 +472,11 @@ export default function MyCourses() {
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         ) : (
-          <motion.div
+          <m.div
             variants={itemVariants}
             className="text-center py-20 bg-white dark:bg-cardDark rounded-3xl border border-dashed border-gray-200 dark:border-gray-700"
           >
@@ -485,21 +486,21 @@ export default function MyCourses() {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               No courses found
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
+            <p className="text-gray-500 dark:text-gray-600 max-w-md mx-auto mb-8">
               Get started by creating your first course. You can manage
               students, attendance, and materials.
             </p>
-            <motion.button
+            <m.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowAddModal(true)}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20"
             >
               Create First Course
-            </motion.button>
-          </motion.div>
+            </m.button>
+          </m.div>
         )}
-        </motion.div>
+        </m.div>
       </div>
 
       <AddCourseModal
@@ -507,6 +508,7 @@ export default function MyCourses() {
         onClose={() => setShowAddModal(false)}
         onAddCourse={handleAddCourse}
       />
+      </LazyMotion>
     </DashboardLayout>
   );
 }

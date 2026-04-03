@@ -12,7 +12,7 @@ import {
   School,
   Mail,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -123,6 +123,7 @@ export default function Login() {
 
   return (
     <>
+      <LazyMotion features={domAnimation}>
       <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gray-50">
         {/* Dynamic Background */}
         <div className="absolute inset-0 z-0">
@@ -138,7 +139,7 @@ export default function Login() {
           className="w-full max-w-6xl flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10"
           aria-labelledby="login-title"
         >
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut", type: "spring", stiffness: 200, damping: 20 }}
@@ -220,7 +221,7 @@ export default function Login() {
             <div className="p-6 pt-10 md:p-12 lg:p-16 flex flex-col justify-center bg-white/40 lg:bg-white/50">
               {/* Intelligent Responsive Header for Mobile */}
               <div className="mb-8 text-center lg:text-left flex flex-col items-center lg:items-start">
-                <motion.div 
+                <m.div 
                   initial={{ scale: 0.9, opacity: 1 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ ease: "easeOut" }}
@@ -239,8 +240,8 @@ export default function Login() {
                   <h3 className="text-lg font-bold text-blue-600 tracking-tight mt-1">
                     Smart Campus
                   </h3>
-                  <p className="text-sm text-gray-400 font-medium mt-1 text-center" dir="rtl" lang="ar">المنصة التعليمية والنظام الذكي</p>
-                </motion.div>
+                  <p className="text-sm text-gray-600 font-medium mt-1 text-center" dir="rtl" lang="ar">المنصة التعليمية والنظام الذكي</p>
+                </m.div>
 
                 {/* Desktop Welcome Back Text */}
                 <h2
@@ -249,11 +250,11 @@ export default function Login() {
                 >
                   Welcome Back! 👋
                 </h2>
-                <p className="text-gray-500 text-sm lg:text-base hidden lg:block">
+                <p className="text-gray-600 text-sm lg:text-base hidden lg:block">
                   Please sign in to continue to your dashboard at Thebes Academy.
                 </p>
                 {/* Mobile Welcome Text */}
-                <p className="text-gray-500 text-sm max-w-sm lg:hidden mt-2 text-center">
+                <p className="text-gray-600 text-sm max-w-sm lg:hidden mt-2 text-center">
                   Enter your credentials to securely access your academic dashboard.
                 </p>
               </div>
@@ -261,7 +262,7 @@ export default function Login() {
               {/* Role Selection Tabs - Only show when NOT registering */}
               {!showRegisterForm && (
                 <div className="flex p-1.5 bg-gray-500/5 lg:bg-gray-100/80 backdrop-blur-sm lg:backdrop-blur-none rounded-2xl mb-8 relative border border-gray-200/40 lg:border-gray-200/50">
-                  <motion.div
+                  <m.div
                     layout
                     className="absolute inset-y-1.5 left-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] lg:shadow-sm border-none lg:border lg:border-gray-100"
                     animate={{
@@ -296,7 +297,7 @@ export default function Login() {
 
               <AnimatePresence mode="wait">
                 {!showRegisterForm ? (
-                  <motion.form
+                  <m.form
                     key="login"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -309,7 +310,7 @@ export default function Login() {
                     {/* Error Alert */}
                     <AnimatePresence>
                       {hasAnyError && (
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
@@ -319,7 +320,7 @@ export default function Login() {
                           <div className="text-sm text-red-800 font-medium">
                             {displayError}
                           </div>
-                        </motion.div>
+                        </m.div>
                       )}
                     </AnimatePresence>
 
@@ -374,7 +375,7 @@ export default function Login() {
 
                     <div className="flex items-center justify-between text-sm">
                       <label className="flex items-center gap-2 text-gray-600 cursor-pointer select-none group">
-                        <motion.div
+                        <m.div
                           animate={{
                             backgroundColor: rememberMe ? "#2563eb" : "#ffffff",
                             borderColor: rememberMe ? "#2563eb" : "#d1d5db",
@@ -384,14 +385,14 @@ export default function Login() {
                           className="w-5 h-5 rounded-lg border flex items-center justify-center shadow-sm"
                         >
                           {rememberMe && (
-                            <motion.div
+                            <m.div
                               initial={{ opacity: 0, scale: 0.5 }}
                               animate={{ opacity: 1, scale: 1 }}
                             >
                               <Check className="w-3.5 h-3.5 text-white" />
-                            </motion.div>
+                            </m.div>
                           )}
-                        </motion.div>
+                        </m.div>
                         <input
                           type="checkbox"
                           className="sr-only"
@@ -438,7 +439,7 @@ export default function Login() {
                         <div className="w-full border-t border-gray-200"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white/50 backdrop-blur-sm text-gray-500 font-medium">
+                        <span className="px-4 bg-white/50 backdrop-blur-sm text-gray-600 font-medium">
                           New to Smart Campus?
                         </span>
                       </div>
@@ -452,9 +453,9 @@ export default function Login() {
                       <UserPlus className="w-5 h-5 text-gray-400 lg:text-gray-500" />
                       Create Account
                     </button>
-                  </motion.form>
+                  </m.form>
                 ) : (
-                  <motion.div
+                  <m.div
                     key="register"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -516,12 +517,12 @@ export default function Login() {
                       isSubmitting={isRegistering}
                       setIsSubmitting={setIsRegistering}
                     />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
               {registerSuccess && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3 shadow-sm"
@@ -532,18 +533,19 @@ export default function Login() {
                   <p className="text-sm text-green-800 font-medium">
                     Account created successfully! Redirecting to login...
                   </p>
-                </motion.div>
+                </m.div>
               )}
             </div>
-          </motion.div>
+          </m.div>
 
           <div className="absolute bottom-4 left-0 right-0 text-center z-10">
-            <p className="text-xs text-gray-400 font-medium">
+            <p className="text-xs text-gray-600 font-medium">
               © 2025 Smart Campus Assistant. All rights reserved.
             </p>
           </div>
         </main>
       </div>
+      </LazyMotion>
     </>
   );
 }

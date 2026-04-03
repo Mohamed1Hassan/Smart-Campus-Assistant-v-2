@@ -91,6 +91,7 @@ export default function ChatInput({
 
         <motion.button
           type="submit"
+          aria-label="Send message"
           disabled={!message.trim() || isLoading}
           whileHover={{ scale: isLoading ? 1 : 1.05 }}
           whileTap={{ scale: isLoading ? 1 : 0.95 }}

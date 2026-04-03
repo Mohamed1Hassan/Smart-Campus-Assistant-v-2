@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import {
   MessageSquare,
   Sparkles,
@@ -36,12 +36,13 @@ export default function StudentChatbot() {
   };
 
   return (
-    <DashboardLayout
+    <LazyMotion features={domAnimation}>
+      <DashboardLayout
       userName={user ? `${user.firstName} ${user.lastName}` : "Student"}
       userType="student"
     >
       {/* Welcome Header */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -72,11 +73,11 @@ export default function StudentChatbot() {
           <XCircle className="w-5 h-5" />
           <span className="font-medium">End Session</span>
         </button>
-      </motion.div>
+      </m.div>
 
       {/* Quick Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -97,9 +98,9 @@ export default function StudentChatbot() {
               <Brain className="w-6 h-6 text-white" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -120,9 +121,9 @@ export default function StudentChatbot() {
               <Globe className="w-6 h-6 text-white" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -143,9 +144,9 @@ export default function StudentChatbot() {
               <Zap className="w-6 h-6 text-white" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -166,26 +167,26 @@ export default function StudentChatbot() {
               <MessageSquare className="w-6 h-6 text-white" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
         {/* Chat Container - Takes 3 columns on large screens, or 4 if sidebar closed */}
         <div className={showQuickPrompts ? "lg:col-span-3" : "lg:col-span-4"}>
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white dark:bg-cardDark rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden h-[600px]"
           >
             <ChatContainer className="h-full" />
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Quick Prompts Sidebar - Takes 1 column on large screens */}
         <div className="lg:col-span-1">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -201,47 +202,47 @@ export default function StudentChatbot() {
                 aria-label="Close sidebar"
                 title="Close Sidebar"
               >
-                <XCircle className="w-5 h-5 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" />
+                <XCircle className="w-5 h-5 text-gray-700 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" />
               </button>
             </div>
             <QuickPrompts onPromptClick={handleQuickPrompt} />
-          </motion.div>
+          </m.div>
         </div>
       </div>
 
       {/* Mobile/Desktop Quick Prompts Toggle */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         className={`mt-6 ${showQuickPrompts ? "lg:hidden" : "block"}`}
       >
-        <motion.button
+        <m.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowQuickPrompts(!showQuickPrompts)}
           className="w-full lg:w-auto flex items-center justify-center gap-2 p-3 bg-white dark:bg-cardDark border border-gray-100 dark:border-gray-700 rounded-xl hover:shadow-md transition-all duration-200 px-6 mx-auto"
         >
-          <Sparkles className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          <Sparkles className="w-4 h-4 text-gray-700 dark:text-gray-400" />
           <span className="text-sm font-medium text-gray-700 dark:text-textDark">
             {showQuickPrompts ? "Hide" : "Show"} Quick Prompts
           </span>
-        </motion.button>
+        </m.button>
 
         {showQuickPrompts && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="mt-4"
           >
             <QuickPrompts onPromptClick={handleQuickPrompt} />
-          </motion.div>
+          </m.div>
         )}
-      </motion.div>
+      </m.div>
 
       {/* Features Info */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
@@ -282,7 +283,8 @@ export default function StudentChatbot() {
             24/7 assistance for all your university-related questions
           </p>
         </div>
-      </motion.div>
+      </m.div>
     </DashboardLayout>
+      </LazyMotion>
   );
 }

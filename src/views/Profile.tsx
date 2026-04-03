@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import {
   User,
@@ -403,16 +403,19 @@ export default function Profile() {
       userAvatar={avatarPreview || fullProfile.avatarUrl || undefined}
       userType="student"
     >
+      <LazyMotion features={domAnimation}>
       <div className="max-w-7xl mx-auto pb-12 relative z-0">
         {/* Cover Image Section */}
         <div className="relative h-48 sm:h-72 rounded-b-[2.5rem] lg:rounded-b-[3rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 overflow-hidden shadow-2xl -mt-6 -mx-4 sm:-mx-6 lg:-mx-8 mb-20 sm:mb-24">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+          <div className="absolute inset-0 z-0">
+            <Image src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&q=60" alt="Profile Cover" fill priority className="object-cover opacity-30 mix-blend-overlay" sizes="100vw" />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
           <div className="absolute top-8 left-4 sm:left-6 lg:left-8 z-10">
             <Link
               href="/dashboard/student"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-all bg-black/30 backdrop-blur-md border border-white/20 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl hover:bg-black/40 hover:-translate-y-0.5 text-sm sm:text-base shadow-lg"
+              className="flex items-center gap-2 text-white hover:text-white transition-all bg-black/30 backdrop-blur-md border border-white/20 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl hover:bg-black/40 hover:-translate-y-0.5 text-sm sm:text-base shadow-lg"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-bold">Back to Dashboard</span>
@@ -473,7 +476,7 @@ export default function Profile() {
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-2 tracking-tight">
                     {fullProfile.name}
                   </h1>
-                  <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 flex items-center justify-center lg:justify-start gap-2">
+                  <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 flex items-center justify-center lg:justify-start gap-2">
                     <BookOpen className="w-4 h-4" />
                     {fullProfile.major
                       ? MAJOR_NAMES[fullProfile.major] || fullProfile.major
@@ -495,7 +498,7 @@ export default function Profile() {
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                       <button
                         onClick={handleToggleEdit}
-                        className="flex-1 sm:flex-none px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-white dark:hover:bg-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all font-bold"
+                        className="flex-1 sm:flex-none px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-white dark:hover:bg-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all font-bold"
                       >
                         Cancel
                       </button>
@@ -517,7 +520,7 @@ export default function Profile() {
           {/* Success/Error Messages */}
           <AnimatePresence>
             {saveStatus === "success" && (
-              <motion.div
+              <m.div
                 ref={successBannerRef}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -528,7 +531,7 @@ export default function Profile() {
                 <p className="text-green-800 dark:text-green-200 font-medium">
                   Profile updated successfully!
                 </p>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
@@ -618,7 +621,7 @@ export default function Profile() {
                   </h4>
                   <button
                     onClick={() => setShowDeleteModal(true)}
-                    className="w-full sm:w-auto px-6 py-3 bg-white/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-bold border border-red-200/50 dark:border-red-800/50 flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    className="w-full sm:w-auto px-6 py-3 bg-white/50 dark:bg-red-900/10 text-red-700 dark:text-red-400 rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-bold border border-red-200/50 dark:border-red-800/50 flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5"
                   >
                     <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     Delete Account
@@ -639,6 +642,7 @@ export default function Profile() {
         onConfirm={handleDeleteAccount}
         onCancel={() => setShowDeleteModal(false)}
       />
+          </LazyMotion>
     </DashboardLayout>
   );
 }

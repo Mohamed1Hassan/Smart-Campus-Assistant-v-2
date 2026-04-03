@@ -15,7 +15,7 @@ import {
   usePathname,
 } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import dynamic from "next/dynamic";
 import {
   RefreshCw,
@@ -1306,8 +1306,9 @@ export default function StudentAttendance() {
       userName={user ? `${user.firstName} ${user.lastName}` : "Student"}
       userType="student"
     >
+      <LazyMotion features={domAnimation}>
       {/* Page Header */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -1318,31 +1319,31 @@ export default function StudentAttendance() {
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <motion.div
+            <m.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-white/20 dark:border-white/10"
             >
               <QrCode className="w-8 h-8 sm:w-10 sm:h-10 text-white" strokeWidth={2} />
-            </motion.div>
+            </m.div>
             <div>
-              <motion.h1
+              <m.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
                 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight mb-2"
               >
                 Student Attendance
-              </motion.h1>
-              <motion.p
+              </m.h1>
+              <m.p
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-gray-600 dark:text-gray-400 text-base sm:text-lg font-medium"
+                className="text-gray-700 dark:text-gray-300 text-base sm:text-lg font-medium"
               >
                 Secure attendance with multi-step verification
-              </motion.p>
+              </m.p>
             </div>
           </div>
 
@@ -1363,7 +1364,7 @@ export default function StudentAttendance() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Stats Overview */}
       <StatsOverview stats={attendanceStats} />
@@ -1371,7 +1372,7 @@ export default function StudentAttendance() {
       {/* Permission Advisor Banner */}
       {(permissions.camera === "denied" ||
         permissions.location === "denied") && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="mb-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-3xl p-6 shadow-sm overflow-hidden relative"
@@ -1384,13 +1385,13 @@ export default function StudentAttendance() {
               <AlertTriangle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-amber-900 dark:text-amber-200 mb-2 flex flex-wrap gap-2 items-center">
+              <h2 className="text-xl font-bold text-amber-900 dark:text-amber-200 mb-2 flex flex-wrap gap-2 items-center">
                 <span>إذن الوصول مطلوب</span>
                 <span className="text-sm font-normal opacity-50 font-sans">
                   |
                 </span>
                 <span className="font-sans">Permission Required</span>
-              </h3>
+              </h2>
               <p className="text-base text-amber-800 dark:text-amber-300 mb-6 leading-relaxed">
                 <span className="font-bold">يرجى ملاحظة:</span> نظام الحضور
                 يتطلب الوصول للكاميرا (لمسح الكود) والموقع (للتأكد من وجودك في
@@ -1432,7 +1433,7 @@ export default function StudentAttendance() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0">
@@ -1453,7 +1454,7 @@ export default function StudentAttendance() {
             </>
           ) : (
             <>
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -1465,12 +1466,12 @@ export default function StudentAttendance() {
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">
                   No Active Sessions
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto text-base sm:text-lg">
+                <p className="text-gray-700 dark:text-gray-300 max-w-lg mx-auto text-base sm:text-lg">
                   There are no attendance sessions currently active for your
                   enrolled courses. Please check back later or view your
                   schedule.
                 </p>
-              </motion.div>
+              </m.div>
 
               {/* Attendance Progress Chart - Moved here when no active session */}
               <AttendanceChart
@@ -1550,6 +1551,7 @@ export default function StudentAttendance() {
         message={successMessage.title}
         subMessage={successMessage.subtitle}
       />
+          </LazyMotion>
     </DashboardLayout>
   );
 }

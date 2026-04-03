@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback/* eslint-disable @typescript-eslint/no-unused-vars */ } from "react";
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -204,6 +204,7 @@ export default function Exams() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const activeExamData = exams.find((e: any) => e.id === activeExamMode);
     return (
+      <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-[#020617] text-white p-8 flex flex-col pointer-events-auto selection:bg-transparent relative overflow-hidden">
         {/* Animated Security Grid Background */}
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
@@ -240,14 +241,14 @@ export default function Exams() {
           <div className="lg:col-span-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
             
-            <motion.div
+            <m.div
               animate={{ scale: [1, 1.05, 1], opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 4 }}
               className="relative mb-10"
             >
               <div className="absolute inset-0 bg-indigo-500 blur-3xl opacity-20" />
               <Terminal className="w-32 h-32 text-indigo-400 relative z-10" />
-            </motion.div>
+            </m.div>
             
             <h2 className="text-3xl font-black text-white max-w-2xl leading-tight mb-6">
               Awaiting payload broadcast... <br />
@@ -340,12 +341,14 @@ export default function Exams() {
           </div>
         </div>
       </div>
+      </LazyMotion>
     );
   }
 
   // --- Standard Dashboard State ---
   return (
     <DashboardLayout userType="student">
+      <LazyMotion features={domAnimation}>
       <div className="space-y-10 pb-32">
         {/* Premium Floating Header */}
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 p-8 shadow-2xl">
@@ -355,14 +358,14 @@ export default function Exams() {
           
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-4">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full text-xs font-bold uppercase tracking-wider"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Academic Calendar
-              </motion.div>
+              </m.div>
               
               <div className="space-y-1">
                 <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
@@ -484,9 +487,9 @@ export default function Exams() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Schedule List */}
           <div className="lg:col-span-2 space-y-6">
-            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">
+            <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">
               Full Schedule
-            </h3>
+            </h2>
 
             <AnimatePresence mode="popLayout">
               {exams.length > 0 ? (
@@ -495,7 +498,7 @@ export default function Exams() {
                   if (nextExam && exam.id === nextExam.id) return null; // Skip if it's the hero exam
 
                   return (
-                    <motion.div
+                    <m.div
                       key={exam.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -553,7 +556,7 @@ export default function Exams() {
                           </button>
                         </div>
                       </GlassCard>
-                    </motion.div>
+                    </m.div>
                   );
                 })
               ) : (
@@ -561,9 +564,9 @@ export default function Exams() {
                   <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-dashed border-gray-200 dark:border-gray-700">
                     <Calendar className="w-10 h-10 text-gray-300" />
                   </div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                  <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">
                     Schedule Clear
-                  </h3>
+                  </h2>
                   <p className="text-gray-500 font-medium">
                     No upcoming assessments detected in the system.
                   </p>
@@ -591,7 +594,7 @@ export default function Exams() {
                     <h5 className="text-sm font-black text-indigo-900 dark:text-white tracking-wide uppercase">
                       Environment Locked
                     </h5>
-                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 font-bold leading-relaxed">
+                    <p className="text-xs text-indigo-700 dark:text-indigo-300 font-bold leading-relaxed">
                       Exiting fullscreen or switching tabs during an active
                       session will trigger an automatic security audit.
                     </p>
@@ -641,6 +644,7 @@ export default function Exams() {
           </div>
         </div>
       </div>
+      </LazyMotion>
     </DashboardLayout>
   );
 }

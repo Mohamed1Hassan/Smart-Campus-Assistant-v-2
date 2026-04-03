@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import { Bell, CheckCheck, Trash2, RefreshCw, Search } from "lucide-react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import FilterBar, {
@@ -905,6 +905,7 @@ export default function StudentNotifications() {
         userName={user ? `${user.firstName} ${user.lastName}` : "Student"}
         userType="student"
       >
+        <LazyMotion features={domAnimation}>
         <div className="max-w-4xl mx-auto relative">
           {/* Background Gradients */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -924,23 +925,23 @@ export default function StudentNotifications() {
             aria-labelledby="notifications-header"
             className="relative z-10"
           >
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
               <div className="flex items-center gap-6 mb-6">
-                <motion.div
+                <m.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                   className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg"
                 >
                   <Bell className="w-9 h-9 text-white" />
-                </motion.div>
+                </m.div>
                 <div className="flex-1">
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
@@ -953,7 +954,7 @@ export default function StudentNotifications() {
                       Notifications
                     </h1>
                     {unreadCount > 0 && (
-                      <motion.span
+                      <m.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.4, type: "spring" }}
@@ -961,19 +962,19 @@ export default function StudentNotifications() {
                         aria-label={`${unreadCount} unread notifications`}
                       >
                         {unreadCount}
-                      </motion.span>
+                      </m.span>
                     )}
-                  </motion.div>
-                  <motion.div
+                  </m.div>
+                  <m.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 }}
                     className="flex items-center gap-4"
                   >
-                    <p className="text-gray-600 dark:text-mutedDark text-lg lg:text-xl">
+                    <p className="text-gray-700 dark:text-gray-300 text-lg lg:text-xl">
                       Stay updated with your latest alerts and course activities
                     </p>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
                       {isAutoRefreshing ? (
                         <span className="flex items-center gap-1">
                           <RefreshCw className="w-3 h-3 animate-spin" />
@@ -983,7 +984,7 @@ export default function StudentNotifications() {
                         <span>Last synced: {formatRelativeTime(lastSync)}</span>
                       )}
                     </div>
-                  </motion.div>
+                  </m.div>
                 </div>
               </div>
 
@@ -1014,7 +1015,7 @@ export default function StudentNotifications() {
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 {notifications.length > 0 && (
                   <>
-                    <motion.button
+                    <m.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleMarkAllAsRead}
@@ -1031,9 +1032,9 @@ export default function StudentNotifications() {
                     >
                       <CheckCheck className="w-4 h-4" />
                       Mark All as Read
-                    </motion.button>
+                    </m.button>
 
-                    <motion.button
+                    <m.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
@@ -1050,11 +1051,11 @@ export default function StudentNotifications() {
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear All
-                    </motion.button>
+                    </m.button>
                   </>
                 )}
 
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={async () => {
@@ -1071,9 +1072,9 @@ export default function StudentNotifications() {
                     className={`w-4 h-4 ${isAutoRefreshing ? "animate-spin" : ""}`}
                   />
                   Refresh
-                </motion.button>
+                </m.button>
 
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() =>
@@ -1092,9 +1093,9 @@ export default function StudentNotifications() {
                 >
                   <CheckCheck className="w-4 h-4" />
                   {showReadNotifications ? "Hide Read" : "Show Read"}
-                </motion.button>
+                </m.button>
               </div>
-            </motion.div>
+            </m.div>
           </section>
 
           {/* Filter Bar */}
@@ -1135,6 +1136,7 @@ export default function StudentNotifications() {
             )}
           </section>
         </div>
+              </LazyMotion>
       </DashboardLayout>
     </ErrorBoundary>
   );

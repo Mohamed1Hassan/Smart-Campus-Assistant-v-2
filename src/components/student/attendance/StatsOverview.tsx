@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle, Clock, XCircle, AlertCircle } from "lucide-react";
 
 interface AttendanceStats {
@@ -55,7 +55,7 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
       {statItems.map((stat, index) => (
-        <motion.div
+        <m.div
           key={index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,15 +74,15 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
               </div>
             </div>
             <div>
-              <p className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 tracking-wide uppercase">
+              <p className="text-xs md:text-sm font-bold text-gray-600 dark:text-gray-300 mb-1.5 tracking-wide uppercase">
                 {stat.label}
               </p>
-              <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              <p className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 {String(stat.value)}
-              </h3>
+              </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );
