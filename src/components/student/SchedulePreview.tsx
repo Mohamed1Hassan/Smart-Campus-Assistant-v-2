@@ -516,9 +516,9 @@ export default function SchedulePreview({
                       {/* Card Header (Course + Status) */}
                       <div className="flex flex-wrap justify-between items-start gap-2 mb-3 w-full">
                         <div className="flex-1 min-w-[200px]">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1 truncate w-full">
+                          <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1 truncate w-full">
                             {classItem.course}
-                          </h4>
+                          </h3>
                           {classItem.courseCode && (
                             <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-700/50 px-2 py-0.5 rounded-md inline-block">
                               {classItem.courseCode}
@@ -594,9 +594,9 @@ export default function SchedulePreview({
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
               <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             </div>
-            <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               No classes today
-            </h4>
+            </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto mb-6">
               You don&apos;t have any lectures scheduled for today. Enjoy your
               free time!
