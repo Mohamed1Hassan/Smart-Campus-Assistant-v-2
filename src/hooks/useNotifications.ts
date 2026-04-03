@@ -67,11 +67,19 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
           'broadcast',
           { event: `user:${user.id}:notification` },
           (payload: any) => {
-            console.log('[useNotifications] New notification:', payload);
+            console.log('[useNotifications] New notification received:', payload);
+            // Handle both wrapped { payload: data } and direct data
+            const notificationData = payload?.payload || payload;
+            
+            if (!notificationData || (!notificationData.id && !notificationData.title)) {
+              console.warn('[useNotifications] Received invalid notification payload:', payload);
+              return;
+            }
+
             setState((prev) => ({
               ...prev,
               notifications: [
-                payload?.payload as unknown as NotificationResponse,
+                notificationData as unknown as NotificationResponse,
                 ...prev.notifications,
               ],
             }));

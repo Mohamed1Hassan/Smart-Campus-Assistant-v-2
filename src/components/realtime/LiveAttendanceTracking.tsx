@@ -147,12 +147,12 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:attendance:marked` },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.studentName) return;
           setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
           addRecentActivity({
             type: "attendance",
-            message: `${data.studentName} marked ${data.status.toLowerCase()}`,
+            message: `${data.studentName} marked ${data.status?.toLowerCase() || 'attendance'}`,
             timestamp: new Date(),
             status: data.status,
           });
@@ -163,8 +163,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:attendance:fraud_detected` },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.studentName) return;
           const alert = {
             type: "fraud",
             message: `Fraud detected for ${data.studentName}`,
@@ -179,8 +179,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:session:started` },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.title) return;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" started`,
@@ -192,8 +192,8 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
         'broadcast',
         { event: `session:${sessionId}:session:ended` },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.title) return;
           addRecentActivity({
             type: "session",
             message: `Session "${data.title}" ended`,

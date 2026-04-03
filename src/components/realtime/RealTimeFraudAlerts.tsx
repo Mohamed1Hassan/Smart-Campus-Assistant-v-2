@@ -95,8 +95,8 @@ export const RealTimeFraudAlerts: React.FC<RealTimeFraudAlertsProps> = ({
         'broadcast',
         { event: 'attendance:fraud_detected' },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.sessionId) return;
           const alert: FraudAlert = {
             id: data.id || `fraud-${Date.now()}`,
             type: data.type || "BEHAVIOR_FRAUD",
@@ -119,8 +119,8 @@ export const RealTimeFraudAlerts: React.FC<RealTimeFraudAlertsProps> = ({
         'broadcast',
         { event: 'security:fraud_alert' },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.sessionId) return;
           const alert: FraudAlert = {
             id: data.id || `alert-${Date.now()}`,
             type: data.type || "BEHAVIOR_FRAUD",

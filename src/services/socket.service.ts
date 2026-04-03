@@ -73,7 +73,7 @@ export class SocketService {
       await channel.send({
         type: 'broadcast',
         event: `${target}:${event}`,
-        payload: { payload }, // Wrap in payload property as expected by components
+        payload: payload, 
       });
     } catch (error) {
       console.error(`[SocketService] Broadcast error (${target}:${event}):`, error);

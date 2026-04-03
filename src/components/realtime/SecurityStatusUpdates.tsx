@@ -156,8 +156,8 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
         'broadcast',
         { event: 'security:status_update' },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || (!data.type && !data.message)) return;
           const status: SecurityStatus = {
             id: data.id || `status-${Date.now()}`,
             type: data.type || "SESSION",
@@ -175,7 +175,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
         'broadcast',
         { event: 'security:location_update' },
         (payload: any) => {
-          const data = payload?.payload;
+          const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
             id: `location-${Date.now()}`,
@@ -194,7 +194,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
         'broadcast',
         { event: 'security:device_update' },
         (payload: any) => {
-          const data = payload?.payload;
+          const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
             id: `device-${Date.now()}`,
@@ -213,8 +213,8 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
         'broadcast',
         { event: 'security:fraud_alert' },
         (payload: any) => {
-          const data = payload?.payload;
-          if (!data) return;
+          const data = payload?.payload || payload;
+          if (!data || !data.description) return;
           const status: SecurityStatus = {
             id: `fraud-${Date.now()}`,
             type: "SESSION",

@@ -15,16 +15,25 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AIAssistantButton } from "../components/common/AIAssistantButton";
+import dynamic from "next/dynamic";
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCardStudent from "../components/student/StatCardStudent";
-import SchedulePreview from "../components/student/SchedulePreview";
-import AnnouncementsList from "../components/student/AnnouncementsList";
-import { StatsSkeleton } from "../components/common/LoadingSkeleton";
+import { StatsSkeleton, CardSkeleton, ListSkeleton } from "../components/common/LoadingSkeleton";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../hooks/useNotifications";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
-import ChatbotCard from "../components/ChatbotCard";
+
+// Lazy-load non-critical components
+const SchedulePreview = dynamic(() => import("../components/student/SchedulePreview"), {
+  loading: () => <CardSkeleton className="lg:col-span-2" />,
+});
+const AnnouncementsList = dynamic(() => import("../components/student/AnnouncementsList"), {
+  loading: () => <ListSkeleton className="h-full" />,
+});
+const ChatbotCard = dynamic(() => import("../components/ChatbotCard"), {
+  loading: () => <CardSkeleton />,
+});
 
 // Types for dashboard data
 interface StudentStats {

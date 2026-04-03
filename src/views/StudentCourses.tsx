@@ -48,7 +48,7 @@ export default function StudentCourses() {
   }, []);
 
   const {
-    data: courses = [],
+    data: courses = [] as Course[],
     isLoading,
     isError,
     refetch,
@@ -60,7 +60,7 @@ export default function StudentCourses() {
 
       if (response.success && Array.isArray(response.data)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return response.data.map((course: any) => ({
+        return response.data.map((course: any): Course => ({
           id: String(course.id),
           name: course.name,
           code: course.code,
@@ -242,7 +242,9 @@ export default function StudentCourses() {
                         }
                         alt={course.name}
                         fill
-                        unoptimized
+                        priority={mounted && courses.indexOf(course) < 1}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        fetchPriority={mounted && courses.indexOf(course) === 0 ? "high" : "auto"}
                         onError={() =>
                           setImgErrors((prev) => ({
                             ...prev,

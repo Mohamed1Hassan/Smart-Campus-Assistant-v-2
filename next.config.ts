@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  productionBrowserSourceMaps: false,
+  reactStrictMode: true,
+  bundlePagesRouterDependencies: true,
   images: {
     remotePatterns: [
       {

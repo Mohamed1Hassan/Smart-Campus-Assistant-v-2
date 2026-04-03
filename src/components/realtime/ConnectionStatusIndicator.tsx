@@ -112,12 +112,14 @@ export const ConnectionStatusIndicator: React.FC<
       .on(
         'broadcast',
         { event: 'system-status:health_check' },
-        (payload: { payload: { latency: number; serverStatus: string } }) => {
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (!data) return;
           setConnectionStatus((prev) => ({
             ...prev,
-            latency: payload?.payload?.latency || 0,
-            serverStatus: (payload?.payload?.serverStatus as ConnectionStatus["serverStatus"]) || "online",
-            connectionQuality: calculateConnectionQuality(payload?.payload?.latency || 0),
+            latency: data.latency || 0,
+            serverStatus: (data.serverStatus as ConnectionStatus["serverStatus"]) || "online",
+            connectionQuality: calculateConnectionQuality(data.latency || 0),
           }));
         }
       )

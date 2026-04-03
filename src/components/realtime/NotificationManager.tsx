@@ -148,36 +148,51 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification' },
-        (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload?.payload, payload?.payload?.type || "SYSTEM");
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (data && (data.title || data.message)) {
+            handleNotification(data, data.type || "SYSTEM");
+          }
         }
       )
       .on(
         'broadcast',
         { event: 'notification:security' },
-        (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload?.payload, "SECURITY");
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (data && (data.title || data.message)) {
+            handleNotification(data, "SECURITY");
+          }
         }
       )
       .on(
         'broadcast',
         { event: 'notification:attendance' },
-        (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload?.payload, "ATTENDANCE");
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (data && (data.title || data.message)) {
+            handleNotification(data, "ATTENDANCE");
+          }
         }
       )
       .on(
         'broadcast',
         { event: 'notification:system' },
-        (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload?.payload, "SYSTEM");
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (data && (data.title || data.message)) {
+            handleNotification(data, "SYSTEM");
+          }
         }
       )
       .on(
         'broadcast',
         { event: 'notification:emergency' },
-        (payload: { payload: SocketNotificationData }) => {
-          handleNotification(payload?.payload, "EMERGENCY");
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          if (data && (data.title || data.message)) {
+            handleNotification(data, "EMERGENCY");
+          }
         }
       )
       .subscribe();
