@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import StudentCourses from "../../../../views/StudentCourses";
 import { getStudentCoursesAction } from "../../../../actions/course.actions";
+import { getCourseImage } from "../../../../utils/courseImages";
 
 export default async function StudentCoursesPage() {
   const result = await getStudentCoursesAction();
@@ -27,7 +28,7 @@ export default async function StudentCoursesPage() {
       academicYear: c.academicYear || "",
       scheduleTime: timeString,
       description: c.description || "",
-      coverImage: c.coverImage || "",
+      coverImage: c.coverImage || getCourseImage(c.courseName || "", String(c.id)),
     };
   }) : [];
 
