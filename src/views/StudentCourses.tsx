@@ -250,6 +250,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
                         fill
                         priority={courses.indexOf(course) < 1}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        quality={60}
                         fetchPriority={courses.indexOf(course) === 0 ? "high" : "auto"}
                         onError={() =>
                           setImgErrors((prev) => ({
