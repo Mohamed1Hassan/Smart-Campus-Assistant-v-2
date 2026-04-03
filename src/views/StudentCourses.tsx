@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import {
   BookOpen,
   Search,
@@ -112,26 +112,27 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
 
   return (
     <DashboardLayout userName={user?.firstName} userType="student">
-      <motion.div
+      <LazyMotion features={domAnimation}>
+      <m.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="max-w-7xl mx-auto space-y-6 sm:space-y-8 pb-12"
       >
         {/* Header */}
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <motion.div
+            <m.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
               <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-            </motion.div>
+            </m.div>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 My Courses
@@ -141,10 +142,10 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
               </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Filters & Search */}
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
         >
@@ -155,7 +156,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-bold placeholder:text-gray-500"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-bold placeholder:text-gray-600 dark:placeholder:text-gray-400"
             />
           </div>
 
@@ -163,25 +164,25 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             <div className="flex bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"}`}
                 aria-label="Grid view"
               >
                 <LayoutGrid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400" : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"}`}
                 aria-label="List view"
               >
                 <List className="w-5 h-5" />
               </button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Course Grid */}
         {isError ? (
-          <motion.div
+          <m.div
             variants={itemVariants}
             className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-900/20"
           >
@@ -191,7 +192,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               Failed to load courses
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+            <p className="text-gray-700 dark:text-gray-300 max-w-md mx-auto mb-6">
               We couldn&apos;t fetch your courses. This might be due to a
               network issue or server timeout.
             </p>
@@ -201,7 +202,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             >
               Try Again
             </button>
-          </motion.div>
+          </m.div>
         ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -220,7 +221,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             }
           >
             {filteredCourses.map((course: Course) => (
-              <motion.div
+              <m.div
                 key={course.id}
                 variants={itemVariants}
                 initial="hidden"
@@ -352,11 +353,11 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
                      </div>
                   )}
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         ) : (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-20 bg-white/50 dark:bg-cardDark/50 backdrop-blur-sm rounded-3xl border border-dashed border-gray-200 dark:border-gray-700"
@@ -378,9 +379,10 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             >
               Refresh Courses
             </button>
-          </motion.div>
+          </m.div>
         )}
-      </motion.div>
+      </m.div>
+      </LazyMotion>
     </DashboardLayout>
   );
 }
