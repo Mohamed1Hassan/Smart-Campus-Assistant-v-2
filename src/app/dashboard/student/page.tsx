@@ -15,23 +15,16 @@ export default async function StudentDashboardPage() {
   ]);
 
   const initialStats = statsRes.success ? statsRes.data : null;
+  // Send FULL schedule to the client to avoid server-side timezone mismatches
   const initialScheduleRaw = scheduleRes.success ? scheduleRes.data : [];
   const initialSessionsRaw = sessionsRes.success ? sessionsRes.data : [];
   const initialUser = profileRes.success ? profileRes.data : null;
   const initialNotifications = notificationsRes.success ? notificationsRes.data : [];
 
-  // Filter for today's schedule on the server to match the client's initial view
-  // Convert standard Sun=0..Sat=6 to Sat=0..Fri=6 mapping used in the DB
-  const adjustDay = (d: number) => (d + 1) % 7;
-  const currentDayOfWeek = adjustDay(new Date().getDay());
-  const todayScheduleRaw = (initialScheduleRaw as any[]).filter(
-    (s) => s.dayOfWeek === currentDayOfWeek
-  );
-
   return (
     <StudentDashboard 
       initialStats={initialStats} 
-      initialScheduleRaw={todayScheduleRaw}
+      initialScheduleRaw={initialScheduleRaw}
       initialSessionsRaw={initialSessionsRaw}
       initialUser={initialUser}
       initialNotifications={initialNotifications}
