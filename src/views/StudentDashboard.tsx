@@ -431,27 +431,69 @@ export default function StudentDashboard({
   });
 
   // 3. Announcements (Derived from notifications)
-  const announcements = useMemo(() => {
+  const announcements = useMemo((): Announcement[] => {
     // Priority: notifications (rehydrated) -> initialNotifications (SSR)
     const currentNotifications = (notifications && notifications.length > 0) ? notifications : (initialNotifications || []);
     
     if (currentNotifications.length === 0) return [];
+
+    const mapNotificationToAnnouncement = (n: any): Announcement => {
+      let icon: Announcement["icon"] = "megaphone";
+      let type: Announcement["type"] = "info";
+
+      switch (n.category) {
+        case "SYSTEM":
+          icon = "building";
+          type = "info";
+          break;
+        case "COURSE":
+          icon = "book";
+          type = "info";
+          break;
+        case "EXAM":
+          icon = "calendar";
+          type = "warning";
+          break;
+        case "ASSIGNMENT":
+          icon = "lightbulb";
+          type = "warning";
+          break;
+        case "ATTENDANCE":
+          icon = "alert";
+          type = "info";
+          break;
+        default:
+          icon = "megaphone";
+          type = "info";
+      }
+
+      // Ensure type matches Announcement["type"]
+      const nType = String(n.type).toLowerCase();
+      if (nType === "warning" || nType === "error") type = "warning";
+      else if (nType === "success") type = "success";
+
+      return {
+        id: String(n.id),
+        title: n.title,
+        message: n.message,
+        icon,
+        type,
+        timestamp: String(n.createdAt), // AnnouncementsList expects string timestamp
+      };
+    };
 
     return currentNotifications
       .filter(
         (n: any) =>
           n.category === "SYSTEM" ||
           n.category === "COURSE" ||
-          n.type === "INFO",
+          n.category === "EXAM" ||
+          n.category === "ASSIGNMENT" ||
+          n.type === "INFO" ||
+          n.type === "WARNING",
       )
       .slice(0, 5)
-      .map((n: any) => ({
-        id: String(n.id),
-        title: n.title,
-        message: n.message,
-        type: n.type,
-        time: (n.createdAt as Date).toLocaleDateString(),
-      }));
+      .map(mapNotificationToAnnouncement);
   }, [notifications, initialNotifications]);
 
   // Handle manual refresh
