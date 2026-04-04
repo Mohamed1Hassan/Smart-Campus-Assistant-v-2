@@ -72,3 +72,20 @@ export async function sendBulkNotificationAction(data: {
     return { success: false, error: errorMessage };
   }
 }
+
+export async function getStudentNotificationsAction(limit: number = 10) {
+  try {
+    const user = await getAuthenticatedUser();
+    const notificationService = new NotificationService();
+    const notifications = await notificationService.getUserNotifications(
+      user.id,
+      { limit },
+    );
+
+    return { success: true, data: JSON.parse(JSON.stringify(notifications)) };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch notifications";
+    return { success: false, error: errorMessage };
+  }
+}

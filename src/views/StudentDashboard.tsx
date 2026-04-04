@@ -167,7 +167,21 @@ const mapNotificationToAnnouncement = (
   };
 };
 
-export default function StudentDashboard() {
+interface StudentDashboardProps {
+  initialStats?: StudentStats | null;
+  initialScheduleRaw?: any[];
+  initialSessionsRaw?: any[];
+  initialUser?: any;
+  initialNotifications?: any[];
+}
+
+export default function StudentDashboard({ 
+  initialStats = null, 
+  initialScheduleRaw = [],
+  initialSessionsRaw = [],
+  initialUser = null,
+  initialNotifications = []
+}: StudentDashboardProps) {
   const { user, isAuthenticated } = useAuth();
   const { notifications } = useNotifications();
   const { info: showInfo } = useToast();
@@ -181,14 +195,15 @@ export default function StudentDashboard() {
   }, []);
 
   // 1. Fetch Student Stats
-  const { data: stats = null, isLoading: statsLoading } = useQuery({
+  const { data: stats = initialStats, isLoading: statsLoading } = useQuery({
     queryKey: ["student-stats", user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) return initialStats;
       const res = await apiClient.get<StudentStats>("/api/users/student/stats");
       if (res.success) return res.data;
       throw new Error(res.message || "Failed to fetch stats");
     },
+    initialData: initialStats || undefined,
     enabled: !!user?.id && user.role === "student",
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -234,51 +249,36 @@ export default function StudentDashboard() {
   const { data: todaySchedule = [] } = useQuery({
     queryKey: ["student-schedule-today", user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
-
       const start = new Date();
       start.setHours(0, 0, 0, 0);
       const end = new Date();
       end.setHours(23, 59, 59, 999);
-
-      // Get current day of week (0-6) from client's local time
       const currentDayOfWeek = new Date().getDay();
 
       const [scheduleRes, sessionsRes] = await Promise.all([
         apiClient.get<RawScheduleItem[]>("/api/schedule/today", {
           params: { dayOfWeek: currentDayOfWeek },
         }),
-        apiClient.get<RawAttendanceSession[]>(
-          "/api/attendance/sessions",
-          {
-            params: {
-              startDate: start.toISOString(),
-              endDate: end.toISOString(),
-            },
+        apiClient.get<RawAttendanceSession[]>("/api/attendance/sessions", {
+          params: {
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
           },
-        ),
+        }),
       ]);
 
-      const scheduleData =
-        scheduleRes?.success && Array.isArray(scheduleRes.data)
-          ? scheduleRes.data
-          : [];
-      const activeSessions =
-        sessionsRes?.success && Array.isArray(sessionsRes.data)
-          ? sessionsRes.data
-          : [];
+      const scheduleData = scheduleRes?.success && Array.isArray(scheduleRes.data) ? scheduleRes.data : [];
+      const activeSessions = sessionsRes?.success && Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
 
-      // Transform static schedule
+      // Transformation logic...
       const staticSchedule = scheduleData.map((item: RawScheduleItem) => {
         const normalizeTime = (t: string) => {
           if (!t) return "00:00";
           const parts = t.split(":");
-          if (parts.length < 2) return "00:00";
           return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
         };
         const startStr = normalizeTime(item.startTime);
         const endStr = normalizeTime(item.endTime);
-
         return {
           id: String(item.id),
           course: `${item.courseName} (${item.courseCode})`,
@@ -288,40 +288,30 @@ export default function StudentDashboard() {
           startTime: startStr,
           endTime: endStr,
           courseCode: item.courseCode,
-          professor:
-            item.professorName ||
-            `${item.professorFirstName} ${item.professorLastName}`,
+          professor: item.professorName || `${item.professorFirstName} ${item.professorLastName}`,
           isActive: false,
           _originalCourseName: item.courseName,
         };
       });
 
-      // Transform active sessions
       const activeSessionItems = activeSessions
         .filter((session: RawAttendanceSession) => {
-          // Check if session is active or scheduled for today
-          const isToday =
-            new Date(session.startTime).toDateString() ===
-            new Date().toDateString();
-          // Backend returns isActive, but we also check validFrom/validTo if available
+          const isToday = new Date(session.startTime).toDateString() === new Date().toDateString();
           return session.isActive || session.status === "ACTIVE" || isToday;
         })
         .map((session: RawAttendanceSession) => {
           const startTime = new Date(session.startTime);
           const endTime = new Date(session.endTime);
           const toTimeStr = (date: Date) => {
-            const hours = date.getHours().toString().padStart(2, "0");
-            const minutes = date.getMinutes().toString().padStart(2, "0");
-            return `${hours}:${minutes}`;
+            const h = date.getHours().toString().padStart(2, "0");
+            const m = date.getMinutes().toString().padStart(2, "0");
+            return `${h}:${m}`;
           };
           const startStr = toTimeStr(startTime);
           const endStr = toTimeStr(endTime);
-
-          // Calculate status dynamically
           let status: "upcoming" | "ongoing" | "completed" = "upcoming";
           const now = new Date();
           const isSessionActive = session.isActive || session.status === "ACTIVE";
-
           if (isSessionActive && now <= endTime) {
             status = "ongoing";
           } else if (now > endTime) {
@@ -329,7 +319,6 @@ export default function StudentDashboard() {
           } else {
             status = getClassStatus(startStr, endStr);
           }
-
           return {
             id: String(session.id || session.sessionId),
             course: `${session.courseName}`,
@@ -340,25 +329,19 @@ export default function StudentDashboard() {
             endTime: endStr,
             courseCode: "",
             professor: "",
-            isActive: session.isActive || session.status === "ACTIVE",
+            isActive: isSessionActive,
             _originalCourseName: session.courseName,
           };
         });
 
-      // Merge logic
       const mergedSchedule = [...activeSessionItems];
       staticSchedule.forEach((staticItem) => {
         const hasActiveSession = activeSessionItems.some(
-          (active) =>
-            active.course.includes(staticItem._originalCourseName) ||
-            (active.courseCode && active.courseCode === staticItem.courseCode),
+          (active) => active.course.includes(staticItem._originalCourseName) || (active.courseCode && active.courseCode === staticItem.courseCode),
         );
-        if (!hasActiveSession) {
-          mergedSchedule.push(staticItem);
-        }
+        if (!hasActiveSession) mergedSchedule.push(staticItem);
       });
 
-      // Sort by time
       mergedSchedule.sort((a, b) => {
         if (a.status === "ongoing" && b.status !== "ongoing") return -1;
         if (a.status !== "ongoing" && b.status === "ongoing") return 1;
@@ -367,6 +350,81 @@ export default function StudentDashboard() {
 
       return mergedSchedule;
     },
+    initialData: useMemo(() => {
+      const staticFormatted = initialScheduleRaw.map((item: any) => {
+        const normalizeTime = (t: string) => {
+          if (!t) return "00:00";
+          const parts = t.split(":");
+          return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
+        };
+        const startStr = normalizeTime(item.startTime);
+        const endStr = normalizeTime(item.endTime);
+        return {
+          id: String(item.id),
+          course: `${item.course.courseName} (${item.course.courseCode})`,
+          time: `${formatTime(item.startTime || "00:00")} - ${formatTime(item.endTime || "00:00")}`,
+          room: item.room,
+          status: getClassStatus(startStr, endStr),
+          startTime: startStr,
+          endTime: endStr,
+          courseCode: item.course.courseCode,
+          professor: `${item.professor.firstName} ${item.professor.lastName}`,
+          isActive: false,
+          _originalCourseName: item.course.courseName,
+        };
+      });
+
+      const sessionFormatted = initialSessionsRaw
+        .filter((session: any) => {
+          const isToday = new Date(session.startTime).toDateString() === new Date().toDateString();
+          return session.isActive || session.status === "ACTIVE" || isToday;
+        })
+        .map((session: any) => {
+          const startTime = new Date(session.startTime);
+          const endTime = new Date(session.endTime);
+          const toTimeStr = (date: Date) => {
+            const h = date.getHours().toString().padStart(2, "0");
+            const m = date.getMinutes().toString().padStart(2, "0");
+            return `${h}:${m}`;
+          };
+          const startStr = toTimeStr(startTime);
+          const endStr = toTimeStr(endTime);
+          const isSessionActive = session.isActive || session.status === "ACTIVE";
+          let status: "upcoming" | "ongoing" | "completed" = "upcoming";
+          const now = new Date();
+          if (isSessionActive && now <= endTime) status = "ongoing";
+          else if (now > endTime) status = "completed";
+          else status = getClassStatus(startStr, endStr);
+
+          return {
+            id: String(session.id || session.sessionId),
+            course: `${session.course.courseName}`,
+            time: `${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} - ${endTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`,
+            room: session.location?.name || "Online",
+            status: status,
+            startTime: startStr,
+            endTime: endStr,
+            courseCode: session.course.courseCode,
+            professor: "",
+            isActive: isSessionActive,
+            _originalCourseName: session.course.courseName,
+          };
+        });
+
+      const merged = [...sessionFormatted];
+      staticFormatted.forEach((staticItem) => {
+        const hasActiveSession = sessionFormatted.some(
+          (active) => active.course.includes(staticItem._originalCourseName) || (active.courseCode && active.courseCode === staticItem.courseCode),
+        );
+        if (!hasActiveSession) merged.push(staticItem);
+      });
+
+      return merged.sort((a: any, b: any) => {
+        if (a.status === "ongoing" && b.status !== "ongoing") return -1;
+        if (a.status !== "ongoing" && b.status === "ongoing") return 1;
+        return a.startTime.localeCompare(b.startTime);
+      });
+    }, [initialScheduleRaw, initialSessionsRaw]),
     enabled: !!user?.id && user.role === "student",
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 30 * 1000, // Refresh every 30 seconds
@@ -374,14 +432,27 @@ export default function StudentDashboard() {
 
   // 3. Announcements (Derived from notifications)
   const announcements = useMemo(() => {
-    if (!notifications || notifications.length === 0) return [];
-    return notifications
-      .filter((n) =>
-        ["ANNOUNCEMENT", "SYSTEM", "EXAM", "DEADLINE"].includes(n.category),
+    // Priority: notifications (rehydrated) -> initialNotifications (SSR)
+    const currentNotifications = (notifications && notifications.length > 0) ? notifications : (initialNotifications || []);
+    
+    if (currentNotifications.length === 0) return [];
+
+    return currentNotifications
+      .filter(
+        (n: any) =>
+          n.category === "SYSTEM" ||
+          n.category === "COURSE" ||
+          n.type === "INFO",
       )
       .slice(0, 5)
-      .map(mapNotificationToAnnouncement);
-  }, [notifications]);
+      .map((n: any) => ({
+        id: String(n.id),
+        title: n.title,
+        message: n.message,
+        type: n.type,
+        time: (n.createdAt as Date).toLocaleDateString(),
+      }));
+  }, [notifications, initialNotifications]);
 
   // Handle manual refresh
   const handleRefresh = async () => {
@@ -459,12 +530,13 @@ export default function StudentDashboard() {
               <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                Dashboard
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+                Welcome back,{" "}
+                <span className="text-blue-600 dark:text-blue-400">
+                  {user?.firstName || initialUser?.firstName || "Student"}
+                </span>{" "}
+                👋
               </h1>
-              <p className="text-sm sm:text-base text-gray-800 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold min-h-[1.5rem]">
-                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{hasMounted ? (user?.firstName || "Student") : "Student"}</span> 👋
-              </p>
             </div>
           </div>
           <div className="flex items-center justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-none border-gray-100 dark:border-gray-700/50">
