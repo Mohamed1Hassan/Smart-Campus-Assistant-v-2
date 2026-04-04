@@ -107,26 +107,17 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
   return (
     <DashboardLayout userName={user?.firstName} userType="student">
       <LazyMotion features={domAnimation}>
-      <m.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-7xl mx-auto space-y-6 sm:space-y-8 pb-12"
-      >
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 pb-12">
         {/* Header */}
-        <m.div
-          variants={itemVariants}
+        <div
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <m.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            <div
               className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
               <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-            </m.div>
+            </div>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 My Courses
@@ -136,11 +127,10 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
               </p>
             </div>
           </div>
-        </m.div>
+        </div>
 
-        {/* Filters & Search */}
-        <m.div
-          variants={itemVariants}
+        {/* Filters & Search - Removed entrance animation for faster Speed Index */}
+        <div
           className="bg-white/80 dark:bg-cardDark/80 backdrop-blur-xl p-3 sm:p-4 rounded-3xl border border-white/40 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-none flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center sticky top-20 z-30"
         >
           <div className="relative flex-1">
@@ -172,7 +162,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
               </button>
             </div>
           </div>
-        </m.div>
+        </div>
 
         {/* Course Grid */}
         {isError ? (
@@ -214,13 +204,9 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
                 : "space-y-4"
             }
           >
-            {filteredCourses.map((course: Course) => (
-              <m.div
+            {filteredCourses.map((course: Course, index: number) => (
+              <div
                 key={course.id}
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 onClick={() =>
                   router.push(`/dashboard/student/courses/${course.id}`)
                 }
@@ -243,10 +229,10 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
                         }
                         alt={course.name}
                         fill
-                        priority={courses.indexOf(course) < 1}
+                        priority={index < 3}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         quality={60}
-                        fetchPriority={courses.indexOf(course) === 0 ? "high" : "auto"}
+                        fetchPriority={index === 0 ? "high" : "auto"}
                         onError={() =>
                           setImgErrors((prev) => ({
                             ...prev,
@@ -347,7 +333,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
                      </div>
                   )}
                 </div>
-              </m.div>
+              </div>
             ))}
           </div>
         ) : (
@@ -375,7 +361,7 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
             </button>
           </m.div>
         )}
-      </m.div>
+      </div>
       </LazyMotion>
     </DashboardLayout>
   );
