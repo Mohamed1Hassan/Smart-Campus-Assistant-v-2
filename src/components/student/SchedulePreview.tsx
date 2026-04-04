@@ -222,22 +222,16 @@ export default function SchedulePreview({
   // Show loading state
   if (loading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden"
+      <div
+        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden flex flex-col"
       >
         <LoadingSkeleton />
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+    <div
       className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden flex flex-col"
     >
       {/* Enhanced Header */}
@@ -320,9 +314,7 @@ export default function SchedulePreview({
 
         {/* Current Lecture Card */}
         {currentLecture && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div
             className="mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-4 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden group cursor-pointer"
             onClick={() => router.push("/dashboard/student/attendance")}
           >
@@ -345,14 +337,12 @@ export default function SchedulePreview({
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Next Lecture Countdown - Only show if no current lecture or if we want to show both */}
         {!currentLecture && timeUntilNext && nextLecture && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div
             className="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-4 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden group cursor-pointer"
             onClick={() =>
               router.push(`/dashboard/student/courses/${nextLecture.id}`)
@@ -376,7 +366,7 @@ export default function SchedulePreview({
                 <p className="font-mono font-bold text-xl">{hasMounted ? timeUntilNext : "..."}</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
@@ -414,11 +404,8 @@ export default function SchedulePreview({
                     const StatusIcon = statusInfo.icon;
 
                     return (
-                      <motion.tr
+                      <tr
                         key={classItem.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + index * 0.05 }}
                         className={`group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors duration-200 ${
                           statusInfo.pulse
                             ? "bg-emerald-50/10 dark:bg-emerald-900/5"
@@ -486,7 +473,7 @@ export default function SchedulePreview({
                             </button>
                           )}
                         </td>
-                      </motion.tr>
+                      </tr>
                     );
                   })}
                 </tbody>
@@ -625,6 +612,6 @@ export default function SchedulePreview({
           </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

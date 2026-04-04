@@ -265,7 +265,6 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className="relative pointer-events-auto w-24 h-24 focus:outline-none flex flex-col items-center justify-center scale-50 sm:scale-100 origin-bottom-right"
-        initial={{ y: 100 }}
         animate={{ y: 0 }}
         whileHover={{ scale: 1.1, rotate: -5 }}
         whileTap={{ scale: 0.9 }}

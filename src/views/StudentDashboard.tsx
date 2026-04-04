@@ -447,13 +447,7 @@ export default function StudentDashboard() {
   return (
     <DashboardLayout userName={user?.firstName} userType="student">
       <LazyMotion features={domAnimation}>
-      <m.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        style={{ willChange: "transform, opacity" }}
-        className="space-y-6 sm:space-y-8 pb-32 sm:pb-24"
-      >
+        <div className="space-y-6 sm:space-y-8 pb-32 sm:pb-24">
         {/* Header Section - Always render for LCP (Largest Contentful Paint) */}
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
@@ -514,7 +508,6 @@ export default function StudentDashboard() {
               }
               icon={GraduationCap}
               color="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
-              delay={0.1}
               subtitle="Based on Attendance"
             />
             <StatCardStudent
@@ -522,7 +515,6 @@ export default function StudentDashboard() {
               value={stats?.totalCredits ?? 0}
               icon={BookOpen}
               color="bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
-              delay={0.2}
               subtitle="Earned"
             />
             <StatCardStudent
@@ -530,7 +522,6 @@ export default function StudentDashboard() {
               value={`${stats?.attendancePercentage ?? 0}%`}
               icon={Timer}
               color="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
-              delay={0.3}
               subtitle="Overall"
             />
             <StatCardStudent
@@ -538,7 +529,6 @@ export default function StudentDashboard() {
               value={stats?.pendingAssignments ?? 0}
               icon={FileText}
               color="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
-              delay={0.4}
               subtitle="Pending"
             />
           </div>
@@ -553,10 +543,7 @@ export default function StudentDashboard() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Schedule */}
-            <m.div
-              variants={itemVariants}
-              className="lg:col-span-2 space-y-6"
-            >
+            <div className="lg:col-span-2 space-y-6">
               <SchedulePreview classes={todaySchedule} />
 
               {/* Quick Actions (Mobile Only) */}
@@ -583,16 +570,16 @@ export default function StudentDashboard() {
                   <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
                 </button>
               </div>
-            </m.div>
+            </div>
 
             {/* Right Column: Announcements */}
-            <m.div variants={itemVariants} className="space-y-6">
+            <div className="space-y-6">
               <ChatbotCard href="/dashboard/student/ai-assistant" />
               <AnnouncementsList announcements={announcements} />
-            </m.div>
+            </div>
           </div>
         )}
-      </m.div>
+      </div>
       {/* AI Assistant Button */}
       <AIAssistantButton userType="student" />
           </LazyMotion>

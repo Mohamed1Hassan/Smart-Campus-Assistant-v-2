@@ -188,10 +188,7 @@ export default function UnifiedNavbar({
 
   return (
     <>
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <nav
         className="sticky top-0 z-50 w-full bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border-b border-white/50 dark:border-gray-800/50 shadow-xl px-4 sm:px-6 py-2.5 sm:py-3 transition-all duration-300"
         aria-label="Main navigation"
       >
@@ -359,7 +356,7 @@ export default function UnifiedNavbar({
             </motion.button>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
       {/* Modals */}
       <ConfirmModal

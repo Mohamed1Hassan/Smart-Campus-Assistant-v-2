@@ -98,10 +98,7 @@ export default function AnnouncementsList({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+    <div
       className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 overflow-hidden flex flex-col h-full"
     >
       {/* Header */}
@@ -129,11 +126,8 @@ export default function AnnouncementsList({
             const typeInfo = typeConfig[announcement.type] || typeConfig.info;
 
             return (
-              <motion.div
+              <div
                 key={announcement.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
                 className={`p-4 rounded-xl border ${typeInfo.borderColor} ${typeInfo.bgColor} hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 group cursor-pointer`}
                 onClick={() => handleAnnouncementClick(announcement)}
               >
@@ -159,7 +153,7 @@ export default function AnnouncementsList({
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })
         ) : (
@@ -192,6 +186,6 @@ export default function AnnouncementsList({
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
