@@ -1,4 +1,4 @@
-"use client";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Megaphone,
@@ -34,6 +34,23 @@ const iconMap = {
   alert: AlertTriangle,
 };
 
+// Hydration-safe time formatting
+const formatTimeAgo = (date: string | Date | undefined) => {
+  if (!date || typeof window === "undefined") return "Earlier";
+  const d = new Date(date);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return d.toLocaleDateString();
+};
+
 const typeConfig = {
   info: {
     bgColor: "bg-blue-50/50 dark:bg-blue-900/10",
@@ -56,6 +73,11 @@ export default function AnnouncementsList({
   announcements,
 }: AnnouncementsListProps) {
   const router = useRouter();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const handleAnnouncementClick = (announcement: Announcement) => {
     // Navigate based on icon type which maps to category
@@ -129,7 +151,7 @@ export default function AnnouncementsList({
                         {announcement.title}
                       </h4>
                       <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full">
-                        {announcement.timestamp}
+                        {hasMounted ? formatTimeAgo(announcement.timestamp) : "Earlier"}
                       </span>
                     </div>
                     <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed line-clamp-2">

@@ -12,7 +12,7 @@ import {
   ExternalLink,
   QrCode,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface ClassItem {
@@ -187,10 +187,12 @@ export default function SchedulePreview({
 }: SchedulePreviewProps) {
   const router = useRouter();
   console.log("SchedulePreview classes:", classes);
+  const [hasMounted, setHasMounted] = useState(false);
   const [, setCurrentTime] = useState(new Date());
 
   // Update current time every minute
   useEffect(() => {
+    setHasMounted(true);
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // Update every minute
@@ -251,14 +253,14 @@ export default function SchedulePreview({
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
                 <p className="text-sm text-gray-700 dark:text-gray-300 font-bold whitespace-nowrap">
-                  {todayDate.english}
+                  {hasMounted ? todayDate.english : "..."}
                 </p>
                 <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
                 <p
                   className="text-xs text-gray-500 dark:text-gray-500 font-arabic whitespace-nowrap"
                   dir="rtl"
                 >
-                  {todayDate.arabic}
+                  {hasMounted ? todayDate.arabic : "..."}
                 </p>
               </div>
             </div>
@@ -371,7 +373,7 @@ export default function SchedulePreview({
               </div>
               <div className="text-right">
                 <p className="text-xs text-blue-100 mb-0.5">Starts in</p>
-                <p className="font-mono font-bold text-xl">{timeUntilNext}</p>
+                <p className="font-mono font-bold text-xl">{hasMounted ? timeUntilNext : "..."}</p>
               </div>
             </div>
           </motion.div>

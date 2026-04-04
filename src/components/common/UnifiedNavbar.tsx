@@ -100,7 +100,7 @@ const professorNavItems = [
 ];
 
 export default function UnifiedNavbar({
-  userName = "Ahmed Hassan",
+  userName,
   userAvatar,
   userType = "student",
   onMenuToggle,
@@ -335,14 +335,14 @@ export default function UnifiedNavbar({
                   {userAvatar && mounted ? (
                     <Image
                       src={userAvatar}
-                      alt={userName}
+                      alt={userName || "User"}
                       className="w-full h-full object-cover relative z-10"
                       width={40}
                       height={40}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm relative z-10">
-                      {(mounted ? userName : "S").charAt(0)}
+                      {(mounted && userName ? userName : "User").charAt(0)}
                     </div>
                   )}
                 </div>

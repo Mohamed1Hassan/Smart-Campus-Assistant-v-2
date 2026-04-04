@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import UnifiedNavbar from "./UnifiedNavbar";
 import dynamic from "next/dynamic";
 const MobileDrawer = dynamic(() => import("../MobileDrawer"), { ssr: false });
@@ -15,13 +15,20 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({
   children,
-  userName = "Ahmed Hassan",
+  userName,
   userAvatar,
   userType = "student",
   title,
   subtitle,
 }: DashboardLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const displayUserName = hasMounted ? (userName || "User") : "User";
 
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -38,7 +45,7 @@ export default function DashboardLayout({
     >
       <div className="flex-1 flex flex-col min-w-0">
         <UnifiedNavbar
-          userName={userName}
+          userName={displayUserName}
           userAvatar={userAvatar}
           userType={userType}
           onMenuToggle={handleMobileMenuToggle}

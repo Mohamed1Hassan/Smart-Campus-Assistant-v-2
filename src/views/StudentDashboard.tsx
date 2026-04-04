@@ -67,6 +67,12 @@ interface RawScheduleItem {
   professorLastName?: string;
 }
 
+// Hydration-safe Date formatting
+const formatDateSafe = (date: string | Date) => {
+  if (typeof window === "undefined") return "";
+  return new Date(date).toLocaleDateString();
+};
+
 interface RawAttendanceSession {
   id: number;
   sessionId?: number;
@@ -156,7 +162,7 @@ const mapNotificationToAnnouncement = (
     icon,
     title: notification.title,
     message: notification.message,
-    timestamp: formatTimeAgo(notification.createdAt),
+    timestamp: notification.createdAt.toISOString(), // Send ISO for client-side formatting
     type,
   };
 };
@@ -168,6 +174,11 @@ export default function StudentDashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // 1. Fetch Student Stats
   const { data: stats = null, isLoading: statsLoading } = useQuery({
@@ -444,25 +455,21 @@ export default function StudentDashboard() {
         className="space-y-6 sm:space-y-8 pb-32 sm:pb-24"
       >
         {/* Header Section - Always render for LCP (Largest Contentful Paint) */}
-        <m.div
-          variants={itemVariants}
+        <div
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-5 sm:p-0 bg-white/60 sm:bg-transparent dark:bg-gray-800/60 sm:dark:bg-transparent rounded-3xl sm:rounded-none border border-white/40 dark:border-gray-700/40 sm:border-transparent shadow-sm sm:shadow-none backdrop-blur-xl"
         >
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <m.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
+            <div
               className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0"
             >
               <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-            </m.div>
+            </div>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 Dashboard
               </h1>
               <p className="text-sm sm:text-base text-gray-800 dark:text-gray-300 mt-0.5 sm:mt-1 font-bold min-h-[1.5rem]">
-                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{user?.firstName || "Student"}</span> 👋
+                Welcome back, <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 inline-block min-w-[50px]">{hasMounted ? (user?.firstName || "Student") : "Student"}</span> 👋
               </p>
             </div>
           </div>
@@ -473,7 +480,7 @@ export default function StudentDashboard() {
             </div>
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-xl text-sm font-bold">
               <Calendar className="w-4 h-4" />
-              {stats?.currentSemester || "Current Semester"}
+              {hasMounted && stats?.currentSemester ? stats.currentSemester : "Current Semester"}
             </div>
             <button
               onClick={handleRefresh}
@@ -491,7 +498,7 @@ export default function StudentDashboard() {
               <Zap className="w-5 h-5 fill-current group-hover:animate-pulse" />
             </button>
           </div>
-        </m.div>
+        </div>
 
         {/* Stats Grid */}
         {statsLoading && !stats ? (
