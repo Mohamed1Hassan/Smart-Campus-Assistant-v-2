@@ -20,8 +20,10 @@ export default async function StudentDashboardPage() {
   const initialUser = profileRes.success ? profileRes.data : null;
   const initialNotifications = notificationsRes.success ? notificationsRes.data : [];
 
-  // Filter static schedule for today on the server
-  const currentDayOfWeek = new Date().getDay();
+  // Filter for today's schedule on the server to match the client's initial view
+  // Convert standard Sun=0..Sat=6 to Sat=0..Fri=6 mapping used in the DB
+  const adjustDay = (d: number) => (d + 1) % 7;
+  const currentDayOfWeek = adjustDay(new Date().getDay());
   const todayScheduleRaw = (initialScheduleRaw as any[]).filter(
     (s) => s.dayOfWeek === currentDayOfWeek
   );

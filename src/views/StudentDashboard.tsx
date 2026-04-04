@@ -245,6 +245,8 @@ export default function StudentDashboard({
     return "completed";
   };
 
+  const adjustDay = (d: number) => (d + 1) % 7;
+
   // 2. Fetch Schedule
   const { data: todaySchedule = [] } = useQuery({
     queryKey: ["student-schedule-today", user?.id],
@@ -253,12 +255,11 @@ export default function StudentDashboard({
       start.setHours(0, 0, 0, 0);
       const end = new Date();
       end.setHours(23, 59, 59, 999);
-      const currentDayOfWeek = new Date().getDay();
+      const currentDayOfWeekAdjusted = adjustDay(new Date().getDay());
 
       const [scheduleRes, sessionsRes] = await Promise.all([
-        apiClient.get<RawScheduleItem[]>("/api/schedule/today", {
-          params: { dayOfWeek: currentDayOfWeek },
-        }),
+        // Use the same server-side action logic or endpoint that matches the Schedule page
+        apiClient.get<any[]>("/api/schedule/user"), 
         apiClient.get<RawAttendanceSession[]>("/api/attendance/sessions", {
           params: {
             startDate: start.toISOString(),
@@ -267,11 +268,12 @@ export default function StudentDashboard({
         }),
       ]);
 
-      const scheduleData = scheduleRes?.success && Array.isArray(scheduleRes.data) ? scheduleRes.data : [];
+      const allSchedules = scheduleRes?.success && Array.isArray(scheduleRes.data) ? scheduleRes.data : [];
+      const scheduleData = allSchedules.filter((s: any) => s.dayOfWeek === currentDayOfWeekAdjusted);
       const activeSessions = sessionsRes?.success && Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
 
       // Transformation logic...
-      const staticSchedule = scheduleData.map((item: RawScheduleItem) => {
+      const staticSchedule = scheduleData.map((item: any) => {
         const normalizeTime = (t: string) => {
           if (!t) return "00:00";
           const parts = t.split(":");
@@ -279,18 +281,26 @@ export default function StudentDashboard({
         };
         const startStr = normalizeTime(item.startTime);
         const endStr = normalizeTime(item.endTime);
+        
+        // Handle both nested (Server Action) and flat (API) structures
+        const courseName = item.courseName || item.course?.courseName || "Course";
+        const courseCode = item.courseCode || item.course?.courseCode || "N/A";
+        const profName = item.professorName || 
+                         (item.professor ? `${item.professor.firstName} ${item.professor.lastName}` : 
+                         `${item.professorFirstName} ${item.professorLastName}`);
+
         return {
           id: String(item.id),
-          course: `${item.courseName} (${item.courseCode})`,
+          course: `${courseName} (${courseCode})`,
           time: `${formatTime(item.startTime || "00:00")} - ${formatTime(item.endTime || "00:00")}`,
           room: item.room,
           status: getClassStatus(startStr, endStr),
           startTime: startStr,
           endTime: endStr,
-          courseCode: item.courseCode,
-          professor: item.professorName || `${item.professorFirstName} ${item.professorLastName}`,
+          courseCode: courseCode,
+          professor: profName,
           isActive: false,
-          _originalCourseName: item.courseName,
+          _originalCourseName: courseName,
         };
       });
 
@@ -359,18 +369,26 @@ export default function StudentDashboard({
         };
         const startStr = normalizeTime(item.startTime);
         const endStr = normalizeTime(item.endTime);
+
+        // Unified robust mapping
+        const courseName = item.courseName || item.course?.courseName || "Course";
+        const courseCode = item.courseCode || item.course?.courseCode || "N/A";
+        const profName = item.professorName || 
+                         (item.professor ? `${item.professor.firstName} ${item.professor.lastName}` : 
+                         `${item.professorFirstName} ${item.professorLastName}`);
+
         return {
           id: String(item.id),
-          course: `${item.course.courseName} (${item.course.courseCode})`,
+          course: `${courseName} (${courseCode})`,
           time: `${formatTime(item.startTime || "00:00")} - ${formatTime(item.endTime || "00:00")}`,
           room: item.room,
           status: getClassStatus(startStr, endStr),
           startTime: startStr,
           endTime: endStr,
-          courseCode: item.course.courseCode,
-          professor: `${item.professor.firstName} ${item.professor.lastName}`,
+          courseCode: courseCode,
+          professor: profName,
           isActive: false,
-          _originalCourseName: item.course.courseName,
+          _originalCourseName: courseName,
         };
       });
 
