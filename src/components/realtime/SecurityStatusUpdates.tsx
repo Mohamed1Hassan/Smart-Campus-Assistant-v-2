@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, getRealtimeStatus } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -149,6 +149,12 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
   }, [securityStatuses]);
 
   useEffect(() => {
+    // Check if realtime is globally disabled
+    if (getRealtimeStatus().isDisabled) {
+      setConnectionStatus("disconnected");
+      return;
+    }
+
     // Initialize Supabase Realtime connection
     const channel = supabase
       .channel(`session:${sessionId}:security`)
