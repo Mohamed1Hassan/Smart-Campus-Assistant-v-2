@@ -6,18 +6,9 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Base client - initialized only if variables exist
-// IMPORTANT: Realtime is disabled at the client level because:
-// 1. Realtime connections via WebSocket fail repeatedly (Supabase project may not have Realtime enabled)
-// 2. The Supabase JS library has an internal reconnect loop that spams the console
-// 3. Disabling it here at creation time is the ONLY way to fully prevent the spam
+// Auth & DB features are enabled, but Realtime (WebSocket) is fully intercepted below.
 const baseClient = (supabaseUrl && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey, {
-      realtime: {
-        timeout: 60000,
-        params: {
-          eventsPerSecond: 1,
-        },
-      },
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -25,66 +16,49 @@ const baseClient = (supabaseUrl && supabaseAnonKey)
     })
   : null;
 
-// Proactively disconnect the Realtime transport immediately after creation.
-// The Supabase JS library starts a WebSocket reconnect loop internally regardless
-// of whether we call .subscribe() or not. The only way to stop it is to
-// call .disconnect() on the RealtimeClient directly.
-if (baseClient) {
-  try {
-    (baseClient as any).realtime.disconnect();
-  } catch (_) {
-    // Ignore if already disconnected
-  }
-}
+// ============================================================
+// REALTIME BLOCKER
+// The Supabase JS library has an internal reconnect loop that
+// spams the console with WebSocket errors when Realtime is not
+// available on the project. The ONLY reliable fix is to intercept
+// ALL calls to .channel() and return a dummy that never creates
+// a real WebSocket connection.
+// ============================================================
 
-/**
- * Robust Supabase client proxy that prevents crashes when environment variables are missing.
- * This is particularly important for Next.js build-time static analysis.
- */
-/**
- * Creates a recursive dummy object that allows infinite method chaining.
- * This is used when Supabase environment variables are missing.
- */
-const createRecursiveDummy = (name: string): any => {
-  const dummy = (..._args: any[]) => createRecursiveDummy(`${name}(...)`);
-  
-  return new Proxy(dummy, {
-    apply(target, thisArg, args) {
-      return createRecursiveDummy(`${name}(...)`);
+const createDummyChannel = (channelName: string) => {
+  const eventHandlers: Record<string, ((payload: any) => void)[]> = {};
+
+  const channel = {
+    on: (_type: string, _filter: any, callback?: (payload: any) => void) => {
+      // Store handlers so they could theoretically be called manually
+      if (callback) {
+        if (!eventHandlers[_filter?.event]) {
+          eventHandlers[_filter?.event] = [];
+        }
+        eventHandlers[_filter?.event].push(callback);
+      }
+      return channel; // allow chaining
     },
-    get(_target, prop) {
-      // Common terminal methods
-      if (prop === 'then') {
-        return (cb: any) => Promise.resolve({ data: null, error: null }).then(cb);
+    subscribe: (callback?: (status: string, err?: Error) => void) => {
+      // Immediately report a clean "offline/disabled" state without any WebSocket attempt
+      if (typeof callback === 'function') {
+        // Use CLOSED instead of CHANNEL_ERROR to avoid triggering retry logic
+        setTimeout(() => callback('CLOSED'), 0);
       }
-      if (prop === 'subscribe') {
-        return (cb?: (status: string) => void) => {
-          if (typeof cb === 'function') {
-            // Simulate async subscription status update
-            setTimeout(() => cb('SUBSCRIBED'), 0);
-          }
-          return { unsubscribe: () => {} };
-        };
-      }
-      
-      // Handle known properties for destructuring
-      if (prop === 'data') return null;
-      if (prop === 'error') return null;
-      if (prop === 'session') return null;
-      if (prop === 'user') return null;
-      if (prop === 'publicUrl') return '';
-      if (prop === 'subscription') return { unsubscribe: () => {} };
+      return channel;
+    },
+    unsubscribe: () => Promise.resolve('ok'),
+    send: () => Promise.resolve('ok'),
+    track: () => Promise.resolve('ok'),
+    untrack: () => Promise.resolve('ok'),
+  };
 
-      // Recursively return dummy for any other property access
-      return createRecursiveDummy(`${name}.${String(prop)}`);
-    }
-  });
+  return channel;
 };
 
-
-// Realtime Availability Tracking - helps components decide whether to subscribe
-let isRealtimeDisabled = !baseClient;
-let lastRealtimeError: string | null = null;
+// Realtime Availability Tracking
+let isRealtimeDisabled = true; // Always disabled by default - enable only if Realtime works
+let lastRealtimeError: string | null = 'Realtime is disabled to prevent WebSocket connection spam';
 
 export const setRealtimeStatus = (disabled: boolean, error?: string | null) => {
   isRealtimeDisabled = disabled;
@@ -93,30 +67,72 @@ export const setRealtimeStatus = (disabled: boolean, error?: string | null) => {
 
 export const getRealtimeStatus = () => ({
   isDisabled: isRealtimeDisabled,
-  lastError: lastRealtimeError
+  lastError: lastRealtimeError,
 });
 
+/**
+ * Creates a recursive dummy object that allows infinite method chaining.
+ * Used when Supabase environment variables are missing.
+ */
+const createRecursiveDummy = (name: string): any => {
+  const dummy = (..._args: any[]) => createRecursiveDummy(`${name}(...)`);
+
+  return new Proxy(dummy, {
+    apply(_target, _thisArg, _args) {
+      return createRecursiveDummy(`${name}(...)`);
+    },
+    get(_target, prop) {
+      if (prop === 'then') {
+        return (cb: any) => Promise.resolve({ data: null, error: null }).then(cb);
+      }
+      if (prop === 'subscribe') {
+        return (cb?: (status: string) => void) => {
+          if (typeof cb === 'function') {
+            setTimeout(() => cb('CLOSED'), 0);
+          }
+          return { unsubscribe: () => {} };
+        };
+      }
+      if (prop === 'data') return null;
+      if (prop === 'error') return null;
+      if (prop === 'session') return null;
+      if (prop === 'user') return null;
+      if (prop === 'publicUrl') return '';
+      if (prop === 'subscription') return { unsubscribe: () => {} };
+
+      return createRecursiveDummy(`${name}.${String(prop)}`);
+    },
+  });
+};
+
+/**
+ * Main Supabase client proxy.
+ *
+ * - `.channel()` calls are INTERCEPTED and return a dummy that never creates WebSockets.
+ * - All other calls (auth, database, storage) go to the real client.
+ */
 export const supabase = new Proxy({} as any, {
   get(_target, prop) {
+    // INTERCEPT: Block all Realtime channel creation at the proxy level.
+    // This is the definitive fix for WebSocket spam.
+    if (prop === 'channel') {
+      return (channelName: string) => createDummyChannel(channelName);
+    }
+
     if (baseClient) {
-      // If we know realtime is failing, we can intercept 'channel' and 'subscribe' 
-      // but let's keep it simple for now and let the real client handle it
       const value = (baseClient as any)[prop];
       return typeof value === 'function' ? value.bind(baseClient) : value;
     }
-    
-    // Return the recursive dummy starting from the property name
+
+    // Fallback recursive dummy when no client exists
     return createRecursiveDummy(String(prop));
-  }
+  },
 });
-
-
 
 if (!baseClient) {
   if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-    // Only log error on server-side production build to avoid noise in browser
-    console.error('CRITICAL: Supabase environment variables are missing! Real-time features will not work.');
+    console.error('[Supabase] CRITICAL: Missing environment variables. Auth & DB features disabled.');
   } else {
-    console.warn('[Supabase] Missing environment variables. Real-time features disabled.');
+    console.warn('[Supabase] Missing environment variables. Auth & DB features disabled.');
   }
 }
