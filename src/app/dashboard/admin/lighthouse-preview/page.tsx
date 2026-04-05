@@ -31,26 +31,49 @@ export default function LighthousePreview() {
     "overview" | "users" | "courses" | "experience" | "security" | "settings"
   >("overview");
 
-  // Bypass Auth by mocking the user in localStorage if not present
+  // Bypass Auth by mocking the user for audit if requested
   useEffect(() => {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const params = new URLSearchParams(window.location.search);
+    const shouldForceMock = params.get('mock') === 'true';
+
+    // If we're not in development, don't allow mock auth
+    if (!isDevelopment) return;
+
     const existingUser = TokenManager.getUserData();
-    if (!existingUser || existingUser.role !== "admin") {
-      const mockAdmin = {
-        id: 999,
-        universityId: "ADMIN-LH",
-        email: "lighthouse@thebes.edu",
-        firstName: "Audit",
-        lastName: "Mode",
-        role: "admin",
-        firstName_ar: "وضع",
-        lastName_ar: "الاختبار",
-      };
-      TokenManager.setUserData(mockAdmin as any);
-      TokenManager.setTokens("mock-access-token", "mock-refresh-token", 3600);
+    const existingToken = TokenManager.getAccessToken();
+    const isMockBeingUsed = existingToken === "mock-access-token";
+    const isRealAdmin = existingUser?.role === "admin" && !isMockBeingUsed;
+
+    // Apply mock only if forced or if no real session exists
+    if (shouldForceMock || !isRealAdmin) {
+      if (!isMockBeingUsed) {
+        console.log("[LighthousePreview] Applying mock admin session for audit...");
+        const mockAdmin = {
+          id: 999,
+          universityId: "ADMIN-LH",
+          email: "lighthouse@thebes.edu",
+          firstName: "Audit",
+          lastName: "Mode",
+          role: "admin",
+          firstName_ar: "وضع",
+          lastName_ar: "الاختبار",
+        };
+        TokenManager.setUserData(mockAdmin as any);
+        TokenManager.setTokens("mock-access-token", "mock-refresh-token", 3600);
+      }
+      
       document.cookie = "isAdminUnlocked=true; path=/";
       localStorage.setItem("isAdminUnlocked", "true");
     }
   }, []);
+
+  const handleClearMock = () => {
+    TokenManager.clearTokens();
+    localStorage.removeItem("isAdminUnlocked");
+    document.cookie = "isAdminUnlocked=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    window.location.href = "/";
+  };
 
   const tabs = [
     { id: "overview", label: "Overview", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -106,6 +129,14 @@ export default function LighthousePreview() {
                 <span>{tab.label}</span>
               </button>
             ))}
+            <div className="w-px h-8 bg-gray-200/50 mx-2 hidden sm:block"></div>
+            <button
+              onClick={handleClearMock}
+              className="flex items-center gap-3 px-8 py-4 bg-orange-500 text-white font-black rounded-[1.5rem] transition-all shadow-xl shadow-orange-500/20 hover:bg-orange-600 hover:scale-105 active:scale-95 text-[10px] uppercase tracking-widest"
+              title="Clear Mock Session and Logout"
+            >
+              <span>Exit Audit Mode</span>
+            </button>
           </div>
         </div>
 
