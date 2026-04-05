@@ -6,9 +6,36 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Base client - initialized only if variables exist
-const baseClient = (supabaseUrl && supabaseAnonKey) 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+// IMPORTANT: Realtime is disabled at the client level because:
+// 1. Realtime connections via WebSocket fail repeatedly (Supabase project may not have Realtime enabled)
+// 2. The Supabase JS library has an internal reconnect loop that spams the console
+// 3. Disabling it here at creation time is the ONLY way to fully prevent the spam
+const baseClient = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      realtime: {
+        timeout: 60000,
+        params: {
+          eventsPerSecond: 1,
+        },
+      },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    })
   : null;
+
+// Proactively disconnect the Realtime transport immediately after creation.
+// The Supabase JS library starts a WebSocket reconnect loop internally regardless
+// of whether we call .subscribe() or not. The only way to stop it is to
+// call .disconnect() on the RealtimeClient directly.
+if (baseClient) {
+  try {
+    (baseClient as any).realtime.disconnect();
+  } catch (_) {
+    // Ignore if already disconnected
+  }
+}
 
 /**
  * Robust Supabase client proxy that prevents crashes when environment variables are missing.
