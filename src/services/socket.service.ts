@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase, setRealtimeStatus } from "@/lib/supabase";
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/db";
@@ -47,18 +47,39 @@ export interface SessionEvent {
 
 // Event emitter for internal events
 const eventEmitter = new EventEmitter();
-
 export class SocketService {
   private supabase = supabase;
   private channel = this.supabase.channel('smart-campus-realtime');
+  private subscriptionAttempts = 0;
+  private readonly MAX_ATTEMPTS = 5;
 
   constructor() {
+    this.initSupabaseRealtime();
+    this.setupInternalEvents();
+  }
+
+  private initSupabaseRealtime() {
+    if (this.subscriptionAttempts >= this.MAX_ATTEMPTS) return;
+
     this.channel.subscribe((status: string) => {
       if (status === 'SUBSCRIBED') {
         console.log('[SocketService] Connected to Supabase Realtime');
+        this.subscriptionAttempts = 0;
+        setRealtimeStatus(false, null);
+      } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+        this.subscriptionAttempts++;
+        const backoff = Math.min(Math.pow(2, this.subscriptionAttempts) * 1000, 30000);
+        
+        if (this.subscriptionAttempts >= this.MAX_ATTEMPTS) {
+          console.warn(`[SocketService] Supabase Realtime failed after ${this.MAX_ATTEMPTS} attempts. Disabling real-time features.`);
+          setRealtimeStatus(true, status);
+          this.channel.unsubscribe();
+        } else {
+          console.warn(`[SocketService] Connection error (${status}). Retrying in ${backoff}ms... (Attempt ${this.subscriptionAttempts})`);
+          setTimeout(() => this.initSupabaseRealtime(), backoff);
+        }
       }
     });
-    this.setupInternalEvents();
   }
 
   // Helper to send a broadcast

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, getRealtimeStatus } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Wifi,
@@ -107,6 +107,19 @@ export const ConnectionStatusIndicator: React.FC<
   };
 
   useEffect(() => {
+    // Check if realtime is globally disabled/failed
+    const status = getRealtimeStatus();
+    if (status.isDisabled) {
+      setConnectionStatus((prev) => ({
+        ...prev,
+        status: "error",
+        serverStatus: "offline",
+        connectionQuality: "poor",
+      }));
+      addConnectionHistory("error", 0, status.lastError || "Realtime disabled");
+      return;
+    }
+
     const channel = supabase
       .channel('system-status')
       .on(
@@ -136,10 +149,10 @@ export const ConnectionStatusIndicator: React.FC<
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
           setConnectionStatus((prev) => ({
             ...prev,
-            status: "disconnected",
+            status: status === 'CHANNEL_ERROR' ? "error" : "disconnected",
             lastDisconnected: new Date(),
           }));
-          addConnectionHistory("disconnected");
+          addConnectionHistory(status === 'CHANNEL_ERROR' ? "error" : "disconnected", 0, status);
         }
       });
 

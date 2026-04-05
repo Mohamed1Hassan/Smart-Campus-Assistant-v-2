@@ -39,7 +39,7 @@ interface UseNotificationsOptions {
   filters?: NotificationFilters;
 }
 
-import { supabase } from "../lib/supabase";
+import { supabase, getRealtimeStatus, setRealtimeStatus } from "../lib/supabase";
 
 // Main hook
 export function useNotifications(options: UseNotificationsOptions = {}) {
@@ -61,6 +61,15 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
   // Initialize Supabase Realtime Channel
   useEffect(() => {
     if (realTime && isAuthenticated && user) {
+      // Check if global realtime is disabled before attempting
+      if (getRealtimeStatus().isDisabled) {
+        setState(prev => ({
+          ...prev,
+          wsState: { connected: false, reconnecting: false, error: 'Realtime globally disabled' }
+        }));
+        return;
+      }
+
       const channel = supabase
         .channel(`user:${user.id}`)
         .on(
@@ -69,11 +78,9 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
           (payload: any) => {
             if (!payload) return;
             console.log('[useNotifications] New notification received:', payload);
-            // Handle both wrapped { payload: data } and direct data
             const notificationData = payload?.payload || payload;
             
             if (!notificationData || (!notificationData.id && !notificationData.title)) {
-              console.warn('[useNotifications] Received invalid notification payload:', payload);
               return;
             }
 
@@ -92,11 +99,18 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
               ...prev,
               wsState: { connected: true, reconnecting: false, error: null },
             }));
-          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+            console.warn(`[useNotifications] Supabase channel error: ${status}`);
             setState((prev) => ({
               ...prev,
               wsState: { connected: false, reconnecting: false, error: status },
             }));
+            
+            // If it's a channel error, it might be a project-level issue
+            if (status === 'CHANNEL_ERROR') {
+              // We don't setRealtimeStatus(true) here because other channels might work,
+              // but we stop the spam for this specific component.
+            }
           }
         });
 

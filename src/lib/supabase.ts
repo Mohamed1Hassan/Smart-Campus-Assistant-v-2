@@ -55,9 +55,25 @@ const createRecursiveDummy = (name: string): any => {
 };
 
 
+// Realtime Availability Tracking - helps components decide whether to subscribe
+let isRealtimeDisabled = !baseClient;
+let lastRealtimeError: string | null = null;
+
+export const setRealtimeStatus = (disabled: boolean, error?: string | null) => {
+  isRealtimeDisabled = disabled;
+  if (error !== undefined) lastRealtimeError = error;
+};
+
+export const getRealtimeStatus = () => ({
+  isDisabled: isRealtimeDisabled,
+  lastError: lastRealtimeError
+});
+
 export const supabase = new Proxy({} as any, {
   get(_target, prop) {
     if (baseClient) {
+      // If we know realtime is failing, we can intercept 'channel' and 'subscribe' 
+      // but let's keep it simple for now and let the real client handle it
       const value = (baseClient as any)[prop];
       return typeof value === 'function' ? value.bind(baseClient) : value;
     }
