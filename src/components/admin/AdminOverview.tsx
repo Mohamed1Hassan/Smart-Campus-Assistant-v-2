@@ -32,13 +32,18 @@ interface AdminStats {
 
 export default function AdminOverview({
   onTabChange,
+  initialStats,
 }: {
   onTabChange?: (tab: "users" | "courses" | "security" | "settings") => void;
+  initialStats?: AdminStats;
 }) {
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<AdminStats | null>(initialStats || null);
+  const [loading, setLoading] = useState(!initialStats);
 
   useEffect(() => {
+    // Skip fetch if initial stats were provided (e.g., Lighthouse preview mode)
+    if (initialStats) return;
+
     const fetchStats = async () => {
       try {
         const result = await apiClient.get<AdminStats>("/admin/stats");
@@ -53,7 +58,7 @@ export default function AdminOverview({
     };
 
     fetchStats();
-  }, []);
+  }, [initialStats]);
 
   if (loading) {
     return (
@@ -176,7 +181,7 @@ export default function AdminOverview({
   );
 }
 
-function StatCard({
+const StatCard = React.memo(function StatCard({
   title,
   value,
   trend,
@@ -224,9 +229,9 @@ function StatCard({
       </div>
     </motion.div>
   );
-}
+});
 
-function QuickAction({
+const QuickAction = React.memo(function QuickAction({
   icon,
   title,
   subtitle,
@@ -260,9 +265,9 @@ function QuickAction({
       <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
     </button>
   );
-}
+});
 
-function ActivityItem({
+const ActivityItem = React.memo(function ActivityItem({
   type,
   title,
   description,
@@ -321,4 +326,4 @@ function ActivityItem({
       </div>
     </div>
   );
-}
+});

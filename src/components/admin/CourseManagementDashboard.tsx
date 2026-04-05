@@ -15,13 +15,19 @@ import {
   ChevronRight,
   X,
   Image as ImageIcon,
-  ShieldCheck,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { apiClient } from "@/services/api";
 import { getCourseImage } from "@/utils/courseImages";
+
+// Lazy-load the heavy modal only when the user opens it
+const CourseModal = dynamic(() => import("./CourseModal"), {
+  loading: () => null,
+  ssr: false,
+});
 
 interface Course {
   id: number;
@@ -144,7 +150,7 @@ const CourseCard = React.memo(
               <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden border border-gray-100/50">
                 <div
                   style={{ width: `${Math.min(enrollmentProgress, 100)}%` }}
-                  className={`h-full rounded-full transition-all duration-1000 ${enrollmentProgress >= 90 ? "bg-red-500Shadow" : enrollmentProgress >= 70 ? "bg-orange-500" : "bg-blue-600 shadow-lg shadow-blue-500/20"}`}
+                  className={`h-full rounded-full transition-all duration-1000 ${enrollmentProgress >= 90 ? "bg-red-500" : enrollmentProgress >= 70 ? "bg-orange-500" : "bg-blue-600 shadow-lg shadow-blue-500/20"}`}
                 />
               </div>
             </div>
@@ -226,7 +232,6 @@ export default function CourseManagementDashboard() {
 
   const fetchCourses = useCallback(
     async (page = 1) => {
-      // Cancel existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -491,18 +496,18 @@ export default function CourseManagementDashboard() {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex bg-gray-100/50 p-1 rounded-2xl border border-gray-100/50">
-             <button 
+            <button
               onClick={() => setViewMode("grid")}
               className={`p-2 rounded-xl transition-all ${viewMode === "grid" ? "bg-white text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
-             >
-                <LayoutGrid className="w-4 h-4" />
-             </button>
-             <button 
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => setViewMode("table")}
               className={`p-2 rounded-xl transition-all ${viewMode === "table" ? "bg-white text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
-             >
-                <List className="w-4 h-4" />
-             </button>
+            >
+              <List className="w-4 h-4" />
+            </button>
           </div>
           <button
             onClick={handleOpenCreateModal}
@@ -585,9 +590,9 @@ export default function CourseManagementDashboard() {
               }))
             }
             className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-              filters.showArchived 
-              ? "bg-amber-50 border-amber-200 text-amber-700 shadow-inner" 
-              : "bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100"
+              filters.showArchived
+                ? "bg-amber-50 border-amber-200 text-amber-700 shadow-inner"
+                : "bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100"
             }`}
           >
             {filters.showArchived ? "Hidden (Archived)" : "Show Archived"}
@@ -702,12 +707,12 @@ export default function CourseManagementDashboard() {
                           </td>
                           <td className="px-8 py-5">
                             <div className="flex items-center gap-2.5 text-xs font-bold text-gray-700">
-                               <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100/50 text-gray-400 group-hover/row:text-blue-500 transition-colors">
-                                  <User className="w-3.5 h-3.5" />
-                               </div>
-                               {course.professor
-                                 ? `${course.professor.firstName} ${course.professor.lastName}`
-                                 : "Unassigned"}
+                              <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100/50 text-gray-400 group-hover/row:text-blue-500 transition-colors">
+                                <User className="w-3.5 h-3.5" />
+                              </div>
+                              {course.professor
+                                ? `${course.professor.firstName} ${course.professor.lastName}`
+                                : "Unassigned"}
                             </div>
                           </td>
                           <td className="px-8 py-5">
@@ -729,9 +734,9 @@ export default function CourseManagementDashboard() {
                           <td className="px-8 py-5">
                             <span
                               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                course.isActive 
-                                ? "bg-green-50 text-green-700 border-green-100 shadow-sm shadow-green-500/5" 
-                                : "bg-red-50 text-red-700 border-red-100 shadow-sm shadow-red-500/5"
+                                course.isActive
+                                  ? "bg-green-50 text-green-700 border-green-100 shadow-sm shadow-green-500/5"
+                                  : "bg-red-50 text-red-700 border-red-100 shadow-sm shadow-red-500/5"
                               }`}
                             >
                               <span
@@ -795,24 +800,26 @@ export default function CourseManagementDashboard() {
       {/* Pagination */}
       <div className="p-8 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-400 bg-white/50 px-5 py-2.5 rounded-2xl border border-gray-100 shadow-sm">
-          Displaying <span className="text-gray-900">{(pagination.page - 1) * pagination.limit + 1}</span> -{" "}
-          <span className="text-gray-900">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> 
-          <span className="mx-2 text-gray-200">|</span> Total <span className="text-blue-600">{pagination.total}</span>
+          Displaying <span className="text-gray-900">{(pagination.page - 1) * pagination.limit + 1}</span>{" "}
+          -{" "}
+          <span className="text-gray-900">{Math.min(pagination.page * pagination.limit, pagination.total)}</span>{" "}
+          <span className="mx-2 text-gray-200">|</span> Total{" "}
+          <span className="text-blue-600">{pagination.total}</span>
         </div>
-        
+
         <div className="flex items-center gap-2 bg-white/50 p-1.5 rounded-[1.5rem] border border-gray-100 shadow-sm">
           <button
             onClick={() => handlePageChange(pagination.page - 1)}
             disabled={pagination.page === 1}
             className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-              pagination.page === 1 
-              ? "text-gray-300 bg-gray-50/50 cursor-not-allowed" 
-              : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
+              pagination.page === 1
+                ? "text-gray-300 bg-gray-50/50 cursor-not-allowed"
+                : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
             }`}
           >
             Prev
           </button>
-          
+
           <div className="hidden sm:flex items-center gap-1.5 px-1">
             {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
               .filter(
@@ -829,9 +836,9 @@ export default function CourseManagementDashboard() {
                   <button
                     onClick={() => handlePageChange(p)}
                     className={`w-10 h-10 rounded-xl text-[10px] font-black transition-all ${
-                      pagination.page === p 
-                      ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20 scale-110 z-10" 
-                      : "hover:bg-white text-gray-400 border border-transparent hover:border-gray-100 hover:text-gray-900 active:scale-95"
+                      pagination.page === p
+                        ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20 scale-110 z-10"
+                        : "hover:bg-white text-gray-400 border border-transparent hover:border-gray-100 hover:text-gray-900 active:scale-95"
                     }`}
                   >
                     {p}
@@ -844,9 +851,9 @@ export default function CourseManagementDashboard() {
             onClick={() => handlePageChange(pagination.page + 1)}
             disabled={pagination.page === pagination.totalPages}
             className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-              pagination.page === pagination.totalPages 
-              ? "text-gray-300 bg-gray-50/50 cursor-not-allowed" 
-              : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
+              pagination.page === pagination.totalPages
+                ? "text-gray-300 bg-gray-50/50 cursor-not-allowed"
+                : "bg-white text-gray-600 hover:text-blue-600 shadow-sm border border-gray-100/50 active:scale-95"
             }`}
           >
             Next
@@ -854,242 +861,17 @@ export default function CourseManagementDashboard() {
         </div>
       </div>
 
-      {/* Create/Edit Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/60 backdrop-blur-md overflow-y-auto">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-[3rem] w-full max-w-2xl my-auto shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden border border-white/60"
-            >
-              <div className="p-10 border-b border-gray-100 bg-gradient-to-br from-gray-50/80 to-white/20 relative">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="absolute top-8 right-8 p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all group/close"
-                >
-                  <X className="w-5 h-5 group-hover/close:rotate-90 transition-transform duration-300" />
-                </button>
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-blue-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-300">
-                    {modalMode === "create" ? (
-                      <Plus className="w-8 h-8" />
-                    ) : (
-                      <Edit2 className="w-8 h-8" />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">
-                      {modalMode === "create"
-                        ? "Curriculum Evolution"
-                        : "Refine Offering"}
-                    </h3>
-                    <p className="text-sm text-gray-500 font-medium mt-1">
-                      {modalMode === "create" 
-                        ? "Initialize a new academic course in the system."
-                        : "Update course parameters and identifiers."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white/50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Full Academic Title
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      value={formData.courseName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, courseName: e.target.value })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all placeholder:text-gray-200 font-bold text-gray-900 shadow-sm"
-                      placeholder="Fundamentals of Neural Networks"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Course Token (Code)
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      value={formData.courseCode}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          courseCode: e.target.value.toUpperCase(),
-                        })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-mono font-black text-blue-600 bg-blue-50/10 shadow-sm"
-                      placeholder="CS-402"
-                    />
-                  </div>
-                  <div className="md:col-span-2 space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Curriculum Abstract
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all resize-none font-medium text-gray-600 shadow-sm"
-                      placeholder="Establish a brief overview of the learning objectives and core curriculum components..."
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                      <ImageIcon className="w-3.5 h-3.5 text-blue-500" />
-                      Visual Identity URL
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.coverImage}
-                      onChange={(e) =>
-                        setFormData({ ...formData, coverImage: e.target.value })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all text-xs font-mono text-gray-400 shadow-sm"
-                      placeholder="https://images.unsplash.com/..."
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Academic Domain
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.major}
-                      onChange={(e) =>
-                        setFormData({ ...formData, major: e.target.value })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm"
-                      placeholder="e.g. Computer Science"
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Level
-                    </label>
-                    <div className="relative group/sel">
-                      <select
-                        value={formData.level}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            level: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
-                      >
-                        {[1, 2, 3, 4, 5].map(lv => <option key={lv} value={lv}>Level {lv}</option>)}
-                      </select>
-                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Academic Credits
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      value={formData.credits}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          credits: parseInt(e.target.value),
-                        })
-                      }
-                      className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm"
-                      min="1"
-                      max="10"
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Faculty Assignment
-                    </label>
-                    <div className="relative group/sel">
-                      <select
-                        required
-                        value={formData.professorId}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            professorId: e.target.value,
-                          })
-                        }
-                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
-                      >
-                        <option value="">Choose Professor...</option>
-                        {professors.map((p: Professor) => (
-                          <option key={p.id} value={p.id}>
-                            {p.firstName} {p.lastName}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
-                      Academic Term
-                    </label>
-                    <div className="relative group/sel">
-                      <select
-                        value={formData.semester}
-                        onChange={(e) =>
-                          setFormData({ ...formData, semester: e.target.value })
-                        }
-                        className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
-                      >
-                        <option value="FALL">Fall Semester</option>
-                        <option value="SPRING">Spring Semester</option>
-                        <option value="SUMMER">Summer Term</option>
-                      </select>
-                      <ChevronRight className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none rotate-90 group-hover/sel:translate-y-[-40%] transition-transform" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-10 border-t border-gray-50 flex items-center justify-between gap-6">
-                   <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-8 py-4 bg-gray-50 hover:bg-gray-100 text-gray-500 font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-sm"
-                  >
-                    Discard Changes
-                  </button>
-                  <button
-                    disabled={isSubmitting}
-                    className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all text-[10px] uppercase tracking-widest flex items-center gap-3 group disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <ShieldCheck className="w-5 h-5 group-hover:scale-125 transition-transform" />
-                    )}
-                    <span>{modalMode === "create" ? "Initiate Offering" : "Authorize Changes"}</span>
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Create/Edit Modal - lazy loaded for performance */}
+      <CourseModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalMode={modalMode}
+        formData={formData}
+        setFormData={setFormData}
+        professors={professors}
+        isSubmitting={isSubmitting}
+        handleSubmit={handleSubmit}
+      />
     </div>
   );
 }
