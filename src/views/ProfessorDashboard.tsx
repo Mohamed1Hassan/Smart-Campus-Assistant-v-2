@@ -421,6 +421,7 @@ export default function ProfessorDashboard() {
               alt="Dashboard Background"
               fill
               priority
+              unoptimized
               fetchPriority="high"
               className="object-cover opacity-20 mix-blend-overlay"
             />
