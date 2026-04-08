@@ -338,8 +338,8 @@ export default function UnifiedNavbar({
                       height={40}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm relative z-10">
-                      {(mounted && userName ? userName : "User").charAt(0)}
+                    <div className="w-full h-full flex items-center justify-center bg-transparent text-indigo-700 dark:text-indigo-400 font-bold text-sm relative z-10" suppressHydrationWarning>
+                      {(userName || "User").charAt(0)}
                     </div>
                   )}
                 </div>

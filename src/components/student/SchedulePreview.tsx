@@ -36,25 +36,25 @@ interface SchedulePreviewProps {
 const statusConfig = {
   upcoming: {
     icon: Clock,
-    color: "text-amber-600 dark:text-amber-400",
-    bgColor: "bg-amber-100/50 dark:bg-amber-900/20",
-    borderColor: "border-amber-200/50 dark:border-amber-700/30",
+    color: "text-amber-800 dark:text-amber-400 font-bold",
+    bgColor: "bg-amber-100/50 dark:bg-amber-900/30",
+    borderColor: "border-amber-200/50 dark:border-amber-700/50",
     Tag: "Upcoming",
     pulse: false,
   },
   ongoing: {
     icon: Play,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bgColor: "bg-emerald-100/50 dark:bg-emerald-900/20",
-    borderColor: "border-emerald-200/50 dark:border-emerald-700/30",
+    color: "text-emerald-800 dark:text-emerald-400 font-bold",
+    bgColor: "bg-emerald-100/50 dark:bg-emerald-900/30",
+    borderColor: "border-emerald-200/50 dark:border-emerald-700/50",
     Tag: "Ongoing",
     pulse: true,
   },
   completed: {
     icon: CheckCircle,
-    color: "text-slate-600 dark:text-slate-400",
+    color: "text-slate-800 dark:text-slate-400 font-bold",
     bgColor: "bg-slate-100/50 dark:bg-slate-800/50",
-    borderColor: "border-slate-200/50 dark:border-slate-700/30",
+    borderColor: "border-slate-200/50 dark:border-slate-700/50",
     Tag: "Completed",
     pulse: false,
   },
@@ -188,11 +188,12 @@ export default function SchedulePreview({
   const router = useRouter();
   console.log("SchedulePreview classes:", classes);
   const [hasMounted, setHasMounted] = useState(false);
-  const [, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   // Update current time every minute
   useEffect(() => {
     setHasMounted(true);
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // Update every minute
@@ -277,7 +278,7 @@ export default function SchedulePreview({
         {/* Lecture Statistics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white/60 dark:bg-gray-800/60 rounded-xl p-3 border border-gray-100 dark:border-gray-700/50 text-center">
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider block mb-1">
               Total
             </span>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -295,10 +296,10 @@ export default function SchedulePreview({
           </div>
 
           <div className="bg-amber-50/60 dark:bg-amber-900/10 rounded-xl p-3 border border-amber-100 dark:border-amber-800/30 text-center">
-            <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider block mb-1">
               Upcoming
             </span>
-            <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
+            <span className="text-xl font-bold text-amber-900 dark:text-amber-300">
               {upcomingLectures}
             </span>
           </div>

@@ -558,9 +558,9 @@ export default function StudentDashboard({
               <LayoutDashboard className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-4xl" suppressHydrationWarning>
                 Welcome back,{" "}
-                <span className="text-blue-600 dark:text-blue-400" suppressHydrationWarning>
+                <span className="text-blue-600 dark:text-blue-400">
                   {initialUser?.firstName || "Student"}
                 </span>{" "}
                 👋
@@ -607,7 +607,7 @@ export default function StudentDashboard({
                   : "0.00"
               }
               icon={GraduationCap}
-              color="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
+              color="bg-emerald-500/10 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400"
               subtitle="Based on Attendance"
             />
             <StatCardStudent
@@ -621,14 +621,14 @@ export default function StudentDashboard({
               title="Attendance"
               value={`${stats?.attendancePercentage ?? 0}%`}
               icon={Timer}
-              color="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
+              color="bg-purple-500/10 text-purple-800 dark:bg-purple-500/20 dark:text-purple-400"
               subtitle="Overall"
             />
             <StatCardStudent
               title="Assignments"
               value={stats?.pendingAssignments ?? 0}
               icon={FileText}
-              color="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
+              color="bg-amber-500/10 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400"
               subtitle="Pending"
             />
           </div>

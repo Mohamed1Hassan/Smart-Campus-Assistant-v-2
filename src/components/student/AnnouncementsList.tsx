@@ -54,12 +54,12 @@ const formatTimeAgo = (date: string | Date | undefined) => {
 const typeConfig = {
   info: {
     bgColor: "bg-blue-50/50 dark:bg-blue-900/10",
-    iconColor: "text-blue-600 dark:text-blue-400",
+    iconColor: "text-blue-700 dark:text-blue-400",
     borderColor: "border-blue-100 dark:border-blue-800/30",
   },
   warning: {
     bgColor: "bg-amber-50/50 dark:bg-amber-900/10",
-    iconColor: "text-amber-600 dark:text-amber-400",
+    iconColor: "text-amber-700 dark:text-amber-400",
     borderColor: "border-amber-100 dark:border-amber-800/30",
   },
   success: {
@@ -144,7 +144,10 @@ export default function AnnouncementsList({
                       <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {announcement.title}
                       </h3>
-                      <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full" suppressHydrationWarning>
+                      <span
+                        className="text-[10px] font-bold text-gray-700 dark:text-gray-400 uppercase tracking-widest"
+                        suppressHydrationWarning
+                      >
                         {formatTimeAgo(announcement.timestamp)}
                       </span>
                     </div>
