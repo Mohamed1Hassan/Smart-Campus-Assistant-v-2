@@ -252,7 +252,7 @@ export default function MobileDrawer({
 
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-xl text-gray-500 hover:bg-white/50 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-xl text-gray-600 hover:bg-white/50 dark:hover:bg-gray-800 transition-colors"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
@@ -295,7 +295,7 @@ export default function MobileDrawer({
                                 className="flex items-center gap-3 px-4 py-3.5 flex-1 font-semibold text-sm"
                               >
                                 <Icon
-                                  className={`w-5 h-5 transition-colors duration-300 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-500 dark:text-gray-400"}`}
+                                  className={`w-5 h-5 transition-colors duration-300 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-600 dark:text-gray-400"}`}
                                 />
                                 {item.Tag}
                               </Link>
@@ -337,7 +337,7 @@ export default function MobileDrawer({
                                         className={`flex items-center gap-3 px-4 py-3 pl-12 text-sm font-medium transition-colors ${
                                           isSubActive
                                             ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/10"
-                                            : "text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                                            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                                         }`}
                                       >
                                         <SubIcon className="w-4 h-4" />
@@ -361,7 +361,7 @@ export default function MobileDrawer({
                           >
                             <div className={`absolute inset-0 bg-white/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 ${isActive ? "hidden" : ""}`} />
                             <Icon
-                              className={`w-5 h-5 relative z-10 transition-transform duration-300 group-hover/item:scale-110 ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"}`}
+                              className={`w-5 h-5 relative z-10 transition-transform duration-300 group-hover/item:scale-110 ${isActive ? "text-white" : "text-gray-600 dark:text-gray-400"}`}
                             />
                             <span className="relative z-10">{item.Tag}</span>
                           </Link>

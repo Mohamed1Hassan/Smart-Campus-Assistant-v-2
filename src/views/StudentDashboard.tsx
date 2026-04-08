@@ -88,7 +88,6 @@ interface NotificationItem {
 
 // Helper to format time ago
 const formatTimeAgo = (date: string | Date) => {
-  if (typeof window === "undefined") return "Earlier"; // Return static during SSR
   const d = new Date(date);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
@@ -176,7 +175,7 @@ export default function StudentDashboard({
   initialNotifications = []
 }: StudentDashboardProps) {
   const { user, isAuthenticated } = useAuth();
-  const { notifications } = useNotifications();
+  const { notifications, loading: notificationsLoading } = useNotifications();
   const { info: showInfo } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -239,7 +238,7 @@ export default function StudentDashboard({
   };
 
   // 2. Fetch Schedule
-  const { data: todaySchedule = [] } = useQuery({
+  const { data: todaySchedule = [], isLoading: scheduleLoading } = useQuery({
     queryKey: ["student-schedule-today", user?.id],
     queryFn: async () => {
       const start = new Date();
@@ -561,7 +560,7 @@ export default function StudentDashboard({
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-4xl">
                 Welcome back,{" "}
-                <span className="text-blue-600 dark:text-blue-400">
+                <span className="text-blue-600 dark:text-blue-400" suppressHydrationWarning>
                   {initialUser?.firstName || "Student"}
                 </span>{" "}
                 👋
@@ -569,11 +568,11 @@ export default function StudentDashboard({
             </div>
           </div>
           <div className="flex items-center justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-none border-gray-100 dark:border-gray-700/50">
-            <div className="flex-1 sm:hidden flex items-center gap-2 px-3 py-2 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-bold uppercase tracking-wider">
+            <div className="flex-1 sm:hidden flex items-center gap-2 px-3 py-2 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-bold uppercase tracking-wider" suppressHydrationWarning>
               <Calendar className="w-3.5 h-3.5 opacity-70" />
               {initialStats?.currentSemester || stats?.currentSemester || "Current"}
             </div>
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-xl text-sm font-bold">
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-xl text-sm font-bold" suppressHydrationWarning>
               <Calendar className="w-4 h-4" />
               {initialStats?.currentSemester || stats?.currentSemester || "Current Semester"}
             </div>

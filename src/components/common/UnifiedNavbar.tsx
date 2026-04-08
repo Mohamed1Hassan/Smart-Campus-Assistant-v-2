@@ -218,11 +218,11 @@ export default function UnifiedNavbar({
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Logo className="w-8 h-8 sm:w-9 sm:h-9 relative z-10" />
               </div>
-              <div className={`hidden sm:block ${mounted && isMobile ? "hidden" : ""}`}>
+              <div className="hidden sm:block lg:block">
                 <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-none tracking-tight">
                   Smart Campus
                 </h1>
-                <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-indigo-700 dark:text-indigo-300 font-bold mt-1">
                   {dashboardTitle}
                 </p>
               </div>
