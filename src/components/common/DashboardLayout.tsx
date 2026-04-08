@@ -77,11 +77,13 @@ export default function DashboardLayout({
         </main>
       </div>
 
-      <MobileDrawer
-        isOpen={isMobileMenuOpen}
-        onClose={handleMobileMenuClose}
-        userType={userType}
-      />
+      {isMobileMenuOpen && (
+        <MobileDrawer
+          isOpen={isMobileMenuOpen}
+          onClose={handleMobileMenuClose}
+          userType={userType}
+        />
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -146,7 +146,7 @@ const getTimeUntilNextLecture = (startTime: string) => {
 
 // Loading skeleton component
 const LoadingSkeleton = () => (
-  <motion.div
+  <m.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
@@ -177,7 +177,7 @@ const LoadingSkeleton = () => (
         </div>
       ))}
     </div>
-  </motion.div>
+  </m.div>
 );
 
 export default function SchedulePreview({

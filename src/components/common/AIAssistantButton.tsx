@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Lightbulb, Heart } from "lucide-react";
 
@@ -246,7 +246,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
       {/* Chat Bubble Hint */}
       <AnimatePresence>
         {isHovered && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 20, scale: 0.8, rotate: 5 }}
             animate={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
             exit={{ opacity: 0, x: 10, scale: 0.8 }}
@@ -255,12 +255,12 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
             <div className="bg-white text-gray-800 px-4 py-2 rounded-2xl rounded-br-none shadow-xl border-2 border-indigo-100 font-bold text-sm flex items-center gap-2">
               <span className="text-xl">👋</span> How can I help?
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* The 3D Robot Character */}
-      <motion.button
+      <m.button
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -271,7 +271,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         aria-label="Open AI Assistant"
       >
         {/* Global Float Animation Wrapper */}
-        <motion.div
+        <m.div
           style={{ willChange: "transform" }}
           animate={{
             y: isHovered ? [0, -10, 0] : [0, -5, 0],
@@ -284,7 +284,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
           className="relative w-full h-full flex flex-col items-center justify-center"
         >
           {/* --- HEAD (Existing) --- */}
-          <motion.div
+          <m.div
             animate={{
               rotate: robotState.headRotate,
               y: robotState.bodyY,
@@ -304,12 +304,12 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
             className="relative w-24 h-20 z-20" // Head is z-20 to sit above body
           >
             {/* Antenna */}
-            <motion.div
+            <m.div
               className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-4 bg-gray-400 rounded-full origin-bottom"
               animate={{ rotate: isHovered ? [0, 20, -20, 0] : [0, 5, -5, 0] }}
               transition={{ duration: isHovered ? 0.2 : 2, repeat: Infinity }}
             >
-              <motion.div
+              <m.div
                 className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-sm"
                 animate={{
                   backgroundColor:
@@ -323,7 +323,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                   repeat: Infinity,
                 }}
               />
-            </motion.div>
+            </m.div>
 
             {/* Head Shape (Face) */}
             <div className="absolute inset-0 bg-white rounded-[2rem] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3),0_8px_10px_-6px_rgba(0,0,0,0.1)] border-4 border-white overflow-hidden">
@@ -335,7 +335,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                 <div className="absolute -top-2 -right-2 w-10 h-10 bg-white opacity-10 rounded-full blur-sm" />
 
                 {/* Left Eye */}
-                <motion.div
+                <m.div
                   className="w-3 h-5 bg-blue-400 shadow-[0_0_10px_#60a5fa]"
                   style={{
                     borderRadius:
@@ -387,7 +387,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                 />
 
                 {/* Right Eye */}
-                <motion.div
+                <m.div
                   className="w-3 h-5 bg-blue-400 shadow-[0_0_10px_#60a5fa]"
                   style={{
                     borderRadius:
@@ -439,7 +439,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                 />
 
                 {/* Mouth (Talking/Happy) */}
-                <motion.div
+                <m.div
                   className="absolute bottom-3 w-4 h-1 bg-blue-400 rounded-full opacity-0"
                   animate={{
                     opacity: isHovered || robotState.isTalking ? 1 : 0,
@@ -462,19 +462,19 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
             {/* Ears */}
             <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-3 h-8 bg-gray-300 rounded-l-lg border-l-2 border-white shadow-sm" />
             <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-3 h-8 bg-gray-300 rounded-r-lg border-r-2 border-white shadow-sm" />
-          </motion.div>
+          </m.div>
 
           {/* Idea Lightbulb - Moved AFTER head and positioned higher */}
           <AnimatePresence>
             {robotState.showIdea && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 0, scale: 0 }}
                 animate={{ opacity: 1, y: -40, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}
                 className="absolute -top-14 left-[35%] -translate-x-1/2 z-50"
               >
                 <Lightbulb className="w-10 h-10 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" />
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
@@ -483,7 +483,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
             {robotState.isSleeping && (
               <div className="absolute -top-16 right-0 z-50">
                 {[1, 2, 3].map((i) => (
-                  <motion.div
+                  <m.div
                     key={i}
                     initial={{ opacity: 0, y: 0, x: 0 }}
                     animate={{ opacity: [0, 1, 0], y: -30, x: 15 }}
@@ -496,7 +496,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                     style={{ right: i * 5, top: i * 5 }}
                   >
                     Z
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
             )}
@@ -505,18 +505,19 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
           {/* Love Hearts - Moved AFTER head and positioned higher */}
           <AnimatePresence>
             {robotState.showLove && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1.2, y: -35 }}
                 exit={{ opacity: 0, y: -50 }}
                 className="absolute -top-12 left-[35%] -translate-x-1/2 z-50"
               >
                 <Heart className="w-8 h-8 text-red-500 fill-red-500 drop-shadow-xl" />
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
-        </motion.div>
-      </motion.button>
+        </m.div>
+      </m.button>
     </div>
   );
 };
+

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { m, AnimatePresence, Variants } from "framer-motion";
 import { Logo } from "./common/Logo";
 import { useLogout } from "../hooks/useLogout";
 import ConfirmModal from "./ConfirmModal";
@@ -210,7 +210,7 @@ export default function MobileDrawer({
         {isOpen && (
           <>
             {/* Backdrop */}
-            <motion.div
+            <m.div
               variants={backdropVariants}
               initial="closed"
               animate="open"
@@ -221,7 +221,7 @@ export default function MobileDrawer({
             />
 
             {/* Drawer */}
-            <motion.div
+            <m.div
               ref={drawerRef}
               variants={drawerVariants}
               initial="closed"
@@ -244,7 +244,7 @@ export default function MobileDrawer({
                     <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-none tracking-tight">
                       Smart Campus
                     </h1>
-                    <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1 opacity-80">
+                    <p className="text-[10px] uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-bold mt-1">
                       Assistant
                     </p>
                   </div>
@@ -318,7 +318,7 @@ export default function MobileDrawer({
                             {/* Submenu */}
                             <AnimatePresence>
                               {isSubmenuOpen && (
-                                <motion.div
+                                <m.div
                                   initial={{ opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: "auto" }}
                                   exit={{ opacity: 0, height: 0 }}
@@ -345,7 +345,7 @@ export default function MobileDrawer({
                                       </Link>
                                     );
                                   })}
-                                </motion.div>
+                                </m.div>
                               )}
                             </AnimatePresence>
                           </div>
@@ -382,7 +382,7 @@ export default function MobileDrawer({
                   Logout
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>
