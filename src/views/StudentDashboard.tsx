@@ -14,7 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { AIAssistantButton } from "../components/common/AIAssistantButton";
+const AIAssistantButton = dynamic(() => import("../components/common/AIAssistantButton").then(mod => mod.AIAssistantButton), { ssr: false });
 import dynamic from "next/dynamic";
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCardStudent from "../components/student/StatCardStudent";

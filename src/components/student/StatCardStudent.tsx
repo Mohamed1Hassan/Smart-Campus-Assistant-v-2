@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { LucideIcon } from "lucide-react";
 
 interface StatCardStudentProps {
@@ -19,7 +19,7 @@ export default function StatCardStudent({
   subtitle,
 }: StatCardStudentProps) {
   return (
-    <motion.div
+    <m.div
       whileHover={{
         scale: 1.02,
         y: -5,
@@ -54,6 +54,6 @@ export default function StatCardStudent({
           <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

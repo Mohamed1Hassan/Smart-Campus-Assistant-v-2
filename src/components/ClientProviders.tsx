@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "../contexts/AuthContext";
 import { ToastProvider } from "./common/ToastProvider";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 export default function ClientProviders({
   children,
@@ -27,7 +28,9 @@ export default function ClientProviders({
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <LazyMotion features={domAnimation}>
+            <ToastProvider>{children}</ToastProvider>
+          </LazyMotion>
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>

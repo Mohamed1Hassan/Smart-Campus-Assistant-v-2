@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   LogOut,
   Calendar,
@@ -196,14 +196,14 @@ export default function UnifiedNavbar({
           {/* Left Section: Logo & Mobile Menu */}
           <div className="flex items-center gap-3 sm:gap-4">
             {mounted && isMobile && onMenuToggle && (
-              <motion.button
+              <m.button
                 whileTap={{ scale: 0.9 }}
                 onClick={onMenuToggle}
                 className="p-2 -ml-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 aria-label="Toggle Menu"
               >
                 <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              </motion.button>
+              </m.button>
             )}
 
             <Link
@@ -278,7 +278,7 @@ export default function UnifiedNavbar({
                       {/* Submenu */}
                       <AnimatePresence>
                         {item.hasSubmenu && isSubmenuOpen && (
-                          <motion.div
+                          <m.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -300,7 +300,7 @@ export default function UnifiedNavbar({
                                 </button>
                               );
                             })}
-                          </motion.div>
+                          </m.div>
                         )}
                       </AnimatePresence>
                     </div>
@@ -322,7 +322,7 @@ export default function UnifiedNavbar({
             </div>
 
             <div className="relative group ml-1">
-              <motion.button
+              <m.button
                 whileTap={{ scale: 0.95 }}
                 onClick={handleProfileClick}
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 p-[2px] transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
@@ -343,17 +343,17 @@ export default function UnifiedNavbar({
                     </div>
                   )}
                 </div>
-              </motion.button>
+              </m.button>
             </div>
 
-            <motion.button
+            <m.button
               whileTap={{ scale: 0.9 }}
               onClick={handleLogoutClick}
               className="hidden sm:flex p-2.5 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
               title="Logout"
             >
               <LogOut className="w-5 h-5" />
-            </motion.button>
+            </m.button>
           </div>
         </div>
       </nav>
