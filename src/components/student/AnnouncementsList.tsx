@@ -36,7 +36,7 @@ const iconMap = {
 
 // Hydration-safe time formatting
 const formatTimeAgo = (date: string | Date | undefined) => {
-  if (!date || typeof window === "undefined") return "Earlier";
+  if (!date) return "Earlier";
   const d = new Date(date);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
@@ -144,8 +144,8 @@ export default function AnnouncementsList({
                       <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {announcement.title}
                       </h3>
-                      <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full">
-                        {hasMounted ? formatTimeAgo(announcement.timestamp) : "Earlier"}
+                      <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-full" suppressHydrationWarning>
+                        {formatTimeAgo(announcement.timestamp)}
                       </span>
                     </div>
                     <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed line-clamp-2">

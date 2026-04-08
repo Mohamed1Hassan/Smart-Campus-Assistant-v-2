@@ -24,16 +24,9 @@ import { useNotifications } from "../hooks/useNotifications";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
 
-// Lazy-load non-critical components
-const SchedulePreview = dynamic(() => import("../components/student/SchedulePreview"), {
-  loading: () => <CardSkeleton className="lg:col-span-2" />,
-});
-const AnnouncementsList = dynamic(() => import("../components/student/AnnouncementsList"), {
-  loading: () => <ListSkeleton className="h-full" />,
-});
-const ChatbotCard = dynamic(() => import("../components/ChatbotCard"), {
-  loading: () => <CardSkeleton />,
-});
+import SchedulePreview from "../components/student/SchedulePreview";
+import AnnouncementsList from "../components/student/AnnouncementsList";
+import ChatbotCard from "../components/ChatbotCard";
 
 // Types for dashboard data
 interface StudentStats {
@@ -552,7 +545,7 @@ export default function StudentDashboard({
   };
 
   return (
-    <DashboardLayout userName={user?.firstName} userType="student">
+    <DashboardLayout userName={initialUser?.firstName} userType="student">
       <LazyMotion features={domAnimation}>
         <div className="space-y-6 sm:space-y-8 pb-32 sm:pb-24">
         {/* Header Section - Always render for LCP (Largest Contentful Paint) */}
@@ -569,7 +562,7 @@ export default function StudentDashboard({
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-4xl">
                 Welcome back,{" "}
                 <span className="text-blue-600 dark:text-blue-400">
-                  {initialUser?.firstName || user?.firstName || "Student"}
+                  {initialUser?.firstName || "Student"}
                 </span>{" "}
                 👋
               </h1>
@@ -643,50 +636,43 @@ export default function StudentDashboard({
         )}
 
         {/* Main Content Grid */}
-        {statsLoading && !stats ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
-            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column: Schedule */}
-            <div className="lg:col-span-2 space-y-6">
-              <SchedulePreview classes={todaySchedule} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column: Schedule */}
+          <div className="lg:col-span-2 space-y-6">
+            <SchedulePreview classes={todaySchedule} loading={scheduleLoading} />
 
-              {/* Quick Actions (Mobile Only) */}
-              <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
-                <button
-                  onClick={() => router.push("/dashboard/student/ai-assistant")}
-                  className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-3xl text-white shadow-lg shadow-indigo-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
-                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
-                    <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
-                  </div>
-                  <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Ask AI</span>
-                </button>
-                
-                <button
-                  onClick={() => router.push("/dashboard/student/schedule")}
-                  className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-400 rounded-3xl text-white shadow-lg shadow-blue-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
-                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
-                    <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
-                  </div>
-                  <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Right Column: Announcements */}
-            <div className="space-y-6">
-              <ChatbotCard href="/dashboard/student/ai-assistant" />
-              <AnnouncementsList announcements={announcements} />
+            {/* Quick Actions (Mobile Only) */}
+            <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
+              <button
+                onClick={() => router.push("/dashboard/student/ai-assistant")}
+                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-3xl text-white shadow-lg shadow-indigo-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Ask AI</span>
+              </button>
+              
+              <button
+                onClick={() => router.push("/dashboard/student/schedule")}
+                className="relative overflow-hidden p-4 sm:p-5 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-400 rounded-3xl text-white shadow-lg shadow-blue-500/25 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all w-full border border-white/10"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10" />
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner group-hover:scale-110 transition-transform">
+                  <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+                <span className="font-bold text-sm sm:text-base tracking-wide whitespace-nowrap">Schedule</span>
+              </button>
             </div>
           </div>
-        )}
+
+          {/* Right Column: Announcements */}
+          <div className="space-y-6">
+            <ChatbotCard href="/dashboard/student/ai-assistant" />
+            <AnnouncementsList announcements={announcements} loading={notificationsLoading} />
+          </div>
+        </div>
       </div>
       {/* AI Assistant Button */}
       <AIAssistantButton userType="student" />

@@ -246,15 +246,16 @@ export default function SchedulePreview({
                 Today&apos;s Lectures
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-bold whitespace-nowrap">
-                  {hasMounted ? todayDate.english : "..."}
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-bold whitespace-nowrap" suppressHydrationWarning>
+                  {todayDate.english}
                 </p>
                 <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
                 <p
                   className="text-xs text-gray-500 dark:text-gray-500 font-arabic whitespace-nowrap"
                   dir="rtl"
+                  suppressHydrationWarning
                 >
-                  {hasMounted ? todayDate.arabic : "..."}
+                  {todayDate.arabic}
                 </p>
               </div>
             </div>
@@ -363,7 +364,7 @@ export default function SchedulePreview({
               </div>
               <div className="text-right">
                 <p className="text-xs text-blue-100 mb-0.5">Starts in</p>
-                <p className="font-mono font-bold text-xl">{hasMounted ? timeUntilNext : "..."}</p>
+                <p className="font-mono font-bold text-xl" suppressHydrationWarning>{timeUntilNext}</p>
               </div>
             </div>
           </div>

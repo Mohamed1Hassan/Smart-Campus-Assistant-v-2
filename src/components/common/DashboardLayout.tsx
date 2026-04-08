@@ -28,7 +28,7 @@ export default function DashboardLayout({
     setHasMounted(true);
   }, []);
 
-  const displayUserName = hasMounted ? (userName || "User") : "User";
+  const displayUserName = userName || "User";
 
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
