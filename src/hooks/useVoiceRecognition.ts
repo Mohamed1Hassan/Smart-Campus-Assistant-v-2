@@ -36,8 +36,7 @@ export const useVoiceRecognition = (onResult: (text: string) => void) => {
   const startListening = useCallback(() => {
     // Check for browser support
     const SpeechRecognition = 
-      (window as unknown as { SpeechRecognition: unknown; webkitSpeechRecognition: unknown }).SpeechRecognition || 
-      (window as unknown as { SpeechRecognition: unknown; webkitSpeechRecognition: unknown }).webkitSpeechRecognition;
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     if (!SpeechRecognition) {
       setError("Speech recognition is not supported in this browser.");
