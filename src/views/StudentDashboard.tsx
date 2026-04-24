@@ -52,7 +52,7 @@ interface RawScheduleItem {
   id: number;
   courseName: string;
   courseCode: string;
-  dayOfWeek: string;
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
   room: string;
