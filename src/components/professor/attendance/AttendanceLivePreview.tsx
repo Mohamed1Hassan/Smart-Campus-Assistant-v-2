@@ -23,7 +23,7 @@ interface Course {
 
 interface AttendanceLivePreviewProps {
   formData: AttendanceFormData;
-  selectedCourse: Course | null;
+  selectedCourse: Course | null | undefined;
 }
 
 const AttendanceLivePreview: React.FC<AttendanceLivePreviewProps> = ({
