@@ -4,7 +4,7 @@ import React from "react";
 import { Check, Loader2 } from "lucide-react";
 
 interface EditingUser {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   universityId: string;
@@ -16,7 +16,7 @@ interface UserEditModalProps {
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   editingUser: EditingUser | null;
-  setEditingUser: (user: EditingUser) => void;
+  setEditingUser: React.Dispatch<React.SetStateAction<any>>;
   editPassword: string;
   setEditPassword: (pass: string) => void;
 }

@@ -7,12 +7,12 @@ interface NewUser {
   firstName: string;
   lastName: string;
   email: string;
-  password?: string;
+  password: string;
   universityId: string;
   role: string;
-  major?: string;
-  year?: string;
-  department?: string;
+  major: string;
+  year: string;
+  department: string;
 }
 
 interface UserAddModalProps {
@@ -21,7 +21,7 @@ interface UserAddModalProps {
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   newUser: NewUser;
-  setNewUser: (user: NewUser) => void;
+  setNewUser: React.Dispatch<React.SetStateAction<NewUser>>;
 }
 
 export default function UserAddModal({
