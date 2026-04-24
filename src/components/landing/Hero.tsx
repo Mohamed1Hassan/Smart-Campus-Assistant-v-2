@@ -80,7 +80,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-400/70 max-w-lg mx-auto mb-12 leading-relaxed"
+              className="text-lg md:text-xl text-gray-300 max-w-lg mx-auto mb-12 leading-relaxed"
             >
               A state-of-the-art AI ecosystem designed for Thebes Academy. 
               Seamless attendance and intelligent assistance.
@@ -100,7 +100,10 @@ export const Hero = () => {
                 </div>
               </Link>
               
-              <button className="w-full sm:w-auto px-10 py-5 bg-white/[0.03] backdrop-blur-3xl text-white border border-white/10 rounded-2xl font-black text-lg hover:bg-white/[0.08] transition-all hover:border-white/20">
+              <button 
+                aria-label="Watch Platform Demo"
+                className="w-full sm:w-auto px-10 py-5 bg-white/[0.03] backdrop-blur-3xl text-white border border-white/10 rounded-2xl font-black text-lg hover:bg-white/[0.08] transition-all hover:border-white/20"
+              >
                 Watch Demo
               </button>
             </motion.div>

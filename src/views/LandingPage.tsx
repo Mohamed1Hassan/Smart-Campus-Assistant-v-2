@@ -43,7 +43,7 @@ const Navbar = () => {
           <div className="relative">
             <div className="absolute -inset-2 bg-blue-600/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-[10deg] transition-transform">
-               <Image src="/icon.png" alt="Logo" width={22} height={22} className="brightness-200" priority />
+               <Image src="/icon.png" alt="Logo" width={40} height={40} className="brightness-200" priority />
             </div>
           </div>
           <span className="text-white font-black tracking-tighter text-xl uppercase italic group-hover:text-blue-400 transition-colors">Smart Campus</span>
@@ -72,6 +72,7 @@ const Navbar = () => {
             </button>
           </Link>
           <button 
+            aria-label="Toggle Mobile Menu"
             className="md:hidden text-white p-2 bg-white/5 rounded-lg border border-white/10"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -113,7 +114,7 @@ const PartnersTicker = () => (
     <div className="flex gap-20 animate-infinite-scroll whitespace-nowrap opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
       {/* Mock Partners */}
       {[1,2,3,4,5,6,1,2,3,4,5,6].map((p, i) => (
-        <div key={i} className="text-white text-2xl font-black italic tracking-tighter opacity-70">
+        <div key={i} className="text-white text-2xl font-black italic tracking-tighter opacity-100">
           {i % 2 === 0 ? "THEBES ACADEMY" : "TECH INSTITUTE"}
         </div>
       ))}
@@ -144,7 +145,10 @@ const CTASection = () => (
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/login">
-              <button className="group px-12 py-5 bg-white text-blue-600 rounded-2xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-2">
+              <button 
+                aria-label="Get Started with Smart Campus"
+                className="group px-12 py-5 bg-white text-blue-600 rounded-2xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-2"
+              >
                 Get Started Now <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
@@ -275,7 +279,7 @@ export default function LandingPage() {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <Image src="/icon.png" alt="Logo" width={22} height={22} className="brightness-200" />
+                  <Image src="/icon.png" alt="Logo" width={40} height={40} className="brightness-200" />
                 </div>
                 <span className="text-white font-black tracking-tighter text-2xl uppercase italic">Smart Campus</span>
               </div>
