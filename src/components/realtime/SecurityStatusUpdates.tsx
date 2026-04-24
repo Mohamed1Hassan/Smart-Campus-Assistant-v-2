@@ -162,7 +162,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:status_update' },
-        (payload: { payload?: SocketSecurityData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || (!data.type && !data.message)) return;
           const status: SecurityStatus = {
@@ -181,7 +181,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:location_update' },
-        (payload: { payload?: SocketSecurityData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -200,7 +200,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:device_update' },
-        (payload: { payload?: SocketSecurityData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -219,7 +219,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:fraud_alert' },
-        (payload: { payload?: SocketFraudData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || !data.description) return;
           const status: SecurityStatus = {

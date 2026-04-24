@@ -126,7 +126,7 @@ export const ConnectionStatusIndicator: React.FC<
       .on(
         'broadcast',
         { event: 'system-status:health_check' },
-        (payload: { payload?: { latency?: number; serverStatus?: string } } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data) return;
           setConnectionStatus((prev) => ({

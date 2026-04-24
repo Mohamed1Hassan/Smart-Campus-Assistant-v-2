@@ -153,7 +153,7 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification' },
-        (payload: { payload?: SocketNotificationData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (data && (data.title || data.message)) {
             handleNotification(data, data.type || "SYSTEM");
@@ -163,7 +163,7 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification:security' },
-        (payload: { payload?: SocketNotificationData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (data && (data.title || data.message)) {
             handleNotification(data, "SECURITY");
@@ -173,7 +173,7 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification:attendance' },
-        (payload: { payload?: SocketNotificationData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (data && (data.title || data.message)) {
             handleNotification(data, "ATTENDANCE");
@@ -183,7 +183,7 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification:system' },
-        (payload: { payload?: SocketNotificationData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (data && (data.title || data.message)) {
             handleNotification(data, "SYSTEM");
@@ -193,7 +193,7 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
       .on(
         'broadcast',
         { event: 'notification:emergency' },
-        (payload: { payload?: SocketNotificationData } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (data && (data.title || data.message)) {
             handleNotification(data, "EMERGENCY");

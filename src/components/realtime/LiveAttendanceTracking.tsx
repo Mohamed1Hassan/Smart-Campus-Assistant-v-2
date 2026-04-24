@@ -153,7 +153,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:marked` },
-        (payload: { payload?: AttendanceRecord } | unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || !data.studentName) return;
           setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
@@ -169,7 +169,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:fraud_detected` },
-        (payload: unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || !data.studentName) return;
           const alert = {
@@ -185,7 +185,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:started` },
-        (payload: unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || !data.title) return;
           addRecentActivity({
@@ -198,7 +198,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:ended` },
-        (payload: unknown) => {
+        (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
           const data = payload?.payload || payload;
           if (!data || !data.title) return;
           addRecentActivity({
