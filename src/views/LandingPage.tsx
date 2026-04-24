@@ -43,7 +43,7 @@ const Navbar = () => {
           <div className="relative">
             <div className="absolute -inset-2 bg-blue-600/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-[10deg] transition-transform">
-               <Image src="/icon.png" alt="Logo" width={22} height={22} className="brightness-200" />
+               <Image src="/icon.png" alt="Logo" width={22} height={22} className="brightness-200" priority />
             </div>
           </div>
           <span className="text-white font-black tracking-tighter text-xl uppercase italic group-hover:text-blue-400 transition-colors">Smart Campus</span>
@@ -106,13 +106,14 @@ const Navbar = () => {
 
 const PartnersTicker = () => (
   <div className="py-12 bg-[#020202] border-y border-white/5 overflow-hidden">
+    <h2 className="sr-only">Our Partners and Institutions</h2>
     <div className="container mx-auto px-6 mb-8 text-center">
-      <span className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">Trusted by Leading Institutions</span>
+      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Trusted by Leading Institutions</span>
     </div>
     <div className="flex gap-20 animate-infinite-scroll whitespace-nowrap opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
       {/* Mock Partners */}
       {[1,2,3,4,5,6,1,2,3,4,5,6].map((p, i) => (
-        <div key={i} className="text-white text-2xl font-black italic tracking-tighter opacity-50">
+        <div key={i} className="text-white text-2xl font-black italic tracking-tighter opacity-70">
           {i % 2 === 0 ? "THEBES ACADEMY" : "TECH INSTITUTE"}
         </div>
       ))}
@@ -190,7 +191,7 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <div className="h-full w-full rounded-[3.3rem] bg-[#050505]/80 flex flex-col items-center justify-center relative overflow-hidden">
                   {/* Animated Background Grid */}
-                  <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] " />
+                  <div className="absolute inset-0 opacity-[0.03] bg-blue-500/5" />
                   
                   <motion.div
                     animate={{ rotate: 360 }}
@@ -253,8 +254,8 @@ export default function LandingPage() {
                     <div className={`w-12 h-12 bg-${item.color}-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                       <item.icon className={`text-${item.color}-400 w-6 h-6`} />
                     </div>
-                    <h4 className="text-white text-xl font-bold mb-3">{item.title}</h4>
-                    <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                    <h3 className="text-white text-xl font-bold mb-3">{item.title}</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
@@ -274,18 +275,18 @@ export default function LandingPage() {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <Image src="/icon.png" alt="Logo" width={24} height={24} className="brightness-200" />
+                  <Image src="/icon.png" alt="Logo" width={22} height={22} className="brightness-200" />
                 </div>
                 <span className="text-white font-black tracking-tighter text-2xl uppercase italic">Smart Campus</span>
               </div>
-              <p className="text-gray-500 max-w-sm leading-relaxed font-medium">
+              <p className="text-gray-400 max-w-sm leading-relaxed font-medium">
                 Pioneering the future of educational technology with AI-driven attendance and real-time biometric security.
               </p>
             </div>
             
             <div>
-              <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">Platform</h4>
-              <ul className="flex flex-col gap-4 text-gray-500 font-medium">
+              <h3 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">Platform</h3>
+              <ul className="flex flex-col gap-4 text-gray-400 font-medium">
                 <li><a href="#features" className="hover:text-blue-400 transition-colors">Features</a></li>
                 <li><a href="/login" className="hover:text-blue-400 transition-colors">Student Portal</a></li>
                 <li><a href="/login" className="hover:text-blue-400 transition-colors">Professor Dashboard</a></li>
@@ -293,8 +294,8 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">Support</h4>
-              <ul className="flex flex-col gap-4 text-gray-500 font-medium">
+              <h3 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">Support</h3>
+              <ul className="flex flex-col gap-4 text-gray-400 font-medium">
                 <li><a href="#" className="hover:text-blue-400 transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-blue-400 transition-colors">API Docs</a></li>
                 <li><a href="#" className="hover:text-blue-400 transition-colors">Contact Support</a></li>
@@ -302,11 +303,11 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-12 border-t border-white/5 flex flex-col md:row items-center justify-between gap-6">
-            <p className="text-gray-600 text-xs font-bold tracking-widest uppercase">
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="text-gray-400 text-xs font-bold tracking-widest uppercase">
               © {new Date().getFullYear()} Thebes Academy. Industrial Design for Education.
             </p>
-            <div className="flex items-center gap-8 text-gray-600 text-xs font-bold tracking-widest uppercase">
+            <div className="flex items-center gap-8 text-gray-400 text-xs font-bold tracking-widest uppercase">
                <a href="#" className="hover:text-white transition-colors">Privacy</a>
                <a href="#" className="hover:text-white transition-colors">Terms</a>
             </div>

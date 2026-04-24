@@ -12,7 +12,6 @@ export const Hero = () => {
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[140px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 blur-[140px] rounded-full animate-pulse delay-700" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
@@ -41,8 +40,8 @@ export const Hero = () => {
               <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="text-blue-400 w-7 h-7" />
               </div>
-              <h3 className="text-white text-xl font-bold mb-3">Biometric Shield</h3>
-              <p className="text-gray-400 text-sm leading-relaxed opacity-80">Advanced Face ID verification for guaranteed attendance integrity.</p>
+              <h2 className="text-white text-xl font-bold mb-3">Biometric Shield</h2>
+              <p className="text-gray-400 text-sm leading-relaxed opacity-90">Advanced Face ID verification for guaranteed attendance integrity.</p>
             </motion.div>
           </div>
 
@@ -66,9 +65,9 @@ export const Hero = () => {
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
               className="text-6xl md:text-[88px] font-black tracking-tighter text-white mb-10 leading-[1.1] drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)]"
             >
               Elevate Your <br />
@@ -130,8 +129,8 @@ export const Hero = () => {
               <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Cpu className="text-purple-400 w-7 h-7" />
               </div>
-              <h3 className="text-white text-xl font-bold mb-3">AI Coordinator</h3>
-              <p className="text-gray-400 text-sm leading-relaxed opacity-80">24/7 intelligent assistant helping students manage academic life.</p>
+              <h2 className="text-white text-xl font-bold mb-3">AI Coordinator</h2>
+              <p className="text-gray-400 text-sm leading-relaxed opacity-90">24/7 intelligent assistant helping students manage academic life.</p>
             </motion.div>
 
             <motion.div
@@ -153,8 +152,8 @@ export const Hero = () => {
               <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="text-emerald-400 w-7 h-7" />
               </div>
-              <h3 className="text-white text-xl font-bold mb-3">Instant Sync</h3>
-              <p className="text-gray-400 text-sm leading-relaxed opacity-80">Real-time attendance and grade updates powered by Supabase.</p>
+              <h2 className="text-white text-xl font-bold mb-3">Instant Sync</h2>
+              <p className="text-gray-400 text-sm leading-relaxed opacity-90">Real-time attendance and grade updates powered by Supabase.</p>
             </motion.div>
           </div>
         </div>

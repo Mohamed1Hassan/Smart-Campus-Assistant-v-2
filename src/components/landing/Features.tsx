@@ -28,7 +28,7 @@ export const Features = () => {
             className="text-4xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter"
           >
             Smarter Campus. <br />
-            <span className="text-gray-700">Better Learning.</span>
+            <span className="text-gray-400">Better Learning.</span>
           </motion.h2>
         </div>
 

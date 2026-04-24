@@ -13,6 +13,7 @@ const stats = [
 export const LandingStats = () => {
   return (
     <section className="py-20 bg-[#020202] relative overflow-hidden">
+      <h2 className="sr-only">Platform Statistics</h2>
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {stats.map((stat, i) => (
@@ -26,7 +27,7 @@ export const LandingStats = () => {
               <div className={`text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r ${stat.color} mb-2 tracking-tighter`}>
                 {stat.value}{stat.suffix}
               </div>
-              <div className="text-gray-500 font-medium text-xs md:text-sm uppercase tracking-[0.2em]">
+              <div className="text-gray-400 font-medium text-xs md:text-sm uppercase tracking-[0.2em]">
                 {stat.label}
               </div>
             </motion.div>
