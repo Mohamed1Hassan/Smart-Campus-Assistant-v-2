@@ -220,15 +220,17 @@ export default function ProfessorExams() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleNewAlert = (payload: any) => {
+      const data = payload?.payload || payload;
       if (
-        payload.category === "EXAM" &&
-        payload.metadata?.examId === activeProctorExam
+        data &&
+        data.category === "EXAM" &&
+        data.metadata?.examId === activeProctorExam
       ) {
         const newAlert: SecurityAlert = {
-          id: payload.id.toString(),
-          studentName: payload.metadata.studentName,
-          type: payload.metadata.violationType,
-          timestamp: new Date(payload.createdAt),
+          id: data.id.toString(),
+          studentName: data.metadata.studentName,
+          type: data.metadata.violationType,
+          timestamp: new Date(data.createdAt),
           status: "OPEN",
         };
         setLocalAlerts((prev) => [newAlert, ...prev].slice(0, 50));
