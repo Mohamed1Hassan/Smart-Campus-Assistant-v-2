@@ -38,15 +38,7 @@ interface AttendanceRecord {
 }
 
 
-interface SocketFraudData {
-  studentName: string;
-  severity: string;
-  description?: string;
-}
 
-interface SocketSessionData {
-  title: string;
-}
 
 
 

@@ -36,19 +36,6 @@ interface Notification {
   courseId?: number;
 }
 
-interface SocketNotificationData {
-  id?: string;
-  type?: Notification["type"];
-  priority?: Notification["priority"];
-  title?: string;
-  message?: string;
-  data?: Record<string, unknown>;
-  timestamp?: number | string;
-  userId?: string;
-  sessionId?: string;
-  courseId?: number;
-}
-
 interface NotificationManagerProps {
   userId?: string;
   sessionId?: string;

@@ -35,21 +35,6 @@ interface SecurityStatus {
   actionRequired?: boolean;
 }
 
-interface SocketSecurityData {
-  id?: string;
-  type?: SecurityStatus["type"];
-  status?: SecurityStatus["status"];
-  message?: string;
-  timestamp?: number | string;
-  details?: Record<string, unknown>;
-  actionRequired?: boolean;
-  isSecure?: boolean;
-}
-
-interface SocketFraudData {
-  description?: string;
-}
-
 interface SecurityMetrics {
   overallScore: number;
   locationSecurity: number;

@@ -52,12 +52,21 @@ interface RawScheduleItem {
   id: number;
   courseName: string;
   courseCode: string;
+  dayOfWeek: string;
   startTime: string;
   endTime: string;
   room: string;
   professorName?: string;
   professorFirstName?: string;
   professorLastName?: string;
+  course?: {
+    courseName: string;
+    courseCode: string;
+  };
+  professor?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface RawAttendanceSession {
