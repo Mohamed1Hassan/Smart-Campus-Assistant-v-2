@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Login from "../views/Login";
+import LandingPage from "../views/LandingPage";
 import { JWTUtils } from "@/utils/jwt";
 
 export default async function Home() {
@@ -15,10 +15,10 @@ export default async function Home() {
       redirect("/dashboard");
     } catch {
       // Token is expired or invalid, don't redirect
-      console.log("[Home] Token validation failed, showing login page");
+      console.log("[Home] Token validation failed, showing landing page");
     }
   }
 
-  // Otherwise, show the original Login page design
-  return <Login />;
+  // Show the premium Landing Page
+  return <LandingPage />;
 }

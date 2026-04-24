@@ -17,7 +17,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { apiClient } from "@/services/api";

@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { JWTUtils } from "../utils/jwt";
 import prisma from "@/lib/db";
 import { UserService, UpdateProfileRequest } from "../services/user.service";
@@ -40,12 +41,9 @@ export async function getUserProfileAction() {
 
     // Parse/stringify to ensure Date objects don't crash Server Actions -> Client Component serialization
     return { success: true, data: JSON.parse(JSON.stringify(profile)) };
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Failed to retrieve user profile";
-    return { success: false, error: errorMessage };
+  } catch {
+    console.error("[user.actions] getUserProfileAction failed, redirecting to login");
+    redirect("/login");
   }
 }
 
@@ -54,12 +52,9 @@ export async function getStudentStatsAction() {
     const localUserId = await getLocalUserId();
     const stats = await UserService.getStudentStats(localUserId);
     return { success: true, data: JSON.parse(JSON.stringify(stats)) };
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Failed to retrieve student statistics";
-    return { success: false, error: errorMessage };
+  } catch {
+    console.error("[user.actions] getStudentStatsAction failed, redirecting to login");
+    redirect("/login");
   }
 }
 

@@ -187,13 +187,10 @@ export default function SchedulePreview({
 }: SchedulePreviewProps) {
   const router = useRouter();
   console.log("SchedulePreview classes:", classes);
-  const [hasMounted, setHasMounted] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
 
   // Update current time every minute
   useEffect(() => {
-    setHasMounted(true);
-    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // Update every minute

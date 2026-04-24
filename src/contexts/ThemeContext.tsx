@@ -15,6 +15,8 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+  triggerTransition: (x: number, y: number) => void;
+  transitionData: { x: number; y: number; isTransitioning: boolean; targetTheme: Theme } | null;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -42,6 +44,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // - Then, after mount on the client, read the real value
   //   from localStorage and update state.
   const [theme, setThemeState] = useState<Theme>("light");
+  const [transitionData, setTransitionData] = useState<{ 
+    x: number; 
+    y: number; 
+    isTransitioning: boolean;
+    targetTheme: Theme;
+  } | null>(null);
 
   // After the component mounts on the client, read the stored theme once
   // and update state. This avoids hydration mismatches.
@@ -75,41 +83,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.warn("Failed to save theme to localStorage:", error);
     }
-
-    // Debug log in development
-    if (process.env.NODE_ENV === "development") {
-      console.log(`[ThemeContext] Theme changed to: ${theme}`);
-    }
   }, [theme]);
 
   // Sync theme from localStorage periodically to catch mismatches
-  // This ensures theme is restored correctly after leaving Login page
   useEffect(() => {
     const checkAndSyncTheme = () => {
       const storedTheme = localStorage.getItem("theme") as Theme | null;
       const hasDarkClass = document.documentElement.classList.contains("dark");
 
-      // Only sync if there's a clear mismatch
       if (storedTheme === "dark" && !hasDarkClass && theme !== "dark") {
-        // Stored theme is dark but DOM and state don't match
         setThemeState("dark");
       } else if (storedTheme === "light" && hasDarkClass && theme !== "light") {
-        // Stored theme is light but DOM and state don't match
         setThemeState("light");
       }
     };
 
-    // Check periodically (every 2 seconds) to catch theme mismatches
-    // This is especially useful after navigation from Login page
     const interval = setInterval(checkAndSyncTheme, 2000);
-
-    // Also check immediately on mount
     checkAndSyncTheme();
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [theme]); // Re-run when theme changes
+    return () => clearInterval(interval);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -119,12 +111,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  const triggerTransition = (x: number, y: number) => {
+    const newTargetTheme = theme === "dark" ? "light" : "dark";
+    setTransitionData({ x, y, isTransitioning: true, targetTheme: newTargetTheme });
+    
+    // Switch theme exactly when the coverage is complete
+    setTimeout(() => {
+      setThemeState(newTargetTheme);
+    }, 300);
+
+    // Immediate cleanup to trigger the exit animation
+    setTimeout(() => {
+      setTransitionData(null);
+    }, 600);
+  };
+
   return (
     <ThemeContext.Provider
       value={{
         theme,
         setTheme,
         toggleTheme,
+        triggerTransition,
+        transitionData,
       }}
     >
       {children}

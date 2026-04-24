@@ -28,7 +28,7 @@ interface CourseModalProps {
     capacity: number;
     coverImage: string;
   };
-  setFormData: (data: any) => void;
+  setFormData: (data: CourseModalProps["formData"]) => void;
   professors: Professor[];
   isSubmitting: boolean;
   handleSubmit: (e: React.FormEvent) => void;
@@ -215,7 +215,7 @@ export default function CourseModal({
                   className="w-full px-5 py-4 rounded-[1.25rem] border border-gray-100 bg-white focus:border-blue-500/50 focus:ring-[6px] focus:ring-blue-500/5 outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer"
                 >
                   <option value="">Choose Professor...</option>
-                  {professors.map((p: Professor) => (
+                  {professors.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.firstName} {p.lastName}
                     </option>

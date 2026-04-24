@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import StudentCourses from "../../../../views/StudentCourses";
 import { getStudentCoursesAction } from "../../../../actions/course.actions";
 import { getCourseImage } from "../../../../utils/courseImages";

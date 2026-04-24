@@ -110,6 +110,7 @@ export const ConnectionStatusIndicator: React.FC<
     // Check if realtime is globally disabled/failed
     const status = getRealtimeStatus();
     if (status.isDisabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConnectionStatus((prev) => ({
         ...prev,
         status: "error",
@@ -125,7 +126,7 @@ export const ConnectionStatusIndicator: React.FC<
       .on(
         'broadcast',
         { event: 'system-status:health_check' },
-        (payload: any) => {
+        (payload: { payload?: { latency?: number; serverStatus?: string } } | unknown) => {
           const data = payload?.payload || payload;
           if (!data) return;
           setConnectionStatus((prev) => ({

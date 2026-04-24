@@ -211,13 +211,13 @@ export default function ProfessorAttendanceCreate() {
     [],
   );
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
       setFormData((prev) => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof typeof prev] as object),
+          ...(prev[parent as keyof typeof prev] as Record<string, unknown>),
           [child]: value,
         },
       }));

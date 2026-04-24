@@ -194,6 +194,8 @@ model AttendanceRecord {
   @@index([sessionId])
   @@index([status])
   @@index([studentId, courseId])
+  @@index([studentId, markedAt])
+  @@index([courseId, markedAt, status])
   @@unique([studentId, sessionId])
   @@map("attendance_records")
 }
@@ -253,6 +255,7 @@ model Notification {
   @@index([isRead])
   @@index([userId])
   @@index([userId, isRead])
+  @@index([userId, createdAt, isRead])
   @@index([createdAt])
   @@index([category])
   @@map("notifications")
@@ -363,6 +366,7 @@ model FraudAlert {
   @@index([severity])
   @@index([alertType])
   @@index([createdAt])
+  @@index([studentId, isResolved, severity])
   @@map("fraud_alerts")
 }
 
@@ -493,6 +497,7 @@ model AttendanceSession {
   @@index([courseId])
   @@index([professorId])
   @@index([status])
+  @@index([courseId, isActive, startTime])
   @@map("attendance_sessions")
 }
 

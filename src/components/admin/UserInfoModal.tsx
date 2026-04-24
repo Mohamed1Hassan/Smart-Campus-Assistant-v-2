@@ -3,17 +3,43 @@
 import React from "react";
 import { BookOpen, Shield, Archive, Plus, Search, X, Loader2, ShieldOff, Check } from "lucide-react";
 
+interface ViewingUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  universityId: string;
+  email: string;
+  major?: string;
+  year?: number;
+  department?: string;
+  courses?: Array<{
+    id: string;
+    courseCode: string;
+    courseName: string;
+    studentCount: number;
+    capacity: number;
+    isArchived: boolean;
+  }>;
+}
+
+interface Course {
+  id: number;
+  courseCode: string;
+  courseName: string;
+}
+
 interface UserInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  viewingUser: any;
+  viewingUser: ViewingUser | null;
   showArchivedCourses: boolean;
   setShowArchivedCourses: (show: boolean) => void;
   isAssigningCourse: boolean;
   setIsAssigningCourse: (assigning: boolean) => void;
   courseSearchTerm: string;
   setCourseSearchTerm: (term: string) => void;
-  allCourses: any[];
+  allCourses: Course[];
   selectedCourseId: string;
   setSelectedCourseId: (id: string) => void;
   handleAssignCourse: () => void;
@@ -151,7 +177,7 @@ export default function UserInfoModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto p-1">
                     {allCourses
                       .filter(ac => 
-                        !viewingUser.courses?.some((vc: any) => vc.id === String(ac.id)) &&
+                        !viewingUser.courses?.some((vc) => vc.id === String(ac.id)) &&
                         (ac.courseCode.toLowerCase().includes(courseSearchTerm.toLowerCase()) || 
                          ac.courseName.toLowerCase().includes(courseSearchTerm.toLowerCase()))
                       )
@@ -194,8 +220,8 @@ export default function UserInfoModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {viewingUser.courses && viewingUser.courses.length > 0 ? (
                   viewingUser.courses
-                    .filter((c: any) => c.isArchived === showArchivedCourses)
-                    .map((course: any) => (
+                    .filter((c) => c.isArchived === showArchivedCourses)
+                    .map((course) => (
                     <div key={course.id} className="group bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative overflow-hidden">
                       <div className="flex items-center justify-between mb-4">
                         <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-lg uppercase tracking-wider">

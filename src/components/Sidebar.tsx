@@ -7,7 +7,6 @@ import {
   Bot,
   User,
   BookOpen,
-  Radio,
   LogOut,
   Layout
 } from "lucide-react";

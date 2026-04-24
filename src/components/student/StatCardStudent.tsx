@@ -6,7 +6,6 @@ interface StatCardStudentProps {
   value: string | number;
   icon: LucideIcon;
   color: string;
-  delay?: number;
   subtitle?: string;
 }
 
@@ -15,7 +14,6 @@ export default function StatCardStudent({
   value,
   icon: Icon,
   color,
-  delay = 0,
   subtitle,
 }: StatCardStudentProps) {
   return (

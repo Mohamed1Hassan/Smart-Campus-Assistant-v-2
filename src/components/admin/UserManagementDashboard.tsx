@@ -598,15 +598,3 @@ export default function UserManagementDashboard() {
   );
 }
 
-function InfoChip({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="text-[8px] uppercase font-black text-gray-400 mb-1.5 tracking-widest leading-none">
-        {label}
-      </div>
-      <div className="text-sm font-bold text-gray-900 leading-tight truncate">
-        {value}
-      </div>
-    </div>
-  );
-}

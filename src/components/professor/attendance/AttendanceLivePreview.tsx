@@ -1,9 +1,29 @@
 import React from "react";
 import { Clock, MapPin, CheckCircle, Camera, Smartphone, Shield } from "lucide-react";
 
+interface AttendanceFormData {
+  title: string;
+  startTime: string;
+  duration: number;
+  location: {
+    name: string;
+  };
+  security: {
+    isLocationRequired: boolean;
+    isPhotoRequired: boolean;
+    isDeviceCheckRequired: boolean;
+    fraudDetectionEnabled: boolean;
+  };
+}
+
+interface Course {
+  courseCode: string;
+  courseName: string;
+}
+
 interface AttendanceLivePreviewProps {
-  formData: any;
-  selectedCourse: any;
+  formData: AttendanceFormData;
+  selectedCourse: Course | null;
 }
 
 const AttendanceLivePreview: React.FC<AttendanceLivePreviewProps> = ({

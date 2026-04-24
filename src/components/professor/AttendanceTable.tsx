@@ -262,4 +262,6 @@ const AttendanceTable = memo(({
   );
 });
 
+AttendanceTable.displayName = "AttendanceTable";
+
 export default AttendanceTable;

@@ -2,9 +2,17 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Camera, Smartphone, Shield } from "lucide-react";
 
+interface SecurityFormData {
+  security: {
+    isPhotoRequired: boolean;
+    isDeviceCheckRequired: boolean;
+    fraudDetectionEnabled: boolean;
+  };
+}
+
 interface SecurityStepProps {
-  formData: any;
-  handleInputChange: (field: string, value: any) => void;
+  formData: SecurityFormData;
+  handleInputChange: (field: string, value: boolean) => void;
 }
 
 const SecurityStep: React.FC<SecurityStepProps> = ({

@@ -87,13 +87,6 @@ export default function StudentCourses({ initialCourses = [] }: StudentCoursesPr
       course.code.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.03 }, // Much faster
-    },
-  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 8 },

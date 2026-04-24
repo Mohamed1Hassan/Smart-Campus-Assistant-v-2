@@ -1,10 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+interface ScheduleFormData {
+  startTime: string;
+  duration: number;
+}
+
+interface FormErrors {
+  startTime?: string;
+}
+
 interface ScheduleStepProps {
-  formData: any;
-  errors: any;
-  handleInputChange: (field: string, value: any) => void;
+  formData: ScheduleFormData;
+  errors: FormErrors;
+  handleInputChange: (field: string, value: string | number) => void;
   handleQuickTimeSelect: (type: "now" | "today" | "tomorrow") => void;
 }
 

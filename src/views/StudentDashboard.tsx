@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { m, LazyMotion, domAnimation, Variants } from "framer-motion";
+import { LazyMotion, domAnimation } from "framer-motion";
 import {
   GraduationCap,
   BookOpen,
@@ -14,11 +14,11 @@ import {
   Calendar,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-const AIAssistantButton = dynamic(() => import("../components/common/AIAssistantButton").then(mod => mod.AIAssistantButton), { ssr: false });
 import dynamic from "next/dynamic";
+const AIAssistantButton = dynamic(() => import("../components/common/AIAssistantButton").then(mod => mod.AIAssistantButton), { ssr: false });
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCardStudent from "../components/student/StatCardStudent";
-import { StatsSkeleton, CardSkeleton, ListSkeleton } from "../components/common/LoadingSkeleton";
+import { StatsSkeleton } from "../components/common/LoadingSkeleton";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../hooks/useNotifications";
 import { useToast } from "../components/common/ToastProvider";
@@ -60,12 +60,6 @@ interface RawScheduleItem {
   professorLastName?: string;
 }
 
-// Hydration-safe Date formatting
-const formatDateSafe = (date: string | Date) => {
-  if (typeof window === "undefined") return "";
-  return new Date(date).toLocaleDateString();
-};
-
 interface RawAttendanceSession {
   id: number;
   sessionId?: number;
@@ -75,6 +69,10 @@ interface RawAttendanceSession {
   location?: { name: string };
   isActive: boolean;
   status: string;
+  course?: {
+    courseName: string;
+    courseCode: string;
+  };
 }
 
 interface NotificationItem {
@@ -83,88 +81,15 @@ interface NotificationItem {
   type: string;
   title: string;
   message: string;
-  createdAt: Date;
+  createdAt: Date | string;
 }
-
-// Helper to format time ago
-const formatTimeAgo = (date: string | Date) => {
-  const d = new Date(date);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
-
-  if (seconds < 60) return "Just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return d.toLocaleDateString();
-};
-
-// Helper to map notification type/category to announcement icon/type
-const mapNotificationToAnnouncement = (
-  notification: NotificationItem,
-): Announcement => {
-  let icon: Announcement["icon"] = "megaphone";
-  let type: Announcement["type"] = "info";
-
-  switch (notification.category) {
-    case "ANNOUNCEMENT":
-      icon = "megaphone";
-      break;
-    case "SYSTEM":
-      icon = "building";
-      break;
-    case "COURSE":
-      icon = "book";
-      break;
-    case "EXAM":
-    case "DEADLINE":
-      icon = "calendar";
-      break;
-    case "ASSIGNMENT":
-      icon = "lightbulb";
-      break;
-    case "ATTENDANCE":
-      icon = "alert";
-      break;
-    default:
-      icon = "megaphone";
-  }
-
-  switch (notification.type) {
-    case "INFO":
-      type = "info";
-      break;
-    case "WARNING":
-    case "URGENT":
-    case "ERROR":
-      type = "warning";
-      break;
-    case "SUCCESS":
-      type = "success";
-      break;
-    default:
-      type = "info";
-  }
-
-  return {
-    id: String(notification.id),
-    icon,
-    title: notification.title,
-    message: notification.message,
-    timestamp: notification.createdAt.toISOString(), // Send ISO for client-side formatting
-    type,
-  };
-};
 
 interface StudentDashboardProps {
   initialStats?: StudentStats | null;
-  initialScheduleRaw?: any[];
-  initialSessionsRaw?: any[];
-  initialUser?: any;
-  initialNotifications?: any[];
+  initialScheduleRaw?: RawScheduleItem[];
+  initialSessionsRaw?: RawAttendanceSession[];
+  initialUser?: { firstName: string } | null;
+  initialNotifications?: NotificationItem[];
 }
 
 export default function StudentDashboard({ 
@@ -180,11 +105,6 @@ export default function StudentDashboard({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   // 1. Fetch Student Stats
   const { data: stats = initialStats, isLoading: statsLoading } = useQuery({
@@ -249,7 +169,7 @@ export default function StudentDashboard({
       const currentDayOfWeek = new Date().getDay();
 
       const [scheduleRes, sessionsRes] = await Promise.all([
-        apiClient.get<any[]>("/api/schedule/user"), 
+        apiClient.get<RawScheduleItem[]>("/api/schedule/user"), 
         apiClient.get<RawAttendanceSession[]>("/api/attendance/sessions", {
           params: {
             startDate: start.toISOString(),
@@ -259,10 +179,10 @@ export default function StudentDashboard({
       ]);
 
       const allSchedules = scheduleRes?.success && Array.isArray(scheduleRes.data) ? scheduleRes.data : [];
-      const scheduleData = allSchedules.filter((s: any) => s.dayOfWeek === currentDayOfWeek);
+      const scheduleData = allSchedules.filter((s) => s.dayOfWeek === currentDayOfWeek);
       const activeSessions = sessionsRes?.success && Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
 
-      const staticSchedule = scheduleData.map((item: any) => {
+      const staticSchedule = scheduleData.map((item) => {
         const normalizeTime = (t: string) => {
           if (!t) return "00:00";
           const parts = t.split(":");
@@ -297,7 +217,7 @@ export default function StudentDashboard({
           const sessionDate = new Date(session.startTime);
           return sessionDate.toDateString() === new Date().toDateString();
         })
-        .map((session: any) => {
+        .map((session: RawAttendanceSession) => {
           const startTime = new Date(session.startTime);
           const endTime = new Date(session.endTime);
           const toTimeStr = (date: Date) => {
@@ -350,9 +270,9 @@ export default function StudentDashboard({
     },
     initialData: useMemo(() => {
       const currentDayOfWeek = new Date().getDay();
-      const todayScheduleData = initialScheduleRaw.filter((s: any) => s.dayOfWeek === currentDayOfWeek);
+      const todayScheduleData = initialScheduleRaw.filter((s) => s.dayOfWeek === currentDayOfWeek);
 
-      const staticFormatted = todayScheduleData.map((item: any) => {
+      const staticFormatted = todayScheduleData.map((item) => {
         const normalizeTime = (t: string) => {
           if (!t) return "00:00";
           const parts = t.split(":");
@@ -361,11 +281,10 @@ export default function StudentDashboard({
         const startStr = normalizeTime(item.startTime);
         const endStr = normalizeTime(item.endTime);
 
-        const courseName = item.courseName || item.course?.courseName || "Course";
-        const courseCode = item.courseCode || item.course?.courseCode || "N/A";
+        const courseName = item.courseName || "Course";
+        const courseCode = item.courseCode || "N/A";
         const profName = item.professorName || 
-                         (item.professor ? `${item.professor.firstName} ${item.professor.lastName}` : 
-                         `${item.professorFirstName || ""} ${item.professorLastName || ""}`.trim());
+                         `${item.professorFirstName || ""} ${item.professorLastName || ""}`.trim();
 
         return {
           id: String(item.id),
@@ -383,11 +302,11 @@ export default function StudentDashboard({
       });
 
       const sessionFormatted = initialSessionsRaw
-        .filter((session: any) => {
+        .filter((session) => {
           const sessionDate = new Date(session.startTime);
           return sessionDate.toDateString() === new Date().toDateString();
         })
-        .map((session: any) => {
+        .map((session) => {
           const startTime = new Date(session.startTime);
           const endTime = new Date(session.endTime);
           const toTimeStr = (date: Date) => {
@@ -427,7 +346,7 @@ export default function StudentDashboard({
         if (!hasActiveSession) merged.push(staticItem);
       });
 
-      return merged.sort((a: any, b: any) => {
+      return merged.sort((a, b) => {
         if (a.status === "ongoing" && b.status !== "ongoing") return -1;
         if (a.status !== "ongoing" && b.status === "ongoing") return 1;
         return a.startTime.localeCompare(b.startTime);
@@ -446,7 +365,7 @@ export default function StudentDashboard({
 
     return currentNotifications
       .filter(
-        (n: any) =>
+        (n: NotificationItem) =>
           n.category === "SYSTEM" ||
           n.category === "COURSE" ||
           n.category === "EXAM" ||
@@ -455,7 +374,7 @@ export default function StudentDashboard({
           n.type === "WARNING",
       )
       .slice(0, 5)
-      .map((n: any) => {
+      .map((n: NotificationItem) => {
         let icon: Announcement["icon"] = "megaphone";
         let type: Announcement["type"] = "info";
 
@@ -520,28 +439,6 @@ export default function StudentDashboard({
     }
   }, [isAuthenticated, statsLoading, stats, showInfo, user?.firstName]);
 
-  // --- Variants ---
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    },
-  };
 
   return (
     <DashboardLayout userName={initialUser?.firstName} userType="student">

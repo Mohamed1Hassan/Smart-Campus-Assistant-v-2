@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useState, useEffect } from "react";
+import React, { ReactNode, useState } from "react";
 import UnifiedNavbar from "./UnifiedNavbar";
 import dynamic from "next/dynamic";
 const MobileDrawer = dynamic(() => import("../MobileDrawer"), { ssr: false });
@@ -22,11 +22,6 @@ export default function DashboardLayout({
   subtitle,
 }: DashboardLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   const displayUserName = userName || "User";
 

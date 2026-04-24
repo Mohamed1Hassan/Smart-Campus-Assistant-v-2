@@ -2,9 +2,20 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MapPin, Navigation2 } from "lucide-react";
 
+interface LocationFormData {
+  location: {
+    name: string;
+    latitude: string | number;
+    longitude: string | number;
+  };
+  security: {
+    isLocationRequired: boolean;
+  };
+}
+
 interface LocationStepProps {
-  formData: any;
-  handleInputChange: (field: string, value: any) => void;
+  formData: LocationFormData;
+  handleInputChange: (field: string, value: string | boolean | number) => void;
   showError: (msg: string) => void;
   showWarning: (msg: string) => void;
   info: (msg: string) => void;
@@ -147,7 +158,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
                 } else {
                   success(`Location updated (Accuracy: ${acc}m)`);
                 }
-              } catch (error) {
+              } catch {
                 showError("Failed to get location.");
               }
             }}

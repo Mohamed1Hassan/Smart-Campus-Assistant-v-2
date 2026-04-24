@@ -114,11 +114,8 @@ export default function UnifiedNavbar({
   const { isMobile } = useResponsive();
   const [mounted, setMounted] = useState(false);
 
-  useState(() => {
-    // This runs during initialization which is safe for simple states
-  });
-
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

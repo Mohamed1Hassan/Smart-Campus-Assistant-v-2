@@ -39,7 +39,7 @@ interface UseNotificationsOptions {
   filters?: NotificationFilters;
 }
 
-import { supabase, getRealtimeStatus, setRealtimeStatus } from "../lib/supabase";
+import { supabase, getRealtimeStatus } from "../lib/supabase";
 
 // Main hook
 export function useNotifications(options: UseNotificationsOptions = {}) {

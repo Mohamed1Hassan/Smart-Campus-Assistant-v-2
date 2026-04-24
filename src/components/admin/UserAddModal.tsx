@@ -3,13 +3,25 @@
 import React from "react";
 import { Plus, Loader2 } from "lucide-react";
 
+interface NewUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password?: string;
+  universityId: string;
+  role: string;
+  major?: string;
+  year?: string;
+  department?: string;
+}
+
 interface UserAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
-  newUser: any;
-  setNewUser: (user: any) => void;
+  newUser: NewUser;
+  setNewUser: (user: NewUser) => void;
 }
 
 export default function UserAddModal({

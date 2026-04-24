@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase, getRealtimeStatus } from "@/lib/supabase";
@@ -142,6 +142,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
   useEffect(() => {
     // Check if realtime is globally disabled
     if (getRealtimeStatus().isDisabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConnectionStatus("disconnected");
       return;
     }
@@ -152,7 +153,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:marked` },
-        (payload: any) => {
+        (payload: { payload?: AttendanceRecord } | unknown) => {
           const data = payload?.payload || payload;
           if (!data || !data.studentName) return;
           setAttendanceRecords((prev) => [data, ...prev.slice(0, 49)]);
@@ -168,7 +169,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:attendance:fraud_detected` },
-        (payload: any) => {
+        (payload: unknown) => {
           const data = payload?.payload || payload;
           if (!data || !data.studentName) return;
           const alert = {
@@ -184,7 +185,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:started` },
-        (payload: any) => {
+        (payload: unknown) => {
           const data = payload?.payload || payload;
           if (!data || !data.title) return;
           addRecentActivity({
@@ -197,7 +198,7 @@ export const LiveAttendanceTracking: React.FC<LiveAttendanceTrackingProps> = ({
       .on(
         'broadcast',
         { event: `session:${sessionId}:session:ended` },
-        (payload: any) => {
+        (payload: unknown) => {
           const data = payload?.payload || payload;
           if (!data || !data.title) return;
           addRecentActivity({

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
+ 
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { supabase, getRealtimeStatus } from "@/lib/supabase";
@@ -151,6 +151,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
   useEffect(() => {
     // Check if realtime is globally disabled
     if (getRealtimeStatus().isDisabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConnectionStatus("disconnected");
       return;
     }
@@ -161,7 +162,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:status_update' },
-        (payload: any) => {
+        (payload: { payload?: SocketSecurityData } | unknown) => {
           const data = payload?.payload || payload;
           if (!data || (!data.type && !data.message)) return;
           const status: SecurityStatus = {
@@ -180,7 +181,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:location_update' },
-        (payload: any) => {
+        (payload: { payload?: SocketSecurityData } | unknown) => {
           const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -199,7 +200,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:device_update' },
-        (payload: any) => {
+        (payload: { payload?: SocketSecurityData } | unknown) => {
           const data = payload?.payload || payload;
           if (!data) return;
           const status: SecurityStatus = {
@@ -218,7 +219,7 @@ export const SecurityStatusUpdates: React.FC<SecurityStatusUpdatesProps> = ({
       .on(
         'broadcast',
         { event: 'security:fraud_alert' },
-        (payload: any) => {
+        (payload: { payload?: SocketFraudData } | unknown) => {
           const data = payload?.payload || payload;
           if (!data || !data.description) return;
           const status: SecurityStatus = {

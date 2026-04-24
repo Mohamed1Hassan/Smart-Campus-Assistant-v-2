@@ -3,13 +3,20 @@
 import React from "react";
 import { Check, Loader2 } from "lucide-react";
 
+interface EditingUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  universityId: string;
+}
+
 interface UserEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
-  editingUser: any;
-  setEditingUser: (user: any) => void;
+  editingUser: EditingUser | null;
+  setEditingUser: (user: EditingUser) => void;
   editPassword: string;
   setEditPassword: (pass: string) => void;
 }

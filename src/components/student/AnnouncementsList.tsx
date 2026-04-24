@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { m } from "framer-motion";
+import React from "react";
 import {
   Megaphone,
   Building,
@@ -73,11 +72,6 @@ export default function AnnouncementsList({
   announcements,
 }: AnnouncementsListProps) {
   const router = useRouter();
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   const handleAnnouncementClick = (announcement: Announcement) => {
     // Navigate based on icon type which maps to category
@@ -121,7 +115,7 @@ export default function AnnouncementsList({
       {/* Announcements */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
         {announcements.length > 0 ? (
-          announcements.map((announcement, index) => {
+          announcements.map((announcement) => {
             const IconComponent = iconMap[announcement.icon] || Megaphone;
             const typeInfo = typeConfig[announcement.type] || typeConfig.info;
 
