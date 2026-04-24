@@ -180,6 +180,23 @@ select,
   /* gray-600 */
 }
 
+/* Hide scrollbar completely utility */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+
 
 /* Command Palette Styles */
 [cmdk-root] {

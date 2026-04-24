@@ -43,6 +43,26 @@ const MAX_SESSIONS = 25;
 const MAX_MESSAGES_PER_SESSION = 500;
 const SAVE_DEBOUNCE_MS = 300;
 
+const MiniRobot = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+  const sizes = {
+    sm: { w: "w-8 h-8", face: "w-5 h-4", eye: "w-1 h-1.5" },
+    md: { w: "w-10 h-10", face: "w-6 h-5", eye: "w-1 h-2" },
+    lg: { w: "w-16 h-16 sm:w-20 sm:h-20", face: "w-10 h-8", eye: "w-1.5 h-3" }
+  };
+  const s = sizes[size];
+  return (
+    <motion.div className={`relative ${s.w} flex items-center justify-center bg-purple-50 dark:bg-purple-900/30 rounded-xl sm:rounded-2xl border border-purple-100 dark:border-purple-800/50 shadow-sm`}
+      whileHover={{ scale: 1.05, rotate: [-3, 3, -3, 0] }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div animate={{ y: [-1.5, 1.5, -1.5] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className={`relative ${s.face} bg-gray-900 dark:bg-gray-800 rounded-md sm:rounded-[0.4rem] shadow-md flex items-center justify-center gap-1 sm:gap-1.5 overflow-hidden`}>
+         <motion.div animate={{ scaleY: [1, 0.1, 1, 1, 1] }} transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }} className={`${s.eye} bg-purple-400 rounded-full shadow-[0_0_4px_#c084fc]`} />
+         <motion.div animate={{ scaleY: [1, 0.1, 1, 1, 1] }} transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }} className={`${s.eye} bg-purple-400 rounded-full shadow-[0_0_4px_#c084fc]`} />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function ProfessorChatbot() {
   const router = useRouter();
   const { user } = useAuth();
@@ -612,8 +632,8 @@ export default function ProfessorChatbot() {
                 </button>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                    <Bot className="w-6 h-6 text-white" />
+                  <div className="p-1">
+                    <MiniRobot size="md" />
                   </div>
                   <div>
                     <h1 className="font-bold text-gray-900 dark:text-white leading-tight">
@@ -658,52 +678,63 @@ export default function ProfessorChatbot() {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900/50 relative">
+            <div className="flex-1 overflow-y-auto chat-scroll bg-gray-50/80 dark:bg-gray-900 relative">
+              {/* Subtle Mesh Background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-20 mix-blend-multiply dark:mix-blend-lighten">
+                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-300 dark:bg-purple-700 blur-[80px]" />
+                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-300 dark:bg-indigo-700 blur-[80px]" />
+              </div>
+
               <div
                 ref={chatContainerRef}
-                className="min-h-full p-4 sm:p-6 space-y-6"
+                className="relative z-10 min-h-full p-4 sm:p-6 space-y-6"
               >
                 {messages.length === 0 && !isLoading ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto mt-10">
-                    <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                      <Sparkles className="w-10 h-10 text-purple-600 dark:text-purple-400" />
+                  <div className="flex flex-col items-center justify-start text-center max-w-2xl mx-auto px-2 sm:px-4 pt-4 sm:pt-8">
+                    <div className="mb-4 sm:mb-6 animate-float relative group cursor-default">
+                      <div className="absolute inset-0 bg-purple-400/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      <MiniRobot size="lg" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-2 tracking-tight">
                       How can I help you today?
                     </h2>
-                    <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-md">
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 sm:mb-8 max-w-md">
                       I can help you create quizzes, summarize lectures, draft
                       emails to students, or brainstorm assignment ideas.
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-2 sm:px-0">
                       {[
                         {
                           icon: "📝",
                           text: "Generate 5 quiz questions on Machine Learning",
+                          color: "hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-blue-500/10"
                         },
                         {
                           icon: "📊",
                           text: "Create a grading rubric for a project",
+                          color: "hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:shadow-emerald-500/10"
                         },
                         {
                           icon: "📧",
                           text: "Draft an email about the midterm exam",
+                          color: "hover:border-purple-300 dark:hover:border-purple-500/50 hover:shadow-purple-500/10"
                         },
                         {
                           icon: "💡",
                           text: "Suggest assignment ideas for Database course",
+                          color: "hover:border-orange-300 dark:hover:border-orange-500/50 hover:shadow-orange-500/10"
                         },
                       ].map((prompt, i) => (
                         <button
                           key={i}
                           onClick={() => handlePromptSelect(prompt.text)}
-                          className="p-4 bg-white dark:bg-cardDark border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-md rounded-xl text-left transition-all group"
+                          className={`p-3 sm:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-100 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-500/50 rounded-xl text-left transition-all group shadow-sm hover:-translate-y-1 flex items-center gap-3 ${prompt.color}`}
                         >
-                          <span className="text-xl mb-2 block">
+                          <span className="text-xl block transform group-hover:scale-110 transition-transform duration-300">
                             {prompt.icon}
                           </span>
-                          <span className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                          <span className="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200">
                             {prompt.text}
                           </span>
                         </button>
@@ -744,12 +775,12 @@ export default function ProfessorChatbot() {
                                   <div
                                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 shadow-sm ${
                                       isAi
-                                        ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                                        ? "bg-transparent shadow-none"
                                         : "bg-purple-600"
                                     }`}
                                   >
                                     {isAi ? (
-                                      <Bot className="w-5 h-5 text-purple-600" />
+                                      <MiniRobot size="sm" />
                                     ) : (
                                       <span className="text-xs font-bold text-white">
                                         ME
@@ -837,8 +868,8 @@ export default function ProfessorChatbot() {
                         className="flex justify-start mb-6"
                       >
                         <div className="flex gap-4 max-w-[85%]">
-                          <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
-                            <Bot className="w-5 h-5 text-purple-600" />
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 shadow-sm bg-transparent">
+                            <MiniRobot size="sm" />
                           </div>
                           <div className="bg-white dark:bg-cardDark border border-gray-100 dark:border-gray-700 rounded-2xl rounded-tl-none p-4 shadow-sm flex items-center gap-2">
                             <div
@@ -870,9 +901,6 @@ export default function ProfessorChatbot() {
                   isLoading={isLoading}
                   placeholder="Type your message..."
                 />
-                <p className="text-center text-[10px] lg:text-xs text-gray-700 dark:text-gray-300 font-medium mt-2 hidden sm:block">
-                  AI can make mistakes. Please review generated content.
-                </p>
               </div>
             </div>
           </div>

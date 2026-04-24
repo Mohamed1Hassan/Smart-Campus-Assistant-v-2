@@ -47,6 +47,26 @@ const initialSessionTemplate: Omit<Session, 'id'> = {
   messageCount: 0,
 };
 
+const MiniRobot = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+  const sizes = {
+    sm: { w: "w-8 h-8", face: "w-5 h-4", eye: "w-1 h-1.5" },
+    md: { w: "w-10 h-10", face: "w-6 h-5", eye: "w-1 h-2" },
+    lg: { w: "w-16 h-16 sm:w-20 sm:h-20", face: "w-10 h-8", eye: "w-1.5 h-3" }
+  };
+  const s = sizes[size];
+  return (
+    <m.div className={`relative ${s.w} flex items-center justify-center bg-blue-50 dark:bg-blue-900/30 rounded-xl sm:rounded-2xl border border-blue-100 dark:border-blue-800/50 shadow-sm`}
+      whileHover={{ scale: 1.05, rotate: [-3, 3, -3, 0] }}
+      transition={{ duration: 0.3 }}
+    >
+      <m.div animate={{ y: [-1.5, 1.5, -1.5] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className={`relative ${s.face} bg-gray-900 dark:bg-gray-800 rounded-md sm:rounded-[0.4rem] shadow-md flex items-center justify-center gap-1 sm:gap-1.5 overflow-hidden`}>
+         <m.div animate={{ scaleY: [1, 0.1, 1, 1, 1] }} transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }} className={`${s.eye} bg-blue-400 rounded-full shadow-[0_0_4px_#60a5fa]`} />
+         <m.div animate={{ scaleY: [1, 0.1, 1, 1, 1] }} transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }} className={`${s.eye} bg-blue-400 rounded-full shadow-[0_0_4px_#60a5fa]`} />
+      </m.div>
+    </m.div>
+  );
+};
+
 export default function StudentAIAssistant() {
   const router = useRouter();
   const { user } = useAuth();
@@ -409,9 +429,9 @@ export default function StudentAIAssistant() {
           className={`flex ${isAi ? "justify-start" : "justify-end"} mb-6 last:mb-0`}
         >
           <div className={`flex gap-3 sm:gap-4 max-w-[90%] sm:max-w-[85%] ${isAi ? "flex-row" : "flex-row-reverse"}`}>
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg mt-1 ${isAi ? "bg-gradient-to-br from-indigo-500 to-purple-600" : "bg-gradient-to-br from-blue-500 to-indigo-600"}`}>
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg mt-1 ${isAi ? "bg-transparent shadow-none" : "bg-gradient-to-br from-blue-500 to-indigo-600"}`}>
               {isAi ? (
-                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <MiniRobot size="sm" />
               ) : (
                 <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               )}
@@ -520,8 +540,8 @@ export default function StudentAIAssistant() {
                 <button onClick={() => setShowSessionsPanel(!showSessionsPanel)} className="p-2 sm:p-2.5 -ml-2 rounded-xl hover:bg-white dark:hover:bg-gray-800 shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:scale-105" title={showSessionsPanel ? "Hide Sidebar" : "Show Sidebar"}>
                   <Menu className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
                 </button>
-                <div className="w-12 h-12 rounded-[1.25rem] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 ring-2 ring-white/50 dark:ring-gray-800/50">
-                  <Bot className="w-7 h-7 text-white" />
+                <div className="p-1">
+                  <MiniRobot size="md" />
                 </div>
                 <div>
                   <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">AI Assistant</h1>
@@ -533,25 +553,32 @@ export default function StudentAIAssistant() {
               </div>
             </div>
 
-            <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth bg-gray-50/50 dark:bg-gray-900 pb-40 lg:pb-32">
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto chat-scroll p-4 sm:p-6 space-y-6 scroll-smooth bg-gray-50/80 dark:bg-gray-900 pb-40 lg:pb-32 relative">
+              {/* Subtle Mesh Background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-20 mix-blend-multiply dark:mix-blend-lighten">
+                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-300 dark:bg-indigo-700 blur-[80px]" />
+                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-300 dark:bg-blue-700 blur-[80px]" />
+              </div>
+
+              <div className="relative z-10 space-y-6">
               {messages.length === 0 && !isLoading ? (
-                <div className="min-h-full flex flex-col items-center justify-start sm:justify-center text-center max-w-2xl mx-auto px-2 sm:px-4 pt-4 sm:pt-0 sm:mt-10">
-                  <div className="w-16 h-16 sm:w-28 sm:h-28 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-900/40 dark:to-purple-900/40 rounded-2xl sm:rounded-[2rem] flex items-center justify-center mb-4 sm:mb-8 animate-float shadow-inner border border-white/40 dark:border-indigo-500/20 backdrop-blur-md relative group cursor-default">
-                    <div className="absolute inset-0 bg-indigo-500/20 dark:bg-indigo-400/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <Sparkles className="w-8 h-8 sm:w-14 sm:h-14 text-indigo-600 dark:text-indigo-400 relative z-10" />
+                <div className="flex flex-col items-center justify-start text-center max-w-2xl mx-auto px-2 sm:px-4 pt-4 sm:pt-8">
+                  <div className="mb-4 sm:mb-6 animate-float relative group cursor-default">
+                    <div className="absolute inset-0 bg-blue-400/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <MiniRobot size="lg" />
                   </div>
-                  <h2 className="text-xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-2 sm:mb-4 tracking-tight">How can I help you today?</h2>
-                  <p className="text-sm sm:text-lg text-gray-500 dark:text-gray-400 mb-6 sm:mb-10 max-w-lg">I can help you with your schedule, assignments, attendance tracking, and general academic questions.</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full px-2 sm:px-0">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-2 tracking-tight">How can I help you today?</h2>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 sm:mb-8 max-w-md">I can help you with your schedule, assignments, attendance tracking, and general academic questions.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-2 sm:px-0">
                     {[
-                      { icon: "📅", text: "What's my schedule today?" },
-                      { icon: "📊", text: "Check my attendance" },
-                      { icon: "📝", text: "List upcoming exams" },
-                      { icon: "🎓", text: "Study tips for finals" },
+                      { icon: "📅", text: "What's my schedule today?", color: "hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-blue-500/10" },
+                      { icon: "📊", text: "Check my attendance", color: "hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:shadow-emerald-500/10" },
+                      { icon: "📝", text: "List upcoming exams", color: "hover:border-purple-300 dark:hover:border-purple-500/50 hover:shadow-purple-500/10" },
+                      { icon: "🎓", text: "Study tips for finals", color: "hover:border-orange-300 dark:hover:border-orange-500/50 hover:shadow-orange-500/10" },
                     ].map((prompt, idx) => (
-                      <button key={idx} onClick={() => handlePromptSelect(prompt.text)} className="p-3 sm:p-5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-500/50 rounded-2xl sm:rounded-[1.5rem] text-left transition-all group shadow-sm hover:shadow-md hover:-translate-y-1 flex sm:block items-center sm:items-start gap-3 sm:gap-0">
-                        <span className="text-xl sm:text-2xl sm:mb-3 block transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">{prompt.icon}</span>
-                        <span className="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{prompt.text}</span>
+                      <button key={idx} onClick={() => handlePromptSelect(prompt.text)} className={`p-3 sm:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-100 dark:border-gray-700/50 rounded-xl text-left transition-all group shadow-sm hover:-translate-y-1 flex items-center gap-3 ${prompt.color}`}>
+                        <span className="text-xl block transform group-hover:scale-110 transition-transform duration-300">{prompt.icon}</span>
+                        <span className="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200">{prompt.text}</span>
                       </button>
                     ))}
                   </div>
@@ -575,6 +602,7 @@ export default function StudentAIAssistant() {
                   )}
                 </>
               )}
+              </div>
             </div>
 
             <div className="absolute bottom-3 sm:bottom-6 left-3 right-3 sm:left-6 sm:right-6 bg-white/95 dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2rem] shadow-xl z-20 transition-all flex-shrink-0">
@@ -594,11 +622,6 @@ export default function StudentAIAssistant() {
                   </div>
                 )}
                 <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} chromeless />
-                <div className="text-center sm:mt-3 px-2">
-                  <p className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-500 tracking-widest leading-tight">
-                    AI can make mistakes. Verify important information.
-                  </p>
-                </div>
               </div>
             </div>
           </div>

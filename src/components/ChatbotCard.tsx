@@ -1,10 +1,36 @@
 "use client";
-import { Bot, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { m } from "framer-motion";
 
 interface ChatbotCardProps {
   href?: string;
 }
+
+const MiniRobot = () => (
+  <m.div
+    className="relative w-10 h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800/50 shadow-sm"
+    whileHover={{ scale: 1.05, rotate: [-3, 3, -3, 0] }}
+    transition={{ duration: 0.3 }}
+  >
+    <m.div
+      animate={{ y: [-1.5, 1.5, -1.5] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      className="relative w-6 h-5 bg-gray-900 dark:bg-gray-800 rounded-[0.4rem] shadow-md flex items-center justify-center gap-1 overflow-hidden"
+    >
+       <m.div
+          animate={{ scaleY: [1, 0.1, 1, 1, 1] }}
+          transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }}
+          className="w-1 h-2 bg-blue-400 rounded-full shadow-[0_0_4px_#60a5fa]"
+        />
+       <m.div
+          animate={{ scaleY: [1, 0.1, 1, 1, 1] }}
+          transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 1] }}
+          className="w-1 h-2 bg-blue-400 rounded-full shadow-[0_0_4px_#60a5fa]"
+        />
+    </m.div>
+  </m.div>
+);
 
 export default function ChatbotCard({
   href = "/dashboard/student/ai-assistant",
@@ -18,9 +44,7 @@ export default function ChatbotCard({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-800/30 transition-colors">
-            <Bot className="w-5 h-5 text-blue-600" />
-          </div>
+          <MiniRobot />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             AI Assistant
           </h2>
