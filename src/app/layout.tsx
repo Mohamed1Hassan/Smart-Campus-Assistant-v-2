@@ -16,30 +16,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://smart-campus-assistant.vercel.app"),
+  metadataBase: new URL("https://thebes-academy-portal.vercel.app"),
   title: {
-    default: "بوابة معهد طيبة العالي | Smart Campus Assistant",
+    default: "بوابة معهد طيبة العالي الذكية | Smart Campus Assistant",
     template: "%s | معهد طيبة العالي",
   },
   description:
-    "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لطلاب وأعضاء هيئة التدريس في معهد طيبة العالي (Thebes Academy).",
+    "المنصة الذكية المتكاملة لمعهد طيبة العالي (Thebes Academy). نظام متطور لإدارة الحضور بالبصمة الحيوية، مساعد أكاديمي مدعوم بالذكاء الاصطناعي، وإدارة شاملة للمواد والاختبارات.",
   keywords: [
     "معهد طيبة",
     "معهد طيبة العالي",
-    "موقع معهد طيبة",
-    "بوابة معهد طيبة الدخول",
-    "نتائج معهد طيبة",
-    "غياب معهد طيبة",
-    "جدول محاضرات معهد طيبة",
+    "بوابة الطالب معهد طيبة",
     "Thebes Academy",
-    "Thebes Academy Portal",
     "Smart Campus Assistant",
-    "نظام الحضور والغياب معهد طيبة",
-    "المنصة التعليمية لمعهد طيبة",
+    "نظام الحضور الذكي",
+    "ذكاء اصطناعي أكاديمي",
     "Thebes Higher Institute",
-    "موقع معهد طيبة الرسمي",
-    "طيبة اكاديمي",
-    "أكاديمية طيبة التعليمية",
+    "تسجيل الحضور بالوجه",
+    "منصة معهد طيبة التعليمية",
   ],
   authors: [{ name: "Smart Campus Team" }],
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
@@ -51,27 +45,36 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
     ],
     apple: [
-      { url: '/apple-icon.png' }
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }
     ],
   },
   openGraph: {
     type: "website",
     locale: "ar_EG",
-    url: "https://smart-campus-assistant.vercel.app",
-    title: "بوابة معهد طيبة العالي | Smart Campus Assistant",
+    url: "https://thebes-academy-portal.vercel.app",
+    title: "بوابة معهد طيبة العالي الذكية | Smart Campus Assistant",
     description:
-      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية لطلاب وأعضاء هيئة التدريس في معهد طيبة العالي.",
-    siteName: "معهد طيبة العالي - Smart Campus",
+      "اختبر مستقبل التعليم في معهد طيبة العالي. نظام ذكي لإدارة الحضور، مساعد AI، وتقارير أكاديمية فورية.",
+    siteName: "Smart Campus Assistant",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Smart Campus Assistant - The Future of Education",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "بوابة معهد طيبة العالي | Smart Campus Assistant",
+    title: "بوابة معهد طيبة العالي الذكية | Smart Campus Assistant",
     description:
-      "النظام الذكي لإدارة الحضور والغياب والمواد الدراسية في معهد طيبة العالي.",
+      "النظام الذكي المتكامل لإدارة الحضور والعملية التعليمية في معهد طيبة العالي.",
+    images: ["/og-image.png"],
   },
 };
 
@@ -90,8 +93,8 @@ export default function RootLayout({
     "@type": "EducationalOrganization",
     name: "معهد طيبة العالي - Thebes Academy",
     alternateName: ["معهد طيبة", "Thebes Higher Institute", "أكاديمية طيبة"],
-    url: "https://smart-campus-assistant.vercel.app",
-    logo: "https://smart-campus-assistant.vercel.app/icon.png",
+    url: "https://thebes-academy-portal.vercel.app",
+    logo: "https://thebes-academy-portal.vercel.app/icon.png",
     description: "مؤسسة تعليمية رائدة تقدم برامج أكاديمية متنوعة. نظام الحضور والغياب الذكي للطلاب وأعضاء هيئة التدريس.",
     sameAs: [
       "https://thebesacademy.edu.eg/" // Main original site if applicable
@@ -99,7 +102,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="ar" dir="ltr" className="scroll-smooth">
+    <html lang="ar" dir="rtl" className="scroll-smooth">
       <head>
         <script
           type="application/ld+json"

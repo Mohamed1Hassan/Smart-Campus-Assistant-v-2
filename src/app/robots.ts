@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/dashboard/admin/"],
     },
-    sitemap: "https://smart-campus-assistant.vercel.app/sitemap.xml",
+    sitemap: "https://thebes-academy-portal.vercel.app/sitemap.xml",
   };
 }

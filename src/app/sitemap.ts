@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://smart-campus-assistant.vercel.app";
+  const baseUrl = "https://thebes-academy-portal.vercel.app";
 
   return [
     {

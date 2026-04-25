@@ -43,7 +43,7 @@ const Navbar = () => {
           <div className="relative">
             <div className="absolute -inset-2 bg-blue-600/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-[10deg] transition-transform">
-               <Image src="/icon.png" alt="Logo" width={40} height={40} className="brightness-200" priority />
+               <Image src="/icon.png" alt="Smart Campus Assistant Logo" width={40} height={40} className="brightness-200" priority />
             </div>
           </div>
           <span className="text-white font-black tracking-tighter text-xl uppercase italic group-hover:text-blue-400 transition-colors">Smart Campus</span>
@@ -277,9 +277,8 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <Image src="/icon.png" alt="Logo" width={40} height={40} className="brightness-200" />
+                  <Image src="/icon.png" alt="Smart Campus Assistant Logo" width={40} height={40} className="brightness-200" />
                 </div>
                 <span className="text-white font-black tracking-tighter text-2xl uppercase italic">Smart Campus</span>
               </div>
