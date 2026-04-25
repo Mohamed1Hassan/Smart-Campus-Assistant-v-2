@@ -277,6 +277,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
             <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
                   <Image src="/icon.png" alt="Smart Campus Assistant Logo" width={40} height={40} className="brightness-200" />
                 </div>
