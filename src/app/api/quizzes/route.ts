@@ -39,27 +39,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify professor owns the course
+    // Verify professor owns or is assigned to the course
     const course = await CourseService.getCourseById(parseInt(courseId));
     
     const tokenUserId = parseInt(payload.userId);
-    const courseProfessorId = course?.professorId;
+    const isOwner = course?.professorId === tokenUserId;
+    const isAssigned = course?.schedules?.some(s => s.professorId === tokenUserId);
 
     if (
       !course ||
-      (payload.role.toLowerCase() !== "admin" &&
-        Number(courseProfessorId) !== Number(tokenUserId))
+      (payload.role.toLowerCase() !== "admin" && !isOwner && !isAssigned)
     ) {
       console.warn("[API/quizzes] Access Denied:", {
         courseId,
-        courseProfessorId,
+        courseProfessorId: course?.professorId,
         tokenUserId,
+        isAssigned,
         role: payload.role
       });
       return NextResponse.json(
         { 
           success: false, 
-          message: `Access Denied: You are logged in as Professor ID ${tokenUserId}, but course ${courseId} is registered under Professor ID ${courseProfessorId}.` 
+          message: `Access Denied: You (ID ${tokenUserId}) are not authorized to create quizzes for this course.` 
         },
         { status: 403 },
       );
