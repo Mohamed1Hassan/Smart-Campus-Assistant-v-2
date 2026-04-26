@@ -29,7 +29,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   // Audio Synthesis
   const playRobotSound = (type: 'hover' | 'click' | 'idea' | 'wake' | 'sleep' | 'drag' | 'message') => {
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioContext) return;
       const ctx = new AudioContext();
       const osc = ctx.createOscillator();
@@ -103,7 +103,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         osc.start(now);
         osc.stop(now + 0.2);
       }
-    } catch (e) {
+    } catch {
       // Ignore audio context errors
     }
   };
@@ -260,7 +260,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
     }, 12000); 
 
     return () => clearInterval(messageInterval);
-  }, [isHovered, userType, pathname]);
+  }, [isHovered, userType, pathname, getContextualMessages]);
 
 
   const resetState = () => {
