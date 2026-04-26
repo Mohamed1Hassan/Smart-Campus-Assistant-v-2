@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { Lightbulb, Heart, Moon } from "lucide-react";
@@ -109,7 +109,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   };
 
   // Contextual messages
-  const getContextualMessages = () => {
+  const getContextualMessages = useCallback(() => {
     const p = pathname || "";
     if (p.includes('/schedule')) return ["Check your upcoming lectures! 📅", "Don't be late for class!", "Today's schedule is looking busy!"];
     if (p.includes('/grades')) return ["Hope you're proud of your grades! 🌟", "Keep up the excellent work!", "Need help calculating your GPA?"];
@@ -139,7 +139,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
       "Reviewing student performance?",
       "Hope you're having a productive day!"
     ];
-  };
+  }, [pathname, userType]);
 
   // Robot State
   const [robotState, setRobotState] = useState({

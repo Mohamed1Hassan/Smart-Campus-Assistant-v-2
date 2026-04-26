@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +16,7 @@ import {
   AlertTriangle,
   UserX,
   CheckCircle2,
+  Trash2,
 } from "lucide-react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import {
@@ -564,7 +564,6 @@ export default function ProfessorExams() {
                   const isUpcoming = start > now;
                   const isLive = now >= start && now <= end;
                   const canStart = now >= new Date(start.getTime() - 15 * 60000) && now <= end; // Can start 15 mins early or anytime before it ends
-                  const isOver = now > end;
 
                   return (
                     <motion.div
