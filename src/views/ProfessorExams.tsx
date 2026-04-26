@@ -24,6 +24,8 @@ import {
 } from "../actions/exam.actions";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
+import { getQuizzesByCourseAction } from "../actions/quiz.actions";
+import { supabase } from "../lib/supabase";
 
 interface Exam {
   id: number;
@@ -111,6 +113,7 @@ export default function ProfessorExams() {
     startTime: "",
     endTime: "",
     room: "",
+    quizId: "" as string | number,
   });
 
   // Load courses
@@ -140,15 +143,31 @@ export default function ProfessorExams() {
     enabled: !!selectedCourse,
   });
 
+  // Load available quizzes for the selected course
+  const { data: quizzes = EMPTY_ARRAY } = useQuery({
+    queryKey: ["course-quizzes", selectedCourse],
+    queryFn: async () => {
+      if (!selectedCourse) return [];
+      const res = await getQuizzesByCourseAction(selectedCourse);
+      return res.success ? res.data : [];
+    },
+    enabled: !!selectedCourse,
+  });
+
   const scheduleMutation = useMutation({
     mutationFn: (data: Partial<Exam>) =>
-      scheduleExamAction({ ...data, courseId: selectedCourse! } as {
+      scheduleExamAction({ 
+        ...data,
+        courseId: selectedCourse!,
+        quizId: data.quizId ? Number(data.quizId) : undefined,
+      } as {
         title: string;
         startTime: string;
         endTime: string;
         room: string;
         courseId: number;
         description?: string;
+        quizId?: number;
       }),
     onSuccess: (res) => {
       if (res.success) {
@@ -238,12 +257,21 @@ export default function ProfessorExams() {
       }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const socket = (window as unknown as { socket: any }).socket; // Access global socket if available
-    if (socket) {
-      socket.on("notification", handleNewAlert);
-      return () => socket.off("notification", handleNewAlert);
-    }
+    // Use Supabase Realtime for live alerts
+    const channel = supabase
+      .channel(`exam-proctoring-${activeProctorExam}`)
+      .on(
+        'broadcast',
+        { event: `user:*:notification` }, // Listen to all notification events on this channel or specific user
+        (payload: any) => {
+          handleNewAlert(payload);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, [activeProctorExam, warning]);
 
   const handlePenalize = (alertId: string) => {
@@ -581,7 +609,7 @@ export default function ProfessorExams() {
                         </div>
 
                         {/* Action Tools */}
-                        <div className="flex sm:flex-col items-center gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-gray-100 dark:border-gray-700 sm:pl-6">
+                        <div className="flex flex-col sm:flex-col items-center gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-gray-100 dark:border-gray-700 sm:pl-6">
                           <button
                             onClick={() => setActiveProctorExam(exam.id)}
                             className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${
@@ -639,7 +667,7 @@ export default function ProfessorExams() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 dark:border-gray-700/50"
+              className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-[2rem] overflow-y-auto max-h-[90vh] shadow-2xl border border-white/20 dark:border-gray-700/50 custom-scrollbar"
             >
               <div className="p-8 sm:p-10">
                 <div className="flex justify-between items-center mb-8">
@@ -712,6 +740,25 @@ export default function ProfessorExams() {
                         setFormData({ ...formData, room: e.target.value })
                       }
                     />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
+                      Link Quiz (Questions)
+                    </label>
+                    <select
+                      className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all font-bold dark:text-white appearance-none"
+                      value={formData.quizId}
+                      onChange={(e) =>
+                        setFormData({ ...formData, quizId: e.target.value })
+                      }
+                    >
+                      <option value="">None (Proctoring Only)</option>
+                      {(quizzes as any[]).map((quiz) => (
+                        <option key={quiz.id} value={quiz.id}>
+                          {quiz.title} ({quiz._count?.questions || 0} Questions)
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <button
                     onClick={() => scheduleMutation.mutate(formData)}

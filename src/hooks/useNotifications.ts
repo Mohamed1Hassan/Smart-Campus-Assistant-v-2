@@ -90,6 +90,11 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
                 notificationData as unknown as NotificationResponse,
                 ...prev.notifications,
               ],
+              stats: prev.stats ? {
+                ...prev.stats,
+                unread: prev.stats.unread + 1,
+                total: prev.stats.total + 1
+              } : null
             }));
           }
         )

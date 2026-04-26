@@ -445,7 +445,7 @@ export default function Grades() {
         </div>
 
         {/* Enhanced Filters Row */}
-        <div className="flex flex-col md:flex-row gap-6 items-center">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center">
           <div className="relative flex-1 w-full group">
             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
               <Search className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />

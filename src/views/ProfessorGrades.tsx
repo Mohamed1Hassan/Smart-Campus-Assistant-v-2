@@ -15,6 +15,7 @@ import {
   TrendingDown,
   TrendingUp,
   AlertTriangle,
+  Download,
 } from "lucide-react";
 
 const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), {
@@ -246,6 +247,34 @@ export default function ProfessorGrades() {
     });
   };
 
+  const handleExportCSV = () => {
+    if (!grades.length) return;
+    
+    const headers = ["Student ID", "First Name", "Last Name", "Assessment Type", "Assessment Title", "Score", "Max Score", "Percentage", "Date"];
+    const rows = grades.map(g => [
+      g.student.universityId,
+      g.student.firstName,
+      g.student.lastName,
+      g.type,
+      g.quiz?.title || "General Activity",
+      g.score,
+      g.maxScore,
+      ((g.score / g.maxScore) * 100).toFixed(2) + "%",
+      new Date(g.createdAt).toLocaleDateString()
+    ]);
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Grades_Export_${selectedCourse}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <DashboardLayout userType="professor">
       <div className="space-y-8 pb-32">
@@ -450,18 +479,28 @@ export default function ProfessorGrades() {
 
                 {/* Grade Master Ledger */}
                 <GlassCard className="overflow-hidden min-h-[400px]">
-                  <div className="p-6 border-b border-gray-100 dark:border-gray-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="p-6 border-b border-gray-100 dark:border-gray-700/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <h2 className="font-black text-gray-900 dark:text-white flex items-center gap-2">
                       <BookOpen className="w-5 h-5 text-indigo-500" />
                       Master Grade Ledger
                     </h2>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Search student..."
-                        className="pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-indigo-500 transition-colors w-full sm:w-64"
-                      />
+                    {/* Enhanced Filters Row */}
+                    <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center">
+                      <div className="relative flex-1 w-full sm:w-64">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search student..."
+                          className="pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-indigo-500 transition-colors w-full sm:w-64"
+                        />
+                      </div>
+                      <button
+                        onClick={handleExportCSV}
+                        className="p-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700 shadow-sm shrink-0"
+                        title="Export to CSV"
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
 
@@ -608,7 +647,7 @@ export default function ProfessorGrades() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 dark:border-gray-700/50"
+              className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-[2rem] overflow-y-auto max-h-[90vh] shadow-2xl border border-white/20 dark:border-gray-700/50 custom-scrollbar"
             >
               <form onSubmit={handleAssignSubmit}>
                 <div className="p-8 sm:p-10">

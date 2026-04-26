@@ -50,6 +50,7 @@ const eventEmitter = new EventEmitter();
 export class SocketService {
   private supabase = supabase;
   private channel = this.supabase.channel('smart-campus-realtime');
+  private channels: Map<string, any> = new Map();
   private subscriptionAttempts = 0;
   private readonly MAX_ATTEMPTS = 5;
 
@@ -85,12 +86,21 @@ export class SocketService {
   // Helper to send a broadcast
   private async broadcast(target: string, event: string, payload: Record<string, unknown>) {
     try {
-      // Create or get a channel for the specific target
-      const channel = this.supabase.channel(target);
+      let channel = this.channels.get(target);
       
-      // We don't necessarily need to subscribe to send, 
-      // but some Supabase versions require it to be initialized.
-      // We'll use the send method directly.
+      if (!channel) {
+        channel = this.supabase.channel(target);
+        this.channels.set(target, channel);
+        
+        // We MUST subscribe to the channel to send broadcasts reliably
+        await new Promise<void>((resolve, reject) => {
+          channel.subscribe((status: string) => {
+            if (status === 'SUBSCRIBED') resolve();
+            if (status === 'CHANNEL_ERROR') reject(new Error('Channel error'));
+          });
+        });
+      }
+
       await channel.send({
         type: 'broadcast',
         event: `${target}:${event}`,

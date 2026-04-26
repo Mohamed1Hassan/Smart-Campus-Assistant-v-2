@@ -412,6 +412,7 @@ model Quiz {
   questions   Question[]
   submissions QuizSubmission[]
   course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  exams       Exam[]
 
   @@index([courseId])
   @@map("quizzes")
@@ -548,6 +549,8 @@ model Exam {
   updatedAt   DateTime @updatedAt
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   professor   User     @relation("ExamCreator", fields: [professorId], references: [id], onDelete: Cascade)
+  quizId      Int?
+  quiz        Quiz?    @relation(fields: [quizId], references: [id])
 
   @@index([courseId])
   @@index([professorId])

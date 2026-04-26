@@ -19,6 +19,7 @@ export class ExamService {
     startTime: Date;
     endTime: Date;
     room?: string;
+    quizId?: number;
   }): Promise<Exam> {
     return prisma.exam.create({
       data: {
@@ -29,6 +30,7 @@ export class ExamService {
         startTime: data.startTime,
         endTime: data.endTime,
         room: data.room,
+        quizId: data.quizId,
       },
     });
   }
@@ -59,6 +61,15 @@ export class ExamService {
             courseCode: true,
           },
         },
+        quiz: {
+          include: {
+            questions: {
+              include: {
+                options: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         startTime: "asc",
@@ -74,6 +85,16 @@ export class ExamService {
       where: { courseId },
       orderBy: {
         startTime: "asc",
+      },
+      include: {
+        quiz: {
+          select: {
+            title: true,
+            _count: {
+              select: { questions: true },
+            },
+          },
+        },
       },
     });
   }

@@ -12,6 +12,7 @@ export const scheduleExamSchema = z
       message: "Invalid end time",
     }),
     room: z.string().max(50).optional(),
+    quizId: z.number().int().positive().optional(),
   })
   .refine((data) => new Date(data.startTime) < new Date(data.endTime), {
     message: "End time must be after start time",

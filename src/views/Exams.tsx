@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Terminal,
   LogOut,
+  Lock,
 } from "lucide-react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import {
@@ -24,6 +25,7 @@ import {
   reportViolationAction,
 } from "../actions/exam.actions";
 import { StatsSkeleton } from "../components/common/LoadingSkeleton";
+import { QuizTaker } from "../components/quiz/QuizTaker";
 
 // --- Components ---
 
@@ -134,6 +136,8 @@ const useExamIntegrityGuard = (isActive: boolean, examId: number | null) => {
 export default function Exams() {
   const [activeExamMode, setActiveExamMode] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [examCompleted, setExamCompleted] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
 
   const { data: examsResponse, isLoading } = useQuery({
     queryKey: ["upcoming-exams"],
@@ -158,6 +162,11 @@ export default function Exams() {
   const nextExam = sortedExams[0];
   const isGuardActive = activeExamMode !== null;
   const violations = useExamIntegrityGuard(isGuardActive, activeExamMode);
+
+  const isNextExamActive = useMemo(() => {
+    if (!nextExam) return false;
+    return Date.parse(nextExam.startTime) <= Date.parse(currentTime.toString());
+  }, [nextExam, currentTime]);
 
   // Live Clock
   useEffect(() => {
@@ -185,10 +194,20 @@ export default function Exams() {
   };
 
   const handleExitExam = () => {
+    // If the exam is not completed, warn the user
+    if (!examCompleted) {
+      const confirmExit = window.confirm(
+        "Are you sure you want to exit? Exiting early may flag your attempt. Your answers have been autosaved if you submit.",
+      );
+      if (!confirmExit) return;
+    }
+
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
     setActiveExamMode(null);
+    setExamCompleted(false);
+    setScore(null);
   };
 
   if (isLoading) {
@@ -241,31 +260,65 @@ export default function Exams() {
           <div className="lg:col-span-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
             
-            <m.div
-              animate={{ scale: [1, 1.05, 1], opacity: [0.5, 1, 0.5] }}
-              transition={{ repeat: Infinity, duration: 4 }}
-              className="relative mb-10"
-            >
-              <div className="absolute inset-0 bg-indigo-500 blur-3xl opacity-20" />
-              <Terminal className="w-32 h-32 text-indigo-400 relative z-10" />
-            </m.div>
-            
-            <h2 className="text-3xl font-black text-white max-w-2xl leading-tight mb-6">
-              Awaiting payload broadcast... <br />
-              <span className="text-indigo-400 text-xl font-bold">Please remain focused on this window.</span>
-            </h2>
-            <p className="text-gray-400 font-medium max-w-md mb-12 leading-relaxed">
-              Your workstation is currently being monitored for academic integrity. 
-              Do not attempt to switch tabs or applications.
-            </p>
+            {examCompleted ? (
+              <div className="relative z-10 space-y-8">
+                <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/30">
+                  <ShieldCheck className="w-12 h-12 text-emerald-500" />
+                </div>
+                <h2 className="text-4xl font-black text-white">Assessment Completed</h2>
+                <p className="text-gray-400 font-bold">Your submission has been securely recorded.</p>
+                {score !== null && (
+                  <div className="text-6xl font-black text-indigo-400 mb-8">
+                    {score}%
+                  </div>
+                )}
+                <button
+                  onClick={handleExitExam}
+                  className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all uppercase tracking-widest text-xs shadow-xl shadow-indigo-600/20"
+                >
+                  Exit Secure Room
+                </button>
+              </div>
+            ) : activeExamData?.quiz ? (
+              <div className="w-full relative z-10 max-h-[80vh] overflow-y-auto custom-scrollbar pr-4">
+                <QuizTaker 
+                  quiz={activeExamData.quiz} 
+                  onComplete={(scoreValue) => {
+                    setScore(scoreValue);
+                    setExamCompleted(true);
+                  }}
+                  onCancel={() => {}} 
+                />
+              </div>
+            ) : (
+              <>
+                <m.div
+                  animate={{ scale: [1, 1.05, 1], opacity: [0.5, 1, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 4 }}
+                  className="relative mb-10"
+                >
+                  <div className="absolute inset-0 bg-indigo-500 blur-3xl opacity-20" />
+                  <Terminal className="w-32 h-32 text-indigo-400 relative z-10" />
+                </m.div>
+                
+                <h2 className="text-3xl font-black text-white max-w-2xl leading-tight mb-6">
+                  Awaiting payload broadcast... <br />
+                  <span className="text-indigo-400 text-xl font-bold">Please remain focused on this window.</span>
+                </h2>
+                <p className="text-gray-400 font-medium max-w-md mb-12 leading-relaxed">
+                  Your workstation is currently being monitored for academic integrity. 
+                  Do not attempt to switch tabs or applications.
+                </p>
 
-            <button
-              onClick={handleExitExam}
-              className="px-10 py-5 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/30 font-black rounded-2xl transition-all duration-300 uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 shadow-lg shadow-red-900/20"
-            >
-              <LogOut className="w-5 h-5" />
-              EMERGENCY EXIT (FLAGS ATTEMPT)
-            </button>
+                <button
+                  onClick={handleExitExam}
+                  className="px-10 py-5 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/30 font-black rounded-2xl transition-all duration-300 uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 shadow-lg shadow-red-900/20"
+                >
+                  <LogOut className="w-5 h-5" />
+                  EMERGENCY EXIT (FLAGS ATTEMPT)
+                </button>
+              </>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -395,7 +448,7 @@ export default function Exams() {
           <GlassCard className="overflow-hidden border-indigo-500/30 group relative" noBlur>
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/95 via-violet-600/95 to-purple-700/95 z-0" />
             
-            <div className="relative z-10 p-8 sm:p-12">
+            <div className="relative z-10 p-6 sm:p-8 lg:p-12">
               {/* Decorative background elements */}
               <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-indigo-400 opacity-10 rounded-full blur-2xl" />
@@ -454,15 +507,15 @@ export default function Exams() {
                     <p className="text-center text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em] mb-8">
                       Time Remaining
                     </p>
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-2 sm:gap-4">
                       {Object.entries(getTimeRemaining(nextExam.startTime)).map(([unit, value]) => (
                         <div key={unit} className="flex flex-col items-center">
-                          <div className="w-20 h-20 bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover/timer:border-white/30 transition-colors">
-                            <span className="text-3xl font-black font-mono text-white tabular-nums">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover/timer:border-white/30 transition-colors">
+                            <span className="text-xl sm:text-2xl md:text-3xl font-black font-mono text-white tabular-nums">
                               {value.toString().padStart(2, "0")}
                             </span>
                           </div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mt-3">
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-indigo-200 mt-3">
                             {unit}
                           </span>
                         </div>
@@ -471,11 +524,22 @@ export default function Exams() {
 
                     <button
                       onClick={() => handleEnterExam(nextExam.id)}
-                      className="w-full mt-10 py-5 bg-white text-indigo-900 font-black tracking-widest uppercase rounded-2xl hover:scale-[1.03] active:scale-95 transition-all shadow-2xl shadow-black/30 flex items-center justify-center gap-3 overflow-hidden relative group/btn"
+                      disabled={!isNextExamActive}
+                      className={`w-full mt-10 py-5 bg-white text-indigo-900 font-black tracking-widest uppercase rounded-2xl shadow-2xl shadow-black/30 flex items-center justify-center gap-3 overflow-hidden relative group/btn ${
+                        isNextExamActive
+                          ? "hover:scale-[1.03] active:scale-95 transition-all"
+                          : "opacity-50 cursor-not-allowed"
+                      }`}
                     >
                       <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-                      <ShieldCheck className="w-6 h-6 relative z-10" /> 
-                      <span className="relative z-10 font-black">Enter Secure Room</span>
+                      {isNextExamActive ? (
+                        <ShieldCheck className="w-6 h-6 relative z-10" />
+                      ) : (
+                        <Lock className="w-6 h-6 relative z-10" />
+                      )}
+                      <span className="relative z-10 font-black">
+                        {isNextExamActive ? "Enter Secure Room" : "Locked"}
+                      </span>
                     </button>
                   </GlassCard>
                 </div>

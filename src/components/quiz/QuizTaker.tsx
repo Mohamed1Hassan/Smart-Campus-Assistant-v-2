@@ -12,6 +12,7 @@ interface QuizTakerProps {
 export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({}); // questionId -> optionId
+  const [textAnswers, setTextAnswers] = useState<Record<number, string>>({}); // questionId -> text
   const [timeLeft, setTimeLeft] = useState<number>((quiz.timeLimit || 30) * 60);
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,15 +45,23 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onComplete }) => {
     });
   };
 
+  const handleTextChange = (questionId: number, text: string) => {
+    setTextAnswers({
+      ...textAnswers,
+      [questionId]: text,
+    });
+  };
+
   const handleSubmit = async () => {
     if (submitting) return;
     setSubmitting(true);
 
     const submissionData: SubmissionData = {
       quizId: quiz.id,
-      answers: Object.entries(answers).map(([qId, oId]) => ({
-        questionId: parseInt(qId),
-        selectedOptionId: oId,
+      answers: quiz.questions!.map((q) => ({
+        questionId: q.id,
+        selectedOptionId: answers[q.id],
+        textAnswer: textAnswers[q.id],
       })),
     };
 
@@ -114,30 +123,40 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onComplete }) => {
         </div>
 
         <div className="space-y-3">
-          {currentQuestion.options?.map((option) => (
-            <label
-              key={option.id}
-              className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                answers[currentQuestion.id] === option.id
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                  : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
-              }`}
-            >
-              <input
-                type="radio"
-                name={`question-${currentQuestion.id}`}
-                value={option.id}
-                checked={answers[currentQuestion.id] === option.id}
-                onChange={() =>
-                  handleOptionSelect(currentQuestion.id, option.id)
-                }
-                className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300"
-              />
-              <span className="ml-3 text-gray-700 dark:text-gray-200">
-                {option.text}
-              </span>
-            </label>
-          ))}
+          {currentQuestion.type === "TEXT" ? (
+            <textarea
+              className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:border-blue-500 outline-none transition-all dark:text-white font-medium"
+              rows={6}
+              placeholder="Type your answer here..."
+              value={textAnswers[currentQuestion.id] || ""}
+              onChange={(e) => handleTextChange(currentQuestion.id, e.target.value)}
+            />
+          ) : (
+            currentQuestion.options?.map((option) => (
+              <label
+                key={option.id}
+                className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  answers[currentQuestion.id] === option.id
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name={`question-${currentQuestion.id}`}
+                  value={option.id}
+                  checked={answers[currentQuestion.id] === option.id}
+                  onChange={() =>
+                    handleOptionSelect(currentQuestion.id, option.id)
+                  }
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span className="ml-3 text-gray-700 dark:text-gray-200">
+                  {option.text}
+                </span>
+              </label>
+            ))
+          )}
         </div>
       </div>
 

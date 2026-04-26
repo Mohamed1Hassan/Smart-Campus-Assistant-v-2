@@ -35,6 +35,7 @@ export async function scheduleExamAction(data: {
   startTime: string;
   endTime: string;
   room?: string;
+  quizId?: number;
 }) {
   try {
     const user = await getAuthenticatedUser();
@@ -60,6 +61,7 @@ export async function scheduleExamAction(data: {
       startTime: new Date(validated.data.startTime),
       endTime: new Date(validated.data.endTime),
       professorId: user.id,
+      quizId: validated.data.quizId,
     });
 
     revalidatePath("/dashboard/exams");
