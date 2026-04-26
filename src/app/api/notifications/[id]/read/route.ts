@@ -9,6 +9,20 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  return handleReadRequest(req, params);
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  return handleReadRequest(req, params);
+}
+
+async function handleReadRequest(
+  req: NextRequest,
+  params: Promise<{ id: string }>,
+) {
   const { id } = await params;
   try {
     const authHeader = req.headers.get("authorization");

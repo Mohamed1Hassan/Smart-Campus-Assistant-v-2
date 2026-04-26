@@ -171,6 +171,20 @@ export async function notifyExamStartAction(examId: number) {
 
     if (!exam) throw new Error("Exam not found");
 
+    // Check for recent notifications to avoid duplicates
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const existingNotification = await prisma.notification.findFirst({
+      where: {
+        title: "🚨 Exam Started!",
+        message: { contains: exam.title },
+        createdAt: { gte: twelveHoursAgo }
+      }
+    });
+
+    if (existingNotification) {
+      return { success: true }; // Already notified
+    }
+
     const notifications = exam.course.enrollments.map((enrollment: { studentId: number }) => ({
       userId: enrollment.studentId,
       title: "🚨 Exam Started!",
