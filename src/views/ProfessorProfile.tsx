@@ -86,6 +86,25 @@ export default function ProfessorProfile() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">(
     "idle",
   );
+  const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
+
+  // Load preferences from localStorage on mount
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem("ai_assistant_enabled");
+      if (saved !== null) {
+        setAiAssistantEnabled(saved === "true");
+      }
+    }
+  });
+
+  const handleAIAssistantToggle = (enabled: boolean) => {
+    setAiAssistantEnabled(enabled);
+    localStorage.setItem("ai_assistant_enabled", String(enabled));
+    // Dispatch a custom event so other components can react
+    window.dispatchEvent(new Event("ai_assistant_preference_changed"));
+    showInfo(`AI Assistant ${enabled ? "enabled" : "disabled"}`);
+  };
 
   // Local state for form editing
   const [editForm, setEditForm] = useState(initialProfile);
@@ -767,7 +786,10 @@ export default function ProfessorProfile() {
                 <AccountSettings
                   notificationsEnabled={displayProfile.notificationsEnabled}
                   onNotificationToggle={handleNotificationToggle}
+                  aiAssistantEnabled={aiAssistantEnabled}
+                  onAIAssistantToggle={handleAIAssistantToggle}
                   userRole="PROFESSOR"
+                  chromeless={true}
                 />
 
                 <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700">

@@ -16,6 +16,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [isNightTime, setIsNightTime] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   
   const [currentMessage, setCurrentMessage] = useState("👋 How can I help?");
   const [showMessage, setShowMessage] = useState(false);
@@ -203,6 +204,18 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isNightTime, robotState.isSpinning, robotState.isDizzy]);
+
+  // Visibility Control
+  useEffect(() => {
+    const checkVisibility = () => {
+      const saved = localStorage.getItem("ai_assistant_enabled");
+      setIsVisible(saved !== "false");
+    };
+    
+    checkVisibility();
+    window.addEventListener("ai_assistant_preference_changed", checkVisibility);
+    return () => window.removeEventListener("ai_assistant_preference_changed", checkVisibility);
+  }, []);
 
   // Proactive messages timer
   useEffect(() => {
@@ -451,6 +464,8 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
     if (isHovered) return "from-cyan-400 to-blue-500 shadow-blue-500/50";
     return "from-blue-500 to-indigo-500 shadow-indigo-500/40"; 
   };
+
+  if (!isVisible) return null;
 
   return (
     <m.div 

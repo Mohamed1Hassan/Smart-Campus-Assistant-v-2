@@ -114,6 +114,23 @@ export default function Profile() {
   }, [user]);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("ai_assistant_enabled");
+    if (saved !== null) {
+      setAiAssistantEnabled(saved === "true");
+    }
+  }, []);
+
+  const handleAIAssistantToggle = (enabled: boolean) => {
+    setAiAssistantEnabled(enabled);
+    localStorage.setItem("ai_assistant_enabled", String(enabled));
+    // Dispatch a custom event so other components (AIAssistantButton) can react immediately
+    window.dispatchEvent(new Event("ai_assistant_preference_changed"));
+    showInfo(`AI Assistant ${enabled ? "enabled" : "disabled"}`);
+  };
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [originalProfile, setOriginalProfile] = useState(authProfileFallback);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -611,6 +628,8 @@ export default function Profile() {
                 <AccountSettings
                   notificationsEnabled={fullProfile.notificationsEnabled}
                   onNotificationToggle={handleNotificationToggle}
+                  aiAssistantEnabled={aiAssistantEnabled}
+                  onAIAssistantToggle={handleAIAssistantToggle}
                   userRole="STUDENT"
                   chromeless={true}
                 />

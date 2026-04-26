@@ -9,6 +9,8 @@ import { Loader2 } from "lucide-react";
 interface AccountSettingsProps {
   notificationsEnabled: boolean;
   onNotificationToggle: (checked: boolean) => void;
+  aiAssistantEnabled?: boolean;
+  onAIAssistantToggle?: (checked: boolean) => void;
   userRole?: "STUDENT" | "PROFESSOR" | "ADMIN";
   chromeless?: boolean;
 }
@@ -16,6 +18,8 @@ interface AccountSettingsProps {
 export default function AccountSettings({
   notificationsEnabled,
   onNotificationToggle,
+  aiAssistantEnabled = true,
+  onAIAssistantToggle,
   userRole = "STUDENT",
   chromeless = false,
 }: AccountSettingsProps) {
@@ -119,6 +123,34 @@ export default function AccountSettings({
             <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-sm font-medium rounded-full">
               Active
             </span>
+          </div>
+        </div>
+
+        <div className="pb-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="relative">
+                  <div className="w-5 h-5 border-2 border-indigo-600 rounded-md" />
+                  <div className="absolute top-1 left-1 w-1 h-1 bg-indigo-600 rounded-full" />
+                  <div className="absolute top-1 right-1 w-1 h-1 bg-indigo-600 rounded-full" />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-textDark">
+                  AI Assistant Robot
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-mutedDark">
+                  Show/hide the floating AI assistant
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={aiAssistantEnabled}
+              onCheckedChange={onAIAssistantToggle}
+              className="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label="Toggle AI Assistant"
+            />
           </div>
         </div>
 
