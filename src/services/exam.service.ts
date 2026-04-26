@@ -188,9 +188,24 @@ export class ExamService {
   /**
    * Get fraud alerts for an exam (Placeholder)
    */
-  static async getExamAlerts(_examId: number) {
-    // Current schema doesn't have examId on FraudAlert yet. 
-    // Returning empty array to avoid build errors.
-    return [];
+  static async getExamAlerts(examId: number) {
+    const alerts = await prisma.fraudAlert.findMany({
+      where: {
+        metadata: {
+          path: ['examId'],
+          equals: examId
+        }
+      },
+      include: {
+        student: {
+          select: {
+            firstName: true,
+            lastName: true,
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    return alerts;
   }
 }
