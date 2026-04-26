@@ -504,18 +504,18 @@ export default function Exams() {
                   <GlassCard noBlur className="bg-white/10 border-white/20 p-8 shadow-2xl relative overflow-hidden group/timer">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
                     
-                    <p className="text-center text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em] mb-8">
+                    <p className="text-center text-[10px] font-black text-white/70 uppercase tracking-[0.3em] mb-8">
                       Time Remaining
                     </p>
                     <div className="flex justify-center gap-2 sm:gap-4">
                       {Object.entries(getTimeRemaining(nextExam.startTime)).map(([unit, value]) => (
                         <div key={unit} className="flex flex-col items-center">
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover/timer:border-white/30 transition-colors">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-indigo-950/40 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover/timer:border-white/30 transition-colors">
                             <span className="text-xl sm:text-2xl md:text-3xl font-black font-mono text-white tabular-nums">
                               {value.toString().padStart(2, "0")}
                             </span>
                           </div>
-                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-indigo-200 mt-3">
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/80 mt-3">
                             {unit}
                           </span>
                         </div>
@@ -528,14 +528,14 @@ export default function Exams() {
                       className={`w-full mt-10 py-5 bg-white text-indigo-900 font-black tracking-widest uppercase rounded-2xl shadow-2xl shadow-black/30 flex items-center justify-center gap-3 overflow-hidden relative group/btn ${
                         isNextExamActive
                           ? "hover:scale-[1.03] active:scale-95 transition-all"
-                          : "opacity-50 cursor-not-allowed"
+                          : "opacity-60 cursor-not-allowed bg-white/90"
                       }`}
                     >
                       <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
                       {isNextExamActive ? (
                         <ShieldCheck className="w-6 h-6 relative z-10" />
                       ) : (
-                        <Lock className="w-6 h-6 relative z-10" />
+                        <Lock className="w-6 h-6 relative z-10 text-indigo-900/40" />
                       )}
                       <span className="relative z-10 font-black">
                         {isNextExamActive ? "Enter Secure Room" : "Locked"}
