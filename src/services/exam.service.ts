@@ -165,4 +165,31 @@ export class ExamService {
 
     return alert;
   }
+  /**
+   * Delete an exam
+   */
+  static async deleteExam(examId: number): Promise<void> {
+    await prisma.exam.delete({
+      where: { id: examId },
+    });
+  }
+
+  /**
+   * Get fraud alerts for an exam
+   */
+  static async getExamAlerts(examId: number) {
+    return prisma.fraudAlert.findMany({
+      where: { examId },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 }

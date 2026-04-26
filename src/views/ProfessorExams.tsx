@@ -22,6 +22,7 @@ import DashboardLayout from "../components/common/DashboardLayout";
 import {
   getCourseExamsAction,
   scheduleExamAction,
+  deleteExamAction,
 } from "../actions/exam.actions";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
@@ -185,6 +186,17 @@ export default function ProfessorExams() {
       }
     },
   });
+
+  const handleDeleteExam = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this exam? This action cannot be undone.")) return;
+    const res = await deleteExamAction(id);
+    if (res.success) {
+      success("Exam deleted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["course-exams", selectedCourse] });
+    } else {
+      error(res.error || "Failed to delete exam");
+    }
+  };
 
   // Load real security alerts for the active exam
   const { data: realAlerts = EMPTY_ARRAY } = useQuery<SecurityAlert[]>({
@@ -544,7 +556,15 @@ export default function ProfessorExams() {
                   ))
                 )}
                 {exams.map((exam: Exam) => {
-                  const isUpcoming = new Date(exam.startTime) > new Date();
+                  const now = new Date();
+                  const start = new Date(exam.startTime);
+                  const end = new Date(exam.endTime);
+                  
+                  // An exam is "Active" if it's currently happening OR it started less than 2 hours ago (buffer for the professor to start)
+                  const isUpcoming = start > now;
+                  const isLive = now >= start && now <= end;
+                  const canStart = now >= new Date(start.getTime() - 15 * 60000) && now <= end; // Can start 15 mins early or anytime before it ends
+                  const isOver = now > end;
 
                   return (
                     <motion.div
@@ -566,12 +586,16 @@ export default function ProfessorExams() {
                               className={
                                 isUpcoming
                                   ? "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                                  : isLive 
+                                    ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800"
+                                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                               }
                             >
                               {isUpcoming
                                 ? "Upcoming Deployment"
-                                : "Archived Record"}
+                                : isLive 
+                                  ? "Active / Live"
+                                  : "Archived Record"}
                             </Badge>
                           </div>
 
@@ -612,17 +636,17 @@ export default function ProfessorExams() {
                           </div>
                         </div>
 
-                        {/* Action Tools */}
+                         {/* Action Tools */}
                         <div className="flex flex-col sm:flex-col items-center gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-gray-100 dark:border-gray-700 sm:pl-6">
                           <button
                             onClick={() => setActiveProctorExam(exam.id)}
                             className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${
-                              isUpcoming
+                              canStart
                                 ? "bg-indigo-600 text-white hover:bg-indigo-700 hover:-translate-y-0.5 shadow-indigo-600/20"
                                 : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:scale-[1.02]"
                             }`}
                           >
-                            {isUpcoming ? (
+                            {canStart ? (
                               <>
                                 <MonitorPlay className="w-4 h-4" /> Start
                                 Proctoring
@@ -633,11 +657,21 @@ export default function ProfessorExams() {
                               </>
                             )}
                           </button>
-                          {!isUpcoming && (
-                            <button className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/50">
-                              Security Audit
+                          
+                          <div className="flex gap-2 w-full sm:w-auto">
+                            {!canStart && (
+                              <button className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/50">
+                                Security Audit
+                              </button>
+                            )}
+                            <button 
+                              onClick={() => handleDeleteExam(exam.id)}
+                              className="flex-1 sm:flex-none p-2.5 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border border-transparent hover:border-red-200"
+                              title="Delete Exam"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </motion.div>
