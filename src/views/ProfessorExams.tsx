@@ -286,8 +286,9 @@ export default function ProfessorExams() {
       .on(
         'broadcast',
         { event: `exam-proctoring-${activeProctorExam}:exam_alert` }, 
-        (payload: Record<string, unknown>) => {
-          handleNewAlert(payload.payload as Record<string, unknown>);
+        (payload: any) => {
+          const data = payload?.payload || payload;
+          handleNewAlert(data);
         }
       )
       .subscribe();

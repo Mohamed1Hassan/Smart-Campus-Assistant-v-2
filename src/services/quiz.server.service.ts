@@ -141,6 +141,24 @@ export class QuizServerService {
 
     if (!quiz) throw new Error("Quiz not found");
 
+    // Check if the student already submitted this quiz
+    const existingSubmission = await prisma.quizSubmission.findUnique({
+      where: {
+        quizId_studentId: {
+          quizId,
+          studentId,
+        },
+      },
+      include: {
+        answers: true,
+      }
+    });
+
+    if (existingSubmission) {
+      console.log(`[QuizServerService] Quiz ${quizId} already submitted by student ${studentId}`);
+      return existingSubmission; // Return existing instead of throwing 500
+    }
+
     let totalScore = 0;
 
     // 2. Calculate score
