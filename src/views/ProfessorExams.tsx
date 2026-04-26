@@ -805,7 +805,7 @@ export default function ProfessorExams() {
                       }
                     >
                       <option value="">None (Proctoring Only)</option>
-                      {(quizzes as Record<string, unknown>[]).map((quiz) => (
+                      {(quizzes as { id: number; title: string; _count?: { questions: number } }[]).map((quiz) => (
                         <option key={quiz.id} value={quiz.id}>
                           {quiz.title} ({quiz._count?.questions || 0} Questions)
                         </option>

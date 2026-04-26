@@ -29,9 +29,9 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   // Audio Synthesis
   const playRobotSound = (type: 'hover' | 'click' | 'idea' | 'wake' | 'sleep' | 'drag' | 'message') => {
     try {
-      const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       
