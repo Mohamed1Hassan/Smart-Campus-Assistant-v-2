@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-const AIAssistantButton = dynamic(() => import("../components/common/AIAssistantButton").then(mod => mod.AIAssistantButton), { ssr: false });
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCardStudent from "../components/student/StatCardStudent";
 import { StatsSkeleton } from "../components/common/LoadingSkeleton";
@@ -579,8 +578,7 @@ export default function StudentDashboard({
           </div>
         </div>
       </div>
-      {/* AI Assistant Button */}
-      <AIAssistantButton userType="student" />
+      {/* AI Assistant Button Removed - Now in Layout */}
           </LazyMotion>
     </DashboardLayout>
   );

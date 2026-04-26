@@ -23,7 +23,6 @@ import {
   StopCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { AIAssistantButton } from "../components/common/AIAssistantButton";
 import DashboardLayout from "../components/common/DashboardLayout";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -941,8 +940,6 @@ export default function ProfessorDashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* AI Assistant Button */}
-      <AIAssistantButton userType="professor" />
     </DashboardLayout>
   );
 }

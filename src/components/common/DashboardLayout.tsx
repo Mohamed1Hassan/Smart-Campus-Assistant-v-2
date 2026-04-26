@@ -3,6 +3,7 @@ import React, { ReactNode, useState } from "react";
 import UnifiedNavbar from "./UnifiedNavbar";
 import dynamic from "next/dynamic";
 const MobileDrawer = dynamic(() => import("../MobileDrawer"), { ssr: false });
+const AIAssistantButton = dynamic(() => import("./AIAssistantButton").then(mod => mod.AIAssistantButton), { ssr: false });
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -71,6 +72,9 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
+
+      {/* Global AI Assistant Robot */}
+      <AIAssistantButton userType={userType === "professor" ? "professor" : "student"} />
 
       {isMobileMenuOpen && (
         <MobileDrawer

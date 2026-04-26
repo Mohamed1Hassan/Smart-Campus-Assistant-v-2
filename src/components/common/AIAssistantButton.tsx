@@ -26,7 +26,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Audio Synthesis
-  const playRobotSound = (type: 'hover' | 'click' | 'idea') => {
+  const playRobotSound = (type: 'hover' | 'click' | 'idea' | 'wake' | 'sleep' | 'drag' | 'message') => {
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContext) return;
@@ -37,34 +37,70 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
       osc.connect(gain);
       gain.connect(ctx.destination);
       
+      const now = ctx.currentTime;
+      
       if (type === 'hover') {
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.05);
-        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.15);
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.03, now + 0.05);
+        gain.gain.linearRampToValueAtTime(0, now + 0.15);
+        osc.start(now);
+        osc.stop(now + 0.15);
       } else if (type === 'click') {
         osc.type = 'square';
-        osc.frequency.setValueAtTime(800, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
-        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.15);
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+        gain.gain.linearRampToValueAtTime(0, now + 0.15);
+        osc.start(now);
+        osc.stop(now + 0.15);
       } else if (type === 'idea') {
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(800, ctx.currentTime);
-        osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(1600, ctx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
-        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.3);
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.setValueAtTime(1200, now + 0.1);
+        osc.frequency.setValueAtTime(1600, now + 0.2);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'wake') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.1, now + 0.1);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'sleep') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.05, now + 0.1);
+        gain.gain.linearRampToValueAtTime(0, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else if (type === 'drag') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(50, now);
+        gain.gain.setValueAtTime(0.02, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } else if (type === 'message') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.setValueAtTime(900, now + 0.1);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.1, now + 0.05);
+        gain.gain.linearRampToValueAtTime(0, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
       }
     } catch (e) {
       // Ignore audio context errors
@@ -162,10 +198,20 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
 
   // Proactive messages timer
   useEffect(() => {
+    let hoverInterval: NodeJS.Timeout;
+
     if (isHovered) {
       setShowMessage(true);
       setCurrentMessage("👋 How can I help?");
-      return;
+      
+      // Cycle messages while hovering
+      hoverInterval = setInterval(() => {
+        const messages = getContextualMessages();
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        setCurrentMessage(randomMsg);
+      }, 4000);
+
+      return () => clearInterval(hoverInterval);
     }
 
     const messageInterval = setInterval(() => {
@@ -175,6 +221,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         setCurrentMessage(randomMsg);
         setShowMessage(true);
         setRobotState(prev => ({ ...prev, isTalking: true, armRotate: -15 }));
+        playRobotSound('message');
         
         setTimeout(() => {
           setShowMessage(false);
@@ -392,11 +439,19 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   return (
     <m.div 
       drag
-      dragConstraints={{ left: -1000, right: 0, top: -1000, bottom: 0 }}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragStart={() => { isDragging.current = true; }}
-      onDragEnd={() => { setTimeout(() => { isDragging.current = false; }, 100); }}
+      dragConstraints={{ left: -2000, right: 100, top: -2000, bottom: 100 }}
+      dragElastic={0.05}
+      dragMomentum={true}
+      onDragStart={() => { 
+        isDragging.current = true; 
+        playRobotSound('wake');
+      }}
+      onDrag={() => {
+        if (Math.random() > 0.8) playRobotSound('drag');
+      }}
+      onDragEnd={() => { 
+        setTimeout(() => { isDragging.current = false; }, 100); 
+      }}
       className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 flex flex-col items-end gap-4 w-fit cursor-grab active:cursor-grabbing"
       style={{ touchAction: 'none' }}
     >
