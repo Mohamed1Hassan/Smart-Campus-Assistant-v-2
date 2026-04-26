@@ -34,6 +34,7 @@ interface Exam {
   startTime: string;
   endTime: string;
   room: string;
+  quizId?: string | number;
 }
 
 interface CourseSummary {
