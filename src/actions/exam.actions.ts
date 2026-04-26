@@ -127,3 +127,24 @@ export async function reportViolationAction(data: {
     return { success: false, error: errorMessage };
   }
 }
+
+export async function deleteExamAction(examId: number) {
+  try {
+    const user = await getAuthenticatedUser();
+    if (
+      user.role.toLowerCase() !== "professor" &&
+      user.role.toLowerCase() !== "admin"
+    ) {
+      throw new Error("Unauthorized");
+    }
+
+    await ExamService.deleteExam(examId);
+    revalidatePath("/dashboard/professor/exams");
+    return { success: true };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete exam",
+    };
+  }
+}
