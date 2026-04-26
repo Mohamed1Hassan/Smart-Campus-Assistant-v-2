@@ -13,6 +13,7 @@ import {
   Trash2,
   PieChart,
 } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface QuizDashboardProps {
   courseId: number;
@@ -66,8 +67,9 @@ export const QuizDashboard: React.FC<QuizDashboardProps> = ({
         await loadQuizzes();
         setView("LIST");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create quiz:", error);
+      toast.error(error.message || "Failed to create quiz. Please check your permissions.");
     }
   };
 

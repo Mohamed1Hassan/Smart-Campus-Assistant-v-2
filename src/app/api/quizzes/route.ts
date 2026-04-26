@@ -41,6 +41,16 @@ export async function POST(req: NextRequest) {
 
     // Verify professor owns the course
     const course = await CourseService.getCourseById(parseInt(courseId));
+    
+    console.log("[API/quizzes] Ownership check:", {
+      courseFound: !!course,
+      courseProfessorId: course?.professorId,
+      payloadUserId: payload.userId,
+      parsedPayloadUserId: parseInt(payload.userId),
+      isMatch: course?.professorId === parseInt(payload.userId),
+      role: payload.role
+    });
+
     if (
       !course ||
       (payload.role.toLowerCase() !== "admin" &&
