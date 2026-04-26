@@ -113,12 +113,6 @@ const createRecursiveDummy = (name: string): any => {
  */
 export const supabase = new Proxy({} as any, {
   get(_target, prop) {
-    // INTERCEPT: Block all Realtime channel creation at the proxy level.
-    // This is the definitive fix for WebSocket spam.
-    if (prop === 'channel') {
-      return (channelName: string) => createDummyChannel(channelName);
-    }
-
     if (baseClient) {
       const value = (baseClient as any)[prop];
       return typeof value === 'function' ? value.bind(baseClient) : value;
