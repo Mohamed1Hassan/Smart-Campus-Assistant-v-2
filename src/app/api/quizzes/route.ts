@@ -42,22 +42,25 @@ export async function POST(req: NextRequest) {
     // Verify professor owns the course
     const course = await CourseService.getCourseById(parseInt(courseId));
     
-    console.log("[API/quizzes] Ownership check:", {
-      courseFound: !!course,
-      courseProfessorId: course?.professorId,
-      payloadUserId: payload.userId,
-      parsedPayloadUserId: parseInt(payload.userId),
-      isMatch: course?.professorId === parseInt(payload.userId),
-      role: payload.role
-    });
+    const tokenUserId = parseInt(payload.userId);
+    const courseProfessorId = course?.professorId;
 
     if (
       !course ||
       (payload.role.toLowerCase() !== "admin" &&
-        course.professorId !== parseInt(payload.userId))
+        Number(courseProfessorId) !== Number(tokenUserId))
     ) {
+      console.warn("[API/quizzes] Access Denied:", {
+        courseId,
+        courseProfessorId,
+        tokenUserId,
+        role: payload.role
+      });
       return NextResponse.json(
-        { success: false, message: "Access denied to this course" },
+        { 
+          success: false, 
+          message: `Access Denied: You are logged in as Professor ID ${tokenUserId}, but course ${courseId} is registered under Professor ID ${courseProfessorId}.` 
+        },
         { status: 403 },
       );
     }

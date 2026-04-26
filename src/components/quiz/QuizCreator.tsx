@@ -148,9 +148,9 @@ export const QuizCreator: React.FC<QuizCreatorProps> = ({
             </label>
             <input
               type="number"
-              value={timeLimit || ""}
+              value={timeLimit || 30}
               onChange={(e) => {
-                const val = parseInt(e.target.value);
+                const val = e.target.value === "" ? 0 : parseInt(e.target.value);
                 setTimeLimit(isNaN(val) ? 0 : val);
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
