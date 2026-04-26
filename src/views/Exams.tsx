@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, useEffect, useMemo, useCallback/* eslint-disable @typescript-eslint/no-unused-vars */ } from "react";
 import React from 'react';
@@ -165,7 +166,7 @@ export default function Exams() {
 
   const isNextExamActive = useMemo(() => {
     if (!nextExam) return false;
-    return Date.parse(nextExam.startTime) <= Date.parse(currentTime.toString());
+    return Date.parse(nextExam.startTime) <= currentTime.getTime();
   }, [nextExam, currentTime]);
 
   // Live Clock
@@ -175,7 +176,7 @@ export default function Exams() {
   }, []);
 
   const getTimeRemaining = (targetDate: string) => {
-    const total = Date.parse(targetDate) - Date.parse(currentTime.toString());
+    const total = Date.parse(targetDate) - currentTime.getTime();
     if (total <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     const seconds = Math.floor((total / 1000) % 60);
     const minutes = Math.floor((total / 1000 / 60) % 60);

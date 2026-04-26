@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -159,6 +160,8 @@ export default function ProfessorExams() {
     mutationFn: (data: Partial<Exam>) =>
       scheduleExamAction({ 
         ...data,
+        startTime: data.startTime ? new Date(data.startTime as string).toISOString() : undefined,
+        endTime: data.endTime ? new Date(data.endTime as string).toISOString() : undefined,
         courseId: selectedCourse!,
         quizId: data.quizId ? Number(data.quizId) : undefined,
       } as {
@@ -743,9 +746,17 @@ export default function ProfessorExams() {
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase mb-2 block">
-                      Link Quiz (Questions)
-                    </label>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase block">
+                        Link Quiz (Questions)
+                      </label>
+                      <Link 
+                        href={`/dashboard/professor/courses/${selectedCourse}?tab=quizzes`}
+                        className="text-[9px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-tighter flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" /> Manage Quizzes
+                      </Link>
+                    </div>
                     <select
                       className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all font-bold dark:text-white appearance-none"
                       value={formData.quizId}

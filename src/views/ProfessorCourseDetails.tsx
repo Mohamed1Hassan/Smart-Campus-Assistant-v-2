@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DashboardLayout from "../components/common/DashboardLayout";
 import { useAuth } from "../contexts/AuthContext";
@@ -65,6 +65,7 @@ interface CourseDetails {
 export default function ProfessorCourseDetails() {
   const params = useParams();
   const id = params?.id as string;
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
 
@@ -196,7 +197,7 @@ export default function ProfessorCourseDetails() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs defaultValue={searchParams.get("tab") || "overview"} className="w-full">
           <TabsList className="w-full justify-start border-b border-gray-200 dark:border-gray-700 bg-transparent p-0 mb-8 rounded-none">
             <TabsTrigger
               value="overview"
