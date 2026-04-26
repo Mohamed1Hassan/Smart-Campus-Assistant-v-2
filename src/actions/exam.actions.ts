@@ -1,5 +1,6 @@
 "use server";
 
+import prisma from "../lib/db";
 import { cookies } from "next/headers";
 import { JWTUtils } from "../utils/jwt";
 import { ExamService } from "../services/exam.service";
@@ -170,7 +171,7 @@ export async function notifyExamStartAction(examId: number) {
 
     if (!exam) throw new Error("Exam not found");
 
-    const notifications = exam.course.enrollments.map((enrollment) => ({
+    const notifications = exam.course.enrollments.map((enrollment: { studentId: number }) => ({
       userId: enrollment.studentId,
       title: "🚨 Exam Started!",
       message: `The proctoring session for "${exam.title}" has started. Please join now.`,
