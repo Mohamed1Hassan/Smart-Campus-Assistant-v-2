@@ -147,6 +147,7 @@ export class ExamService {
     });
 
     if (exam && socketService) {
+      // 1. Send personal notification to the professor
       socketService.sendNotificationToUser(exam.professorId, {
         id: String(alert.id),
         title: "Security Alert",
@@ -158,6 +159,16 @@ export class ExamService {
           studentName: `${alert.student.firstName} ${alert.student.lastName}`,
           violationType: data.type,
           examId: data.examId,
+        },
+        createdAt: alert.createdAt,
+      });
+
+      // 2. Broadcast directly to the live proctoring channel for the dashboard
+      socketService.broadcastToChannel(`exam-proctoring-${data.examId}`, 'exam_alert', {
+        id: alert.id,
+        metadata: {
+          studentName: `${alert.student.firstName} ${alert.student.lastName}`,
+          violationType: data.type,
         },
         createdAt: alert.createdAt,
       });

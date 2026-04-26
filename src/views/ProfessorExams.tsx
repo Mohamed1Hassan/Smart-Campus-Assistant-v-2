@@ -285,9 +285,9 @@ export default function ProfessorExams() {
       .channel(`exam-proctoring-${activeProctorExam}`)
       .on(
         'broadcast',
-        { event: `user:*:notification` }, // Listen to all notification events on this channel or specific user
+        { event: `exam-proctoring-${activeProctorExam}:exam_alert` }, 
         (payload: Record<string, unknown>) => {
-          handleNewAlert(payload);
+          handleNewAlert(payload.payload as Record<string, unknown>);
         }
       )
       .subscribe();

@@ -170,6 +170,10 @@ export class SocketService {
     this.broadcast(`role:${role}`, event, data);
   }
 
+  public broadcastToChannel(channelName: string, event: string, data: Record<string, unknown>): void {
+    this.broadcast(channelName, event, data);
+  }
+
   public sendNotification(
     notification: NotificationMessage,
     saveToDb: boolean = true,
