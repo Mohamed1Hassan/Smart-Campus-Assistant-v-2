@@ -109,10 +109,14 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
 
   // Contextual messages
   const getContextualMessages = () => {
-    if (pathname?.includes('/schedule')) return ["Check your upcoming lectures! 📅", "Don't be late for class!"];
-    if (pathname?.includes('/grades')) return ["Hope you're proud of your grades! 🌟", "Keep up the excellent work!"];
-    if (pathname?.includes('/attendance')) return ["Consistency is key! 🎯", "Your attendance looks good!"];
-    if (pathname?.includes('/exams')) return ["Good luck studying! 📚", "Need any quiz reviews?"];
+    const p = pathname || "";
+    if (p.includes('/schedule')) return ["Check your upcoming lectures! 📅", "Don't be late for class!", "Today's schedule is looking busy!"];
+    if (p.includes('/grades')) return ["Hope you're proud of your grades! 🌟", "Keep up the excellent work!", "Need help calculating your GPA?"];
+    if (p.includes('/attendance')) return ["Consistency is key! 🎯", "Your attendance looks good!", "Remember to mark your presence!"];
+    if (p.includes('/exams')) return ["Good luck studying! 📚", "Need any quiz reviews?", "Time to ace those tests!"];
+    if (p.includes('/profile')) return ["Looking good today! ✨", "Need to update your settings?", "Your profile is 100% complete!"];
+    if (p.includes('/notifications')) return ["You've got mail! 📩", "Check your latest updates.", "Don't miss any announcements!"];
+    if (p.includes('/chatbot') || p.includes('/ai-assistant')) return ["I'm right here! 🤖", "Need a deep conversation?", "How can I help you today?"];
     
     if (userType === "student") {
       return [
@@ -120,7 +124,9 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         "Keep up the great work! 🌟",
         "Any new assignments due soon?",
         "Need help reviewing a lecture?",
-        "Take a short break if you need it! ☕"
+        "Take a short break if you need it! ☕",
+        "The campus is lively today!",
+        "Don't forget to stay hydrated! 💧"
       ];
     }
     return [
@@ -128,7 +134,9 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
       "Check your upcoming sessions! 📅",
       "Don't forget to mark attendance.",
       "Need help generating an exam?",
-      "Your classes are running smoothly! 🚀"
+      "Your classes are running smoothly! 🚀",
+      "Reviewing student performance?",
+      "Hope you're having a productive day!"
     ];
   };
 
@@ -202,20 +210,28 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
 
     if (isHovered) {
       setShowMessage(true);
-      setCurrentMessage("👋 How can I help?");
+      const messages = getContextualMessages();
+      const initialMsg = messages[Math.floor(Math.random() * messages.length)];
+      setCurrentMessage(initialMsg);
       
-      // Cycle messages while hovering
+      // Cycle messages while hovering - FASTER
       hoverInterval = setInterval(() => {
-        const messages = getContextualMessages();
-        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        const msgs = getContextualMessages();
+        const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
         setCurrentMessage(randomMsg);
-      }, 4000);
+      }, 3000);
 
-      return () => clearInterval(hoverInterval);
+      return () => {
+        clearInterval(hoverInterval);
+      };
+    } else {
+      // Hide message immediately when hover ends, UNLESS it was a proactive one
+      // But actually, for better UX, let's just hide it.
+      setShowMessage(false);
     }
 
     const messageInterval = setInterval(() => {
-      if (!isBusy.current && Math.random() > 0.4) {
+      if (!isBusy.current && Math.random() > 0.3) {
         const messages = getContextualMessages();
         const randomMsg = messages[Math.floor(Math.random() * messages.length)];
         setCurrentMessage(randomMsg);
@@ -226,9 +242,9 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
         setTimeout(() => {
           setShowMessage(false);
           setRobotState(prev => ({ ...prev, isTalking: false, armRotate: 0 }));
-        }, 5000);
+        }, 6000);
       }
-    }, 15000); 
+    }, 12000); 
 
     return () => clearInterval(messageInterval);
   }, [isHovered, userType, pathname]);
