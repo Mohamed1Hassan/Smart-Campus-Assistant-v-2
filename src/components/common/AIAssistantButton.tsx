@@ -549,7 +549,7 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
             transition={{
               rotate: { type: "spring", stiffness: 200, damping: 20 },
               y: { type: "spring", stiffness: 300, damping: 20 },
-              x: { duration: 0.1 },
+              x: { type: "tween", duration: 0.1 },
             }}
             className="relative z-20 flex flex-col items-center"
           >
@@ -587,7 +587,12 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                     backgroundColor: isActuallySleeping ? "#4b5563" : robotState.showLove ? "#ef4444" : "#60a5fa",
                     boxShadow: isActuallySleeping ? "none" : robotState.showLove ? "0 0 12px #ef4444" : "0 0 12px #60a5fa",
                   }}
-                  transition={{ type: "spring", stiffness: 120, damping: 25 }}
+                  transition={{ 
+                    type: robotState.isDizzy ? "tween" : "spring", 
+                    stiffness: 120, 
+                    damping: 25,
+                    duration: robotState.isDizzy ? 0.5 : undefined 
+                  }}
                 />
 
                 <m.div
@@ -602,7 +607,12 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
                     backgroundColor: isActuallySleeping ? "#4b5563" : robotState.showLove ? "#ef4444" : "#60a5fa",
                     boxShadow: isActuallySleeping ? "none" : robotState.showLove ? "0 0 12px #ef4444" : "0 0 12px #60a5fa",
                   }}
-                  transition={{ type: "spring", stiffness: 120, damping: 25 }}
+                  transition={{ 
+                    type: robotState.isDizzy ? "tween" : "spring", 
+                    stiffness: 120, 
+                    damping: 25,
+                    duration: robotState.isDizzy ? 0.5 : undefined 
+                  }}
                 />
 
                 <m.div
