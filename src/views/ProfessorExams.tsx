@@ -24,6 +24,7 @@ import {
   getCourseExamsAction,
   scheduleExamAction,
   deleteExamAction,
+  notifyExamStartAction,
 } from "../actions/exam.actions";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
@@ -157,6 +158,11 @@ export default function ProfessorExams() {
     },
     enabled: !!selectedCourse,
   });
+  const handleStartProctoring = async (id: number) => {
+    setActiveProctorExam(id);
+    // Send background notification to students
+    notifyExamStartAction(id).catch(err => console.error("Notification failed:", err));
+  };
 
   const scheduleMutation = useMutation({
     mutationFn: (data: Partial<Exam>) =>
@@ -639,7 +645,7 @@ export default function ProfessorExams() {
                          {/* Action Tools */}
                         <div className="flex flex-col sm:flex-col items-center gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-gray-100 dark:border-gray-700 sm:pl-6">
                           <button
-                            onClick={() => setActiveProctorExam(exam.id)}
+                            onClick={() => handleStartProctoring(exam.id)}
                             className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${
                               canStart
                                 ? "bg-indigo-600 text-white hover:bg-indigo-700 hover:-translate-y-0.5 shadow-indigo-600/20"

@@ -148,3 +148,47 @@ export async function deleteExamAction(examId: number) {
     };
   }
 }
+
+export async function notifyExamStartAction(examId: number) {
+  try {
+    const user = await getAuthenticatedUser();
+    if (user.role.toLowerCase() !== "professor") throw new Error("Unauthorized");
+
+    const exam = await prisma.exam.findUnique({
+      where: { id: examId },
+      include: {
+        course: {
+          include: {
+            enrollments: {
+              where: { status: "ACTIVE" },
+              select: { studentId: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!exam) throw new Error("Exam not found");
+
+    const notifications = exam.course.enrollments.map((enrollment) => ({
+      userId: enrollment.studentId,
+      title: "🚨 Exam Started!",
+      message: `The proctoring session for "${exam.title}" has started. Please join now.`,
+      type: "URGENT" as const,
+      category: "EXAM" as const,
+    }));
+
+    if (notifications.length > 0) {
+      await prisma.notification.createMany({
+        data: notifications,
+      });
+    }
+
+    return { success: true };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to notify students",
+    };
+  }
+}

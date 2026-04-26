@@ -49,7 +49,7 @@ export class ExamService {
             },
           },
         },
-        startTime: {
+        endTime: {
           gte: new Date(),
         },
         isActive: true,
