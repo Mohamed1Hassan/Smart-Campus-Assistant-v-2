@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "../contexts/AuthContext";
 import { ToastProvider } from "./common/ToastProvider";
 import { ThemeProvider } from "../contexts/ThemeContext";
-import { InitialLoader } from "./common/InitialLoader";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { ThemeTransitionOverlay } from "./common/ThemeTransitionOverlay";
 import { FeedbackProvider } from "../contexts/FeedbackContext";
@@ -33,7 +32,6 @@ export default function ClientProviders({
         <ThemeProvider>
           <FeedbackProvider>
             <LazyMotion features={domAnimation}>
-              <InitialLoader />
               <ThemeTransitionOverlay />
               <ToastProvider>{children}</ToastProvider>
             </LazyMotion>

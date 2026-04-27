@@ -19,6 +19,6 @@ export default async function Home() {
     }
   }
 
-  // Show the premium Landing Page
-  return <LandingPage />;
+  // Redirect to login page instead of showing landing page
+  redirect("/login");
 }
