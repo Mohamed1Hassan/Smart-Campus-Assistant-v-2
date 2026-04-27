@@ -12,10 +12,6 @@ import {
   Menu,
   Edit2,
   Check,
-  MessageCircle,
-  Send,
-  AlertCircle,
-  Info,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/common/DashboardLayout";

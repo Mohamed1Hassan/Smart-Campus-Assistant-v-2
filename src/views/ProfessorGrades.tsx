@@ -41,7 +41,9 @@ import DashboardLayout from "../components/common/DashboardLayout";
 import {
   getCourseGradesAction,
   assignGradeAction,
+  updateGradeIntegrityAction,
 } from "../actions/grade.actions";
+import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { useToast } from "../components/common/ToastProvider";
 import { apiClient } from "../services/api";
 
@@ -59,6 +61,7 @@ interface Grade {
   studentId: number;
   student: Student;
   createdAt: string;
+  integrityStatus: "CLEAN" | "SUSPECTED" | "CHEATED";
   quiz?: { title: string };
 }
 
@@ -234,7 +237,20 @@ export default function ProfessorGrades() {
       }
     },
   });
-
+  const updateIntegrityMutation = useMutation({
+    mutationFn: ({ gradeId, status }: { gradeId: number; status: string }) =>
+      updateGradeIntegrityAction(gradeId, status),
+    onSuccess: (res) => {
+      if (res.success) {
+        success("Integrity status updated.");
+        queryClient.invalidateQueries({
+          queryKey: ["course-grades", selectedCourse],
+        });
+      } else {
+        error(res.error ?? "Failed to update integrity");
+      }
+    },
+  });
   const handleAssignSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     assignMutation.mutate({
@@ -397,7 +413,7 @@ export default function ProfessorGrades() {
                           className={`text-6xl font-black ${classAnalytics.classAverage >= 70 ? "text-emerald-500" : classAnalytics.classAverage >= 60 ? "text-amber-500" : "text-red-500"}`}
                         >
                           {classAnalytics.classAverage.toFixed(1)}
-                          <span className="text-3xl text-gray-300">%</span>
+                          <span className="text-3xl text-gray-300"> Pts</span>
                         </span>
                         <div
                           className={`mb-2 flex items-center gap-1 text-sm font-bold ${classAnalytics.classAverage >= 70 ? "text-emerald-500" : "text-red-500"}`}
@@ -518,6 +534,9 @@ export default function ProfessorGrades() {
                             Metric Score
                           </th>
                           <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
+                            Integrity
+                          </th>
+                          <th className="px-6 py-4 text-[10px] font-black tracking-widest text-gray-700 dark:text-gray-300 uppercase">
                             Timestamp
                           </th>
                         </tr>
@@ -562,20 +581,55 @@ export default function ProfessorGrades() {
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
                                   <div
-                                    className={`px-2 py-1 rounded text-xs font-black ${
-                                      percentage >= 80
-                                        ? "bg-emerald-100 text-emerald-700"
+                                    className={`relative px-4 py-2 rounded-2xl text-[11px] font-black shadow-sm transition-all duration-500 hover:scale-105 ${
+                                      percentage >= 70
+                                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-emerald-500/5"
                                         : percentage >= 60
-                                          ? "bg-amber-100 text-amber-700"
-                                          : "bg-red-100 text-red-700"
+                                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-amber-500/5"
+                                          : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-rose-500/5"
                                     }`}
                                   >
-                                    {grade.score} / {grade.maxScore}
+                                    {grade.score} <span className="opacity-50 mx-0.5">/</span> {grade.maxScore} 
+                                    <span className="ml-1 text-[8px] uppercase tracking-tighter opacity-70">Points</span>
                                   </div>
-                                  <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 hidden sm:inline-block">
-                                    ({percentage.toFixed(0)}%)
+                                  <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hidden sm:inline-block">
+                                    {percentage.toFixed(0)}%
                                   </span>
                                 </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <button
+                                  onClick={() => {
+                                    const statuses: ("CLEAN" | "SUSPECTED" | "CHEATED")[] = ["CLEAN", "SUSPECTED", "CHEATED"];
+                                    const nextStatus = statuses[(statuses.indexOf(grade.integrityStatus) + 1) % statuses.length];
+                                    updateIntegrityMutation.mutate({ gradeId: grade.id, status: nextStatus });
+                                  }}
+                                  className={`group/badge relative flex items-center gap-2.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm overflow-hidden ${
+                                    grade.integrityStatus === "CLEAN"
+                                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20"
+                                      : grade.integrityStatus === "SUSPECTED"
+                                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20"
+                                      : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20"
+                                  }`}
+                                >
+                                  {/* Glass Glow Effect */}
+                                  <div className={`absolute inset-0 opacity-0 group-hover/badge:opacity-100 transition-opacity duration-500 bg-gradient-to-r ${
+                                    grade.integrityStatus === "CLEAN" ? "from-emerald-400/10 to-transparent" :
+                                    grade.integrityStatus === "SUSPECTED" ? "from-amber-400/10 to-transparent" :
+                                    "from-rose-400/10 to-transparent"
+                                  }`} />
+                                  
+                                  <div className={`relative z-10 flex items-center gap-2 ${updateIntegrityMutation.isPending && updateIntegrityMutation.variables?.gradeId === grade.id ? "animate-pulse" : ""}`}>
+                                    {grade.integrityStatus === "CLEAN" ? (
+                                      <ShieldCheck className="w-4 h-4" />
+                                    ) : grade.integrityStatus === "SUSPECTED" ? (
+                                      <ShieldAlert className="w-4 h-4" />
+                                    ) : (
+                                      <ShieldX className="w-4 h-4" />
+                                    )}
+                                    {grade.integrityStatus}
+                                  </div>
+                                </button>
                               </td>
                               <td className="px-6 py-4 text-gray-700 dark:text-gray-300 text-xs font-black">
                                 {new Date(grade.createdAt).toLocaleDateString(

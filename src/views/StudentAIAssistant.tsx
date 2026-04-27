@@ -7,7 +7,6 @@ import {
   Bot,
   Plus,
   RotateCcw,
-  Sparkles,
   Edit2,
   X,
   Menu,

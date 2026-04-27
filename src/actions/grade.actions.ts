@@ -101,3 +101,20 @@ export async function getCourseGradesAction(courseId: number) {
     return { success: false, error: errorMessage };
   }
 }
+export async function updateGradeIntegrityAction(gradeId: number, status: string) {
+  try {
+    const user = await getAuthenticatedUser();
+
+    if (user.role !== "professor" && user.role !== "admin") {
+      throw new Error("Unauthorized");
+    }
+
+    const grade = await GradeService.updateIntegrityStatus(gradeId, status);
+    revalidatePath("/dashboard/professor/grades");
+    return { success: true, data: JSON.parse(JSON.stringify(grade)) };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to update integrity status";
+    return { success: false, error: errorMessage };
+  }
+}

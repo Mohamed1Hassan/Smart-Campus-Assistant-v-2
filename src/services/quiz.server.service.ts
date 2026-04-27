@@ -199,16 +199,44 @@ export class QuizServerService {
       .filter(Boolean);
 
     // 3. Create submission record
-    return await prisma.quizSubmission.create({
-      data: {
-        quizId,
-        studentId,
-        score: totalScore,
-        answers: {
-          create:
-            processedAnswers as unknown as Prisma.StudentAnswerUncheckedCreateWithoutSubmissionInput[],
+    return await prisma.$transaction(async (tx) => {
+      const submission = await tx.quizSubmission.create({
+        data: {
+          quizId,
+          studentId,
+          score: totalScore,
+          answers: {
+            create:
+              processedAnswers as unknown as Prisma.StudentAnswerUncheckedCreateWithoutSubmissionInput[],
+          },
         },
-      },
+      });
+
+      // 4. Create a Grade record so it shows up in the Grades dashboard
+      const totalPossiblePoints = quiz.questions.reduce((acc, q) => acc + q.points, 0);
+      
+      // We need to find the professor who owns the course to set as 'markedBy'
+      const course = await tx.course.findUnique({
+        where: { id: quiz.courseId },
+        select: { professorId: true }
+      });
+
+      if (course) {
+        await tx.grade.create({
+          data: {
+            studentId,
+            courseId: quiz.courseId,
+            quizId: quiz.id,
+            score: totalScore,
+            maxScore: totalPossiblePoints || 100,
+            type: "QUIZ",
+            markedBy: course.professorId,
+            notes: `Auto-graded submission for ${quiz.title}`
+          }
+        });
+      }
+
+      return submission;
     });
   }
 

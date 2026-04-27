@@ -68,6 +68,10 @@ export class ExamService {
                 options: true,
               },
             },
+            submissions: {
+              where: { studentId },
+              select: { id: true, score: true, submittedAt: true }
+            }
           },
         },
       },
@@ -118,29 +122,65 @@ export class ExamService {
     type: string;
     metadata?: Record<string, unknown>;
   }): Promise<FraudAlert> {
+    // Determine the database enum type (Prisma is strict with Enums)
+    let dbAlertType: FraudAlertType = FraudAlertType.SUSPICIOUS_PATTERN;
+    
+    // Map specific frontend types to DB Enums if they aren't directly supported
+    const typeUpper = data.type.toUpperCase();
+    if (Object.values(FraudAlertType).includes(typeUpper as FraudAlertType)) {
+      dbAlertType = typeUpper as FraudAlertType;
+    }
+
     // 1. Save to database
     const alert = await prisma.fraudAlert.create({
       data: {
         studentId: data.studentId,
-        alertType: data.type as FraudAlertType,
-        severity: "HIGH" as AlertSeverity,
+        alertType: dbAlertType,
+        severity: AlertSeverity.HIGH,
         description: `Exam proctoring violation: ${data.type}`,
         metadata: {
           examId: data.examId,
+          violationType: data.type, // Keep original string for display
           ...data.metadata,
         },
       },
       include: {
         student: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
+            universityId: true,
           },
         },
       },
     });
 
-    // 2. Notify the professor in real-time if they are online
+    // 2. Fetch student's score if they have already submitted the linked quiz
+    let studentScore: number | undefined;
+    try {
+      const examData = await prisma.exam.findUnique({
+        where: { id: data.examId },
+        select: { quizId: true }
+      });
+
+      if (examData?.quizId) {
+        const submission = await prisma.quizSubmission.findUnique({
+          where: {
+            quizId_studentId: {
+              quizId: examData.quizId,
+              studentId: data.studentId
+            }
+          },
+          select: { score: true }
+        });
+        if (submission) studentScore = submission.score;
+      }
+    } catch (e) {
+      console.error("[ExamService] Error fetching student score for alert:", e);
+    }
+
+    // 3. Notify the professor in real-time if they are online
     const exam = await prisma.exam.findUnique({
       where: { id: data.examId },
       select: { professorId: true },
@@ -157,6 +197,8 @@ export class ExamService {
         metadata: {
           alertId: alert.id,
           studentName: `${alert.student.firstName} ${alert.student.lastName}`,
+          studentCode: alert.student.universityId,
+          studentScore: studentScore,
           violationType: data.type,
           examId: data.examId,
         },
@@ -166,9 +208,13 @@ export class ExamService {
       // 2. Broadcast directly to the live proctoring channel for the dashboard
       socketService.broadcastToChannel(`exam-proctoring-${data.examId}`, 'exam_alert', {
         id: alert.id,
+        category: "EXAM",
         metadata: {
           studentName: `${alert.student.firstName} ${alert.student.lastName}`,
+          studentCode: alert.student.universityId,
+          studentScore: studentScore,
           violationType: data.type,
+          examId: data.examId,
         },
         createdAt: alert.createdAt,
       });
@@ -199,13 +245,38 @@ export class ExamService {
       include: {
         student: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
+            universityId: true,
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
-    return alerts;
+
+    // Fetch scores separately to avoid complex nested includes that might fail or be slow
+    // and attach them to the alerts
+    const exam = await prisma.exam.findUnique({
+      where: { id: examId },
+      select: { quizId: true }
+    });
+
+    if (!exam?.quizId) return alerts;
+
+    const submissions = await prisma.quizSubmission.findMany({
+      where: {
+        quizId: exam.quizId,
+        studentId: { in: alerts.map(a => a.studentId) }
+      },
+      select: { studentId: true, score: true }
+    });
+
+    const scoreMap = new Map(submissions.map(s => [s.studentId, s.score]));
+
+    return alerts.map(alert => ({
+      ...alert,
+      studentScore: scoreMap.get(alert.studentId)
+    }));
   }
 }

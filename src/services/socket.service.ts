@@ -1,4 +1,5 @@
 import { supabase, setRealtimeStatus } from "@/lib/supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/db";
@@ -50,7 +51,7 @@ const eventEmitter = new EventEmitter();
 export class SocketService {
   private supabase = supabase;
   private channel = this.supabase.channel('smart-campus-realtime');
-  private channels: Map<string, any> = new Map();
+  private channels: Map<string, RealtimeChannel> = new Map();
   private subscriptionAttempts = 0;
   private readonly MAX_ATTEMPTS = 5;
 
@@ -68,12 +69,16 @@ export class SocketService {
         this.subscriptionAttempts = 0;
         setRealtimeStatus(false, null);
       } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+        // If we've already reached max attempts, don't process further status changes
+        if (this.subscriptionAttempts >= this.MAX_ATTEMPTS) return;
+
         this.subscriptionAttempts++;
         const backoff = Math.min(Math.pow(2, this.subscriptionAttempts) * 1000, 30000);
         
         if (this.subscriptionAttempts >= this.MAX_ATTEMPTS) {
           console.warn(`[SocketService] Supabase Realtime failed after ${this.MAX_ATTEMPTS} attempts. Disabling real-time features.`);
           setRealtimeStatus(true, status);
+          // Unsubscribe only once
           this.channel.unsubscribe();
         } else {
           console.warn(`[SocketService] Connection error (${status}). Retrying in ${backoff}ms... (Attempt ${this.subscriptionAttempts})`);

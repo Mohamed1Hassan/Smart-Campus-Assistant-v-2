@@ -14,7 +14,6 @@ import {
   Calendar,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCardStudent from "../components/student/StatCardStudent";
 import { StatsSkeleton } from "../components/common/LoadingSkeleton";

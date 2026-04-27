@@ -16,7 +16,7 @@ interface UserEditModalProps {
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   editingUser: EditingUser | null;
-  setEditingUser: React.Dispatch<React.SetStateAction<any>>;
+  setEditingUser: React.Dispatch<React.SetStateAction<EditingUser | null>>;
   editPassword: string;
   setEditPassword: (pass: string) => void;
 }

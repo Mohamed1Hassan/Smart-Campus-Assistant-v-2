@@ -67,7 +67,8 @@ export const QuizDashboard: React.FC<QuizDashboardProps> = ({
         await loadQuizzes();
         setView("LIST");
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { message?: string };
       console.error("Failed to create quiz:", error);
       toast.error(error.message || "Failed to create quiz. Please check your permissions.");
     }

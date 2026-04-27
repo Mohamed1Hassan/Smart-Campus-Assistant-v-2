@@ -50,6 +50,8 @@ interface CourseSummary {
 interface SecurityAlert {
   id: string;
   studentName: string;
+  studentCode: string;
+  studentScore?: number;
   type: string;
   timestamp: Date;
   status: "OPEN" | "PENALIZED" | "DISMISSED";
@@ -189,7 +191,11 @@ export default function ProfessorExams() {
         });
         setShowScheduleModal(false);
       } else {
-        error(res.error ?? "Unknown error");
+        if (res.details && Array.isArray(res.details)) {
+          res.details.forEach((err: { field: string; message: string }) => error(`${err.field}: ${err.message}`));
+        } else {
+          error(res.error ?? "Unknown error");
+        }
       }
     },
   });
@@ -212,17 +218,22 @@ export default function ProfessorExams() {
       if (!activeProctorExam) return [];
       const res = await apiClient.get(`/api/exams/${activeProctorExam}/alerts`);
       return res.success && res.data
-        ? (res.data as Record<string, unknown>[]).map((a) => ({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            id: (a as any).id.toString(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            studentName: `${(a as any).student.firstName} ${(a as any).student.lastName}`,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            type: (a as any).alertType,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            timestamp: new Date((a as any).createdAt),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            status: (a as any).isResolved ? "DISMISSED" : "OPEN",
+        ? (res.data as Array<{
+            id: number;
+            student: { firstName: string; lastName: string; universityId: string };
+            studentScore?: number;
+            metadata?: { violationType: string };
+            alertType?: string;
+            createdAt: string;
+            isResolved: boolean;
+          }>).map((a) => ({
+            id: a.id.toString(),
+            studentName: `${a.student.firstName} ${a.student.lastName}`,
+            studentCode: a.student.universityId,
+            studentScore: a.studentScore,
+            type: a.metadata?.violationType || a.alertType || "UNKNOWN",
+            timestamp: new Date(a.createdAt),
+            status: a.isResolved ? "DISMISSED" : ("OPEN" as const),
           }))
         : [];
     },
@@ -260,9 +271,20 @@ export default function ProfessorExams() {
   useEffect(() => {
     if (!activeProctorExam) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleNewAlert = (payload: any) => {
-      const data = payload?.payload || payload;
+    interface ExamAlertData {
+      id: number;
+      category: string;
+      metadata: {
+        examId: number;
+        studentName: string;
+        studentCode: string;
+        studentScore: number;
+        violationType: string;
+      };
+      createdAt: string;
+    }
+
+    const handleNewAlert = (data: ExamAlertData) => {
       if (
         data &&
         data.category === "EXAM" &&
@@ -271,6 +293,8 @@ export default function ProfessorExams() {
         const newAlert: SecurityAlert = {
           id: data.id.toString(),
           studentName: data.metadata.studentName,
+          studentCode: data.metadata.studentCode,
+          studentScore: data.metadata.studentScore,
           type: data.metadata.violationType,
           timestamp: new Date(data.createdAt),
           status: "OPEN",
@@ -286,9 +310,9 @@ export default function ProfessorExams() {
       .on(
         'broadcast',
         { event: `exam-proctoring-${activeProctorExam}:exam_alert` }, 
-        (payload: any) => {
-          const data = payload?.payload || payload;
-          handleNewAlert(data);
+        (payload: { payload?: ExamAlertData } | ExamAlertData) => {
+          const data = (payload as { payload?: ExamAlertData })?.payload || payload;
+          handleNewAlert(data as ExamAlertData);
         }
       )
       .subscribe();
@@ -496,6 +520,14 @@ export default function ProfessorExams() {
                                   className={`font-black tracking-tight ${alert.status === "OPEN" ? "text-gray-900 dark:text-white" : "text-gray-600 line-through"}`}
                                 >
                                   {alert.studentName}
+                                  <span className="ml-2 text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">
+                                    #{alert.studentCode}
+                                  </span>
+                                  {alert.studentScore !== undefined && (
+                                    <span className="ml-2 text-[10px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">
+                                      {alert.studentScore} Points
+                                    </span>
+                                  )}
                                 </h4>
                                 <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
                                   {alert.timestamp.toLocaleTimeString()}

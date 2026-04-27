@@ -44,6 +44,7 @@ interface Grade {
     title?: string;
   };
   type: string;
+  integrityStatus: "CLEAN" | "SUSPECTED" | "CHEATED";
 }
 
 // --- Components ---
@@ -517,7 +518,7 @@ export default function Grades() {
                             colorClass === 'amber' ? "text-amber-600" :
                             "text-red-500"
                           }`}>
-                            {percentage}%
+                            {grade.score} <span className="text-sm">Pts</span>
                           </p>
                         </div>
                       </div>
@@ -531,6 +532,16 @@ export default function Grades() {
                         <Target className="w-3.5 h-3.5" />
                         {grade.quiz?.title || "Standard Assessment"}
                       </p>
+                      {grade.integrityStatus !== "CLEAN" && (
+                        <div className={`mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                          grade.integrityStatus === "SUSPECTED"
+                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 border border-amber-200 dark:border-amber-800/30"
+                            : "bg-red-100 dark:bg-red-900/30 text-red-600 border border-red-200 dark:border-red-800/30"
+                        }`}>
+                          <AlertCircle className="w-3 h-3" />
+                          Integrity: {grade.integrityStatus}
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-4 relative z-10">

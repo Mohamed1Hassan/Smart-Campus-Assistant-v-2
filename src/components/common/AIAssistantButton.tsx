@@ -29,10 +29,13 @@ export const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({
   // Audio Synthesis
   const playRobotSound = (type: 'hover' | 'click' | 'idea' | 'wake' | 'sleep' | 'drag' | 'message') => {
     try {
-      if (typeof navigator !== 'undefined' && (navigator as any).userActivation && !(navigator as any).userActivation.hasBeenActive) {
+      if (typeof navigator !== 'undefined' && 
+          'userActivation' in navigator && 
+          (navigator as Navigator & { userActivation: { hasBeenActive: boolean } }).userActivation && 
+          !(navigator as Navigator & { userActivation: { hasBeenActive: boolean } }).userActivation.hasBeenActive) {
         return; // Suppress AudioContext warning if no user gesture yet
       }
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
       const ctx = new AudioContextClass();
       const osc = ctx.createOscillator();
