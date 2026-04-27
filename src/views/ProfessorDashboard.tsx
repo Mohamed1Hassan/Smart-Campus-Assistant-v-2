@@ -129,7 +129,7 @@ export default function ProfessorDashboard() {
             .filter(
               (s) => s.professorId === professorId && s.dayOfWeek === dayOfWeek,
             )
-            .map((s) => {
+            .map((s: any) => {
               const [startH, startM] = s.startTime.split(":").map(Number);
               const [endH, endM] = s.endTime.split(":").map(Number);
               const now = new Date();
@@ -144,7 +144,7 @@ export default function ProfessorDashboard() {
 
               return {
                 id: `static-${s.id}`,
-                course: s.courseName,
+                course: s.courseName || s.course?.courseName || "Course",
                 time: `${s.startTime} - ${s.endTime}`,
                 room: s.room || "TBA",
                 status,
@@ -182,7 +182,7 @@ export default function ProfessorDashboard() {
 
         return {
           id: s.id,
-          course: s.courseName,
+          course: s.courseName || s.course?.courseName || "Session",
           time: `${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })} - ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`,
           room: s.location?.name || "Online",
           status,

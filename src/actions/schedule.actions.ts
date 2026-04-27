@@ -190,7 +190,14 @@ export async function getStudentScheduleAction(activeOnly: boolean = true) {
       orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
     });
 
-    return { success: true, data: JSON.parse(JSON.stringify(schedules)) };
+    const formattedSchedules = schedules.map(s => ({
+      ...s,
+      courseName: s.course?.courseName,
+      courseCode: s.course?.courseCode,
+      professorName: s.professor ? `${s.professor.firstName} ${s.professor.lastName}` : null
+    }));
+
+    return { success: true, data: JSON.parse(JSON.stringify(formattedSchedules)) };
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error

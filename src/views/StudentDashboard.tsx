@@ -288,10 +288,11 @@ export default function StudentDashboard({
         const startStr = normalizeTime(item.startTime);
         const endStr = normalizeTime(item.endTime);
 
-        const courseName = item.courseName || "Course";
-        const courseCode = item.courseCode || "N/A";
+        const courseName = item.courseName || item.course?.courseName || "Course";
+        const courseCode = item.courseCode || item.course?.courseCode || "N/A";
         const profName = item.professorName || 
-                         `${item.professorFirstName || ""} ${item.professorLastName || ""}`.trim();
+                         (item.professor ? `${item.professor.firstName} ${item.professor.lastName}` : 
+                         `${item.professorFirstName || ""} ${item.professorLastName || ""}`.trim());
 
         return {
           id: String(item.id),
