@@ -214,6 +214,11 @@ export default function StudentAttendance() {
   const [connectionStatus, setConnectionStatus] = useState<
     "ONLINE" | "OFFLINE" | "POOR"
   >("ONLINE");
+  
+  const [permissions, setPermissions] = useState({
+    camera: "prompt" as PermissionState,
+    location: "prompt" as PermissionState,
+  });
 
   // QR Scanner Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -805,47 +810,63 @@ export default function StudentAttendance() {
   }, [generateDeviceFingerprint]);
 
   const requestAllPermissions = useCallback(async () => {
-    // 1. Request Camera
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach(track => track.stop());
-      setPermissions(prev => ({ ...prev, camera: "granted" }));
-    } catch (err) {
-      setPermissions(prev => ({ ...prev, camera: "denied" }));
+    // 1. Request Camera if not granted
+    if (permissions.camera !== "granted") {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(track => track.stop());
+        setPermissions(prev => ({ ...prev, camera: "granted" }));
+      } catch (err) {
+        console.error("Camera request failed:", err);
+        setPermissions(prev => ({ ...prev, camera: "denied" }));
+        if (err instanceof Error && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+          alert("Camera access was denied. Please click the Lock 🔒 icon in your browser address bar to reset it.");
+        }
+      }
     }
 
-    // 2. Request Location
-    return new Promise<void>((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setPermissions(prev => ({ ...prev, location: "granted" }));
-          const location: LocationData = {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: pos.coords.accuracy,
-            timestamp: new Date(),
-            isVerified: true,
-            isWithinRadius: true,
-          };
-          setLocationData(location);
-          resolve();
-        },
-        (err) => {
-          setPermissions(prev => ({ ...prev, location: "denied" }));
-          resolve();
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-  }, []);
+    // Small delay between prompts to help browser process them
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // 2. Request Location if not granted
+    if (permissions.location !== "granted") {
+      if (permissions.location === "denied") {
+        alert("Location access is currently blocked. Please click the Lock 🔒 icon in your browser address bar and set Location to 'Allow'.");
+        return;
+      }
+
+      return new Promise<void>((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setPermissions(prev => ({ ...prev, location: "granted" }));
+            const location: LocationData = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              accuracy: pos.coords.accuracy,
+              timestamp: new Date(),
+              isVerified: true,
+              isWithinRadius: true,
+            };
+            setLocationData(location);
+            resolve();
+          },
+          (err) => {
+            console.error("Location request failed:", err);
+            setPermissions(prev => ({ ...prev, location: "denied" }));
+            if (err.code === err.PERMISSION_DENIED) {
+              alert("Location access was denied. Please click the Lock 🔒 icon in your browser address bar to reset it.");
+            }
+            resolve();
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+    }
+  }, [permissions]);
+
 
 
   const isInitialized = React.useRef(false);
-
-  const [permissions, setPermissions] = useState({
-    camera: "prompt" as PermissionState,
-    location: "prompt" as PermissionState,
-  });
 
   const calculateDistance = useCallback(
     (lat1: number, lon1: number, lat2: number, lon2: number): number => {
