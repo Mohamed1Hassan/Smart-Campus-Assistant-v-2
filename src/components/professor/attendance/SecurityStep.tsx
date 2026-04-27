@@ -51,7 +51,7 @@ const SecurityStep: React.FC<SecurityStepProps> = ({
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-xl border border-white/40 dark:border-gray-700/50">
         <h2 className="text-xl font-black mb-8 text-gray-900 dark:text-white flex items-center gap-3">
            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-                <ShieldIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
            </div>
            Security Measures | إجراءات الأمان
         </h2>

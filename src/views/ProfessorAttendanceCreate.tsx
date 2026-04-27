@@ -17,8 +17,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAttendanceSessions } from "../hooks/useAttendanceSessions";
 import { apiClient } from "../services/api";
 import { useToast } from "../components/common/ToastProvider";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Activity, Camera, MapPin as MapPinIcon, Shield as ShieldIcon } from "lucide-react";
+import { Activity, MapPin as MapPinIcon } from "lucide-react";
 
 
 // Dynamically import heavy components
@@ -112,63 +111,6 @@ export default function ProfessorAttendanceCreate() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [currentStep, setCurrentStep] = useState(0);
-
-  const [permissions, setPermissions] = useState({
-    location: "prompt" as PermissionState,
-  });
-
-  const checkDeviceCapabilities = useCallback(async () => {
-    // Check Location Permission
-    if (navigator.permissions && navigator.permissions.query) {
-      try {
-        const result = await navigator.permissions.query({
-          name: "geolocation" as PermissionName,
-        });
-        setPermissions((prev) => ({ ...prev, location: result.state }));
-        result.onchange = () => {
-          setPermissions((prev) => ({ ...prev, location: result.state }));
-        };
-      } catch (error) {
-        console.warn("Location permission query failed:", error);
-      }
-    } else {
-      // Fallback
-      navigator.geolocation.getCurrentPosition(
-        () => setPermissions(prev => ({ ...prev, location: "granted" })),
-        (err) => {
-          if (err.code === err.PERMISSION_DENIED) {
-            setPermissions(prev => ({ ...prev, location: "denied" }));
-          }
-        },
-        { timeout: 2000 }
-      );
-    }
-  }, []);
-
-  const requestLocationPermission = useCallback(async () => {
-    return new Promise<void>((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setPermissions(prev => ({ ...prev, location: "granted" }));
-          handleInputChange("location.latitude", pos.coords.latitude);
-          handleInputChange("location.longitude", pos.coords.longitude);
-          success("Location access granted and coordinates updated.");
-          resolve();
-        },
-        (err) => {
-          setPermissions(prev => ({ ...prev, location: "denied" }));
-          showError("Location access denied.");
-          resolve();
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-  }, [success, showError]);
-
-  useEffect(() => {
-    checkDeviceCapabilities();
-  }, [checkDeviceCapabilities]);
-
 
   // Fetch courses
   useEffect(() => {
@@ -271,7 +213,7 @@ export default function ProfessorAttendanceCreate() {
     [],
   );
 
-  const handleInputChange = (field: string, value: unknown) => {
+  const handleInputChange = useCallback((field: string, value: unknown) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
       setFormData((prev) => ({
@@ -288,7 +230,64 @@ export default function ProfessorAttendanceCreate() {
     if (touched[field]) {
       setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
     }
-  };
+  }, [touched, validateField]);
+
+  const [permissions, setPermissions] = useState({
+    location: "prompt" as PermissionState,
+  });
+
+  const checkDeviceCapabilities = useCallback(async () => {
+    // Check Location Permission
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const result = await navigator.permissions.query({
+          name: "geolocation" as PermissionName,
+        });
+        setPermissions((prev) => ({ ...prev, location: result.state }));
+        result.onchange = () => {
+          setPermissions((prev) => ({ ...prev, location: result.state }));
+        };
+      } catch (error) {
+        console.warn("Location permission query failed:", error);
+      }
+    } else {
+      // Fallback
+      navigator.geolocation.getCurrentPosition(
+        () => setPermissions(prev => ({ ...prev, location: "granted" })),
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            setPermissions(prev => ({ ...prev, location: "denied" }));
+          }
+        },
+        { timeout: 2000 }
+      );
+    }
+  }, []);
+
+  const requestLocationPermission = useCallback(async () => {
+    return new Promise<void>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setPermissions(prev => ({ ...prev, location: "granted" }));
+          handleInputChange("location.latitude", pos.coords.latitude);
+          handleInputChange("location.longitude", pos.coords.longitude);
+          success("Location access granted and coordinates updated.");
+          resolve();
+        },
+        (err) => {
+          console.warn("Location request failed:", err);
+          setPermissions(prev => ({ ...prev, location: "denied" }));
+          showError("Location access denied.");
+          resolve();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }, [success, showError, handleInputChange]);
+
+  useEffect(() => {
+    checkDeviceCapabilities();
+  }, [checkDeviceCapabilities]);
 
   const handleBlur = (field: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
