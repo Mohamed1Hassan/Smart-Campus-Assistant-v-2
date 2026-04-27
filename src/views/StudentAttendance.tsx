@@ -1417,7 +1417,7 @@ export default function StudentAttendance() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight mb-2"
+                className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight mb-2"
               >
                 Student Attendance
               </m.h1>
@@ -1425,7 +1425,7 @@ export default function StudentAttendance() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-gray-700 dark:text-gray-300 text-base sm:text-lg font-medium"
+                className="text-gray-700 dark:text-gray-300 text-sm sm:text-lg font-medium leading-tight"
               >
                 Secure attendance with multi-step verification
               </m.p>
@@ -1458,7 +1458,7 @@ export default function StudentAttendance() {
       <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`mb-8 overflow-hidden rounded-[2.5rem] p-8 shadow-xl relative border transition-all duration-500 ${
+        className={`mb-8 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 shadow-xl relative border transition-all duration-500 ${
           permissions.camera === "granted" && permissions.location === "granted"
             ? "bg-emerald-50/30 border-emerald-100 dark:bg-emerald-900/5 dark:border-emerald-800/20"
             : "bg-white/80 dark:bg-gray-800/80 border-white/40 dark:border-gray-700/50 backdrop-blur-xl"
@@ -1466,49 +1466,49 @@ export default function StudentAttendance() {
       >
         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
           {/* Status Indicators */}
-          <div className="flex flex-row lg:flex-col gap-4 w-full lg:w-auto">
-            <div className={`flex-1 lg:w-48 p-4 rounded-3xl border transition-all ${
+          <div className="flex flex-col xs:flex-row lg:flex-col gap-3 w-full lg:w-auto">
+            <div className={`flex-1 lg:w-48 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border transition-all ${
               permissions.camera === "granted" 
                 ? "bg-emerald-500/10 border-emerald-200/50 text-emerald-600" 
                 : permissions.camera === "denied"
                   ? "bg-red-500/10 border-red-200/50 text-red-600"
                   : "bg-blue-500/10 border-blue-200/50 text-blue-600"
             }`}>
-              <div className="flex items-center gap-3">
-                <Camera className="w-5 h-5" />
-                <span className="font-bold text-sm">Camera</span>
-                <Badge className="ml-auto text-[10px] uppercase">{permissions.camera}</Badge>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="font-bold text-xs sm:text-sm">Camera</span>
+                <Badge className="ml-auto text-[9px] sm:text-[10px] px-1.5 py-0 uppercase">{permissions.camera}</Badge>
               </div>
             </div>
-            <div className={`flex-1 lg:w-48 p-4 rounded-3xl border transition-all ${
+            <div className={`flex-1 lg:w-48 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border transition-all ${
               permissions.location === "granted" 
                 ? "bg-emerald-500/10 border-emerald-200/50 text-emerald-600" 
                 : permissions.location === "denied"
                   ? "bg-red-500/10 border-red-200/50 text-red-600"
                   : "bg-blue-500/10 border-blue-200/50 text-blue-600"
             }`}>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5" />
-                <span className="font-bold text-sm">Location</span>
-                <Badge className="ml-auto text-[10px] uppercase">{permissions.location}</Badge>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="font-bold text-xs sm:text-sm">Location</span>
+                <Badge className="ml-auto text-[9px] sm:text-[10px] px-1.5 py-0 uppercase">{permissions.location}</Badge>
               </div>
             </div>
           </div>
 
           <div className="flex-1 text-center lg:text-left">
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
               {permissions.camera === "granted" && permissions.location === "granted" 
                 ? "Systems Ready" 
                 : "Required Permissions"}
-              <span className="mx-3 text-gray-300 font-normal">|</span>
+              <span className="mx-2 sm:mx-3 text-gray-300 font-normal">|</span>
               <span className="text-blue-600 dark:text-blue-400">أذونات الوصول</span>
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-xs sm:text-base">
               {permissions.camera === "granted" && permissions.location === "granted"
                 ? "All security systems are active. You can now proceed to scan the attendance QR code."
                 : "To register your attendance, we need to verify your presence using the camera and GPS. This ensures a fair and secure academic environment."}
               <br />
-              <span className="dir-rtl block mt-1 font-medium">
+              <span className="dir-rtl block mt-2 font-medium text-sm sm:text-base">
                 {permissions.camera === "granted" && permissions.location === "granted"
                   ? "جميع الأنظمة جاهزة. يمكنك الآن البدء في مسح كود الحضور."
                   : "لتسجيل حضورك، نحتاج للتأكد من وجودك في القاعة عبر الكاميرا والموقع الجغرافي. هذا يضمن بيئة أكاديمية عادلة وآمنة."}
@@ -1519,7 +1519,7 @@ export default function StudentAttendance() {
               <div className="flex flex-wrap justify-center lg:justify-start gap-4">
                 <Button
                   onClick={requestAllPermissions}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-2xl font-black shadow-lg shadow-blue-500/20 group"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-5 sm:py-6 rounded-xl sm:rounded-2xl font-black shadow-lg shadow-blue-500/20 group w-full sm:w-auto"
                 >
                   <Shield className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                   Authorize System | تفعيل النظام
@@ -1530,7 +1530,7 @@ export default function StudentAttendance() {
                     <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-2 uppercase tracking-wider flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4" /> How to Fix / كيفية الإصلاح
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] text-amber-800 dark:text-amber-400">
+                    <div className="grid grid-cols-1 gap-4 text-[10px] sm:text-[11px] text-amber-800 dark:text-amber-400">
                       <p>Click the <b>Lock 🔒</b> icon in your browser address bar and set <b>Camera</b> and <b>Location</b> to <b>Allow</b>.</p>
                       <p className="text-right dir-rtl">اضغط على أيقونة <b>القفل 🔒</b> في شريط العنوان، وقم بتغيير إعدادات <b>الكاميرا</b> و <b>الموقع</b> إلى <b>سماح</b>.</p>
                     </div>

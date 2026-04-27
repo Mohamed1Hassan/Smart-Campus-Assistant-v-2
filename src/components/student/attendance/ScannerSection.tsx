@@ -54,11 +54,11 @@ const ScannerSection = ({
         )}
       </div>
 
-      <div className="p-6 sm:p-10 relative overflow-hidden">
+      <div className="p-4 sm:p-10 relative overflow-hidden">
         {/* Decorative background blur inside the scanner area */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="relative z-10 max-w-xs sm:max-w-md mx-auto aspect-square bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white/80 dark:border-gray-800 ring-1 ring-black/5 dark:ring-white/10">
+        <div className="relative z-10 max-w-[280px] sm:max-w-md mx-auto aspect-square bg-gray-900 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-[4px] sm:border-[6px] border-white/80 dark:border-gray-800 ring-1 ring-black/5 dark:ring-white/10">
           {isScanning ? (
             <>
               <video
@@ -126,7 +126,7 @@ const ScannerSection = ({
             onClick={onStartScan}
             disabled={isScanning}
             className={`
-              relative px-8 py-7 rounded-2xl text-lg font-black shadow-xl transition-all duration-300 hover:scale-[1.03] active:scale-95 w-full sm:w-auto overflow-hidden group
+              relative px-6 sm:px-8 py-6 sm:py-7 rounded-xl sm:rounded-2xl text-base sm:text-lg font-black shadow-xl transition-all duration-300 hover:scale-[1.03] active:scale-95 w-full sm:w-auto overflow-hidden group
               ${
                 permissions.camera === "denied"
                   ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-orange-500/30"

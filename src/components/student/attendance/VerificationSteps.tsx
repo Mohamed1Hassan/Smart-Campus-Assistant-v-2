@@ -45,16 +45,16 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
       transition={{ delay: 0.3 }}
       className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/40 dark:border-gray-700/50 overflow-hidden"
     >
-      <div className="p-6 border-b border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-emerald-50/50 to-transparent dark:from-emerald-900/10">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30">
-            <Shield className="w-6 h-6 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
+      <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-emerald-50/50 to-transparent dark:from-emerald-900/10">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30">
+            <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
           </div>
           <div>
-            <h2 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-400 dark:to-teal-400">
+            <h2 className="text-lg sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-400 dark:to-teal-400">
               Verification
             </h2>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
               Security checks
             </p>
           </div>
@@ -78,22 +78,22 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
 
               {/* Status Icon */}
               <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300 shadow-sm ${
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300 shadow-sm ${
                   step.status === "COMPLETED"
-                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 ring-4 ring-emerald-50 dark:ring-emerald-900/10"
+                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 ring-2 sm:ring-4 ring-emerald-50 dark:ring-emerald-900/10"
                     : step.status === "IN_PROGRESS"
-                      ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 ring-4 ring-blue-50 dark:ring-blue-900/10"
+                      ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 ring-2 sm:ring-4 ring-blue-50 dark:ring-blue-900/10"
                       : step.status === "FAILED"
-                        ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-4 ring-red-50 dark:ring-red-900/10"
+                        ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-2 sm:ring-4 ring-red-50 dark:ring-red-900/10"
                         : step.status === "SKIPPED"
                           ? "bg-gray-100 text-gray-500 dark:bg-gray-700/50 dark:text-gray-500 line-through opacity-60"
                           : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-500"
                 }`}
               >
                 {step.status === "COMPLETED" ? (
-                  <CheckCircle className="w-5 h-5" />
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : step.status === "FAILED" ? (
-                  <XCircle className="w-5 h-5" />
+                  <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : (
                   getStepIcon(step.currentStep)
                 )}
@@ -118,16 +118,16 @@ const VerificationSteps = ({ steps }: VerificationStepsProps) => {
                         ? "default"
                         : "secondary"
                     }
-                    className={
+                    className={`text-[9px] sm:text-xs ${
                       step.status === "COMPLETED"
                         ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50"
                         : ""
-                    }
+                    }`}
                   >
                     {step.status}
                   </Badge>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-[10px] sm:text-sm text-gray-600 dark:text-gray-400">
                   {step.isRequired ? "Required" : "Optional"}
                 </p>
               </div>
