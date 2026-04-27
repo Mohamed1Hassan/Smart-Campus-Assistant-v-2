@@ -38,145 +38,154 @@ const LocationStep: React.FC<LocationStepProps> = ({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-6"
     >
-      <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Location Settings
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-xl border border-white/40 dark:border-gray-700/50">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+             <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+                <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+             </div>
+             Location Settings | إعدادات الموقع
           </h2>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.security.isLocationRequired}
-              onChange={(e) =>
-                handleInputChange("security.isLocationRequired", e.target.checked)
-              }
-              className="sr-only peer"
-              aria-label="Require location geofencing"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-          </label>
+          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900/50 px-4 py-2 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Required</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.security.isLocationRequired}
+                onChange={(e) =>
+                  handleInputChange("security.isLocationRequired", e.target.checked)
+                }
+                className="sr-only peer"
+                aria-label="Require location geofencing"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500 shadow-sm"></div>
+            </label>
+          </div>
         </div>
 
-        <div className={`space-y-4 transition-opacity ${!formData.security.isLocationRequired ? "opacity-50 pointer-events-none" : ""}`}>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Location Name
+        <div className={`space-y-8 transition-all duration-500 ${!formData.security.isLocationRequired ? "opacity-40 grayscale pointer-events-none scale-[0.98]" : ""}`}>
+          <div className="relative group">
+            <label className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
+              Location Name / Venue
             </label>
             <input
               type="text"
               value={formData.location.name}
               onChange={(e) => handleInputChange("location.name", e.target.value)}
               placeholder="e.g. Building A, Room 101"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all font-medium hover:border-emerald-400"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
                 Latitude
               </label>
               <input
                 type="number"
                 value={formData.location.latitude}
                 onChange={(e) => handleInputChange("location.latitude", e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
                 Longitude
               </label>
               <input
                 type="number"
                 value={formData.location.longitude}
                 onChange={(e) => handleInputChange("location.longitude", e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all font-medium"
               />
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={async () => {
-              if (!navigator.geolocation) {
-                showError("Geolocation is not supported by your browser");
-                return;
-              }
+          <div className="flex flex-wrap gap-4 pt-2">
+            <button
+              type="button"
+              onClick={async () => {
+                if (!navigator.geolocation) {
+                  showError("Geolocation is not supported by your browser");
+                  return;
+                }
 
-              const getAccuratePosition = (
-                options: PositionOptions,
-                targetAccuracy = 50,
-                timeoutMs = 15000,
-              ): Promise<GeolocationPosition> => {
-                return new Promise((resolve, reject) => {
-                  let bestPosition: GeolocationPosition | null = null;
-                  info("Locating... Please wait up to 15s for best signal.");
+                const getAccuratePosition = (
+                  options: PositionOptions,
+                  targetAccuracy = 50,
+                  timeoutMs = 15000,
+                ): Promise<GeolocationPosition> => {
+                  return new Promise((resolve, reject) => {
+                    let bestPosition: GeolocationPosition | null = null;
+                    info("Locating... Please wait up to 15s for best signal.");
 
-                  const watchId = navigator.geolocation.watchPosition(
-                    (pos) => {
-                      if (!bestPosition || pos.coords.accuracy < bestPosition.coords.accuracy) {
-                        bestPosition = pos;
+                    const watchId = navigator.geolocation.watchPosition(
+                      (pos) => {
+                        if (!bestPosition || pos.coords.accuracy < bestPosition.coords.accuracy) {
+                          bestPosition = pos;
+                        }
+                        if (pos.coords.accuracy <= targetAccuracy) {
+                          navigator.geolocation.clearWatch(watchId);
+                          resolve(pos);
+                        }
+                      },
+                      (err) => {
+                        console.warn("GPS Watch Error:", err);
+                      },
+                      options,
+                    );
+
+                    setTimeout(() => {
+                      navigator.geolocation.clearWatch(watchId);
+                      if (bestPosition) {
+                        resolve(bestPosition);
+                      } else {
+                        reject(new Error("Timeout: Could not get any location"));
                       }
-                      if (pos.coords.accuracy <= targetAccuracy) {
-                        navigator.geolocation.clearWatch(watchId);
-                        resolve(pos);
-                      }
-                    },
-                    (err) => {
-                      console.warn("GPS Watch Error:", err);
-                    },
-                    options,
+                    }, timeoutMs);
+                  });
+                };
+
+                try {
+                  const pos = await getAccuratePosition(
+                    { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+                    50,
+                    15000,
                   );
 
-                  setTimeout(() => {
-                    navigator.geolocation.clearWatch(watchId);
-                    if (bestPosition) {
-                      resolve(bestPosition);
-                    } else {
-                      reject(new Error("Timeout: Could not get any location"));
-                    }
-                  }, timeoutMs);
-                });
-              };
+                  handleInputChange("location.latitude", pos.coords.latitude);
+                  handleInputChange("location.longitude", pos.coords.longitude);
 
-              try {
-                const pos = await getAccuratePosition(
-                  { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
-                  50,
-                  15000,
-                );
-
-                handleInputChange("location.latitude", pos.coords.latitude);
-                handleInputChange("location.longitude", pos.coords.longitude);
-
-                const acc = Math.round(pos.coords.accuracy);
-                if (acc > 2000) {
-                  showWarning(`Weak Signal (${acc}m). IP-based location confirmed.`);
-                } else if (acc > 100) {
-                  showWarning(`Location set, accuracy is low (${acc}m).`);
-                } else {
-                  success(`Location updated (Accuracy: ${acc}m)`);
+                  const acc = Math.round(pos.coords.accuracy);
+                  if (acc > 2000) {
+                    showWarning(`Weak Signal (${acc}m). IP-based location confirmed.`);
+                  } else if (acc > 100) {
+                    showWarning(`Location set, accuracy is low (${acc}m).`);
+                  } else {
+                    success(`Location updated (Accuracy: ${acc}m)`);
+                  }
+                } catch {
+                  showError("Failed to get location.");
                 }
-              } catch {
-                showError("Failed to get location.");
-              }
-            }}
-            className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
-          >
-            <MapPin className="w-4 h-4" /> Use Current Location
-          </button>
-
-          {formData.location.latitude && formData.location.longitude && (
-            <a
-              href={`https://www.google.com/maps?q=${formData.location.latitude},${formData.location.longitude}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 ml-4"
+              }}
+              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-2 group"
             >
-              <Navigation2 className="w-4 h-4" /> View on Map
-            </a>
-          )}
+              <Navigation2 className="w-4 h-4 group-hover:rotate-12 transition-transform" /> 
+              Use Current Location | موقعي الحالي
+            </button>
+
+            {formData.location.latitude && formData.location.longitude && (
+              <a
+                href={`https://www.google.com/maps?q=${formData.location.latitude},${formData.location.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-100 dark:border-blue-800/50 hover:bg-blue-100 transition-all flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4" /> View on Map
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

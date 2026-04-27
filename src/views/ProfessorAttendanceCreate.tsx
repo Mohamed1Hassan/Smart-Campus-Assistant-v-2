@@ -17,6 +17,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAttendanceSessions } from "../hooks/useAttendanceSessions";
 import { apiClient } from "../services/api";
 import { useToast } from "../components/common/ToastProvider";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, Activity, Camera, MapPin as MapPinIcon, Shield as ShieldIcon } from "lucide-react";
+
 
 // Dynamically import heavy components
 const ScheduleStep = dynamic(() => import("../components/professor/attendance/ScheduleStep"), { ssr: false });
@@ -109,6 +112,63 @@ export default function ProfessorAttendanceCreate() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [currentStep, setCurrentStep] = useState(0);
+
+  const [permissions, setPermissions] = useState({
+    location: "prompt" as PermissionState,
+  });
+
+  const checkDeviceCapabilities = useCallback(async () => {
+    // Check Location Permission
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const result = await navigator.permissions.query({
+          name: "geolocation" as PermissionName,
+        });
+        setPermissions((prev) => ({ ...prev, location: result.state }));
+        result.onchange = () => {
+          setPermissions((prev) => ({ ...prev, location: result.state }));
+        };
+      } catch (error) {
+        console.warn("Location permission query failed:", error);
+      }
+    } else {
+      // Fallback
+      navigator.geolocation.getCurrentPosition(
+        () => setPermissions(prev => ({ ...prev, location: "granted" })),
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            setPermissions(prev => ({ ...prev, location: "denied" }));
+          }
+        },
+        { timeout: 2000 }
+      );
+    }
+  }, []);
+
+  const requestLocationPermission = useCallback(async () => {
+    return new Promise<void>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setPermissions(prev => ({ ...prev, location: "granted" }));
+          handleInputChange("location.latitude", pos.coords.latitude);
+          handleInputChange("location.longitude", pos.coords.longitude);
+          success("Location access granted and coordinates updated.");
+          resolve();
+        },
+        (err) => {
+          setPermissions(prev => ({ ...prev, location: "denied" }));
+          showError("Location access denied.");
+          resolve();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }, [success, showError]);
+
+  useEffect(() => {
+    checkDeviceCapabilities();
+  }, [checkDeviceCapabilities]);
+
 
   // Fetch courses
   useEffect(() => {
@@ -310,35 +370,100 @@ export default function ProfessorAttendanceCreate() {
 
   return (
     <DashboardLayout userName={user ? `${user.firstName} ${user.lastName}` : "Professor"} userType="professor">
-      <div className="max-w-7xl mx-auto h-[calc(100vh-5rem)] md:h-[calc(100vh-8rem)] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6 flex-shrink-0">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
-            aria-label="Go back to attendance list"
-          >
-            <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {isEditMode ? "Edit Session" : "Create Session"}
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {isEditMode ? "Modify existing attendance session" : "Configure a new attendance session"}
-            </p>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto h-[calc(100vh-5rem)] md:h-[calc(100vh-8rem)] flex flex-col px-4">
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-700/50 p-6 lg:p-8 group"
+        >
+          {/* Glow effect */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-125" />
 
-        <div className="flex-1 flex gap-8 min-h-0">
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => router.back()}
+                className="w-12 h-12 bg-white/50 dark:bg-gray-700/50 hover:bg-white dark:hover:bg-gray-700 rounded-2xl flex items-center justify-center transition-all shadow-sm border border-gray-100 dark:border-gray-600 group/back"
+              >
+                <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover/back:-translate-x-1 transition-transform" />
+              </button>
+              <div>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight">
+                  {isEditMode ? "Edit Session" : "Create Session"}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base font-medium">
+                  {isEditMode ? "Modify existing attendance session" : "Configure a new attendance session"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+               <div className="flex items-center space-x-2 px-4 py-2.5 rounded-2xl border bg-purple-50/50 border-purple-100/50 dark:bg-purple-900/10 dark:border-purple-800/30 backdrop-blur-sm shadow-sm">
+                <Activity className="h-5 w-5 text-purple-500" strokeWidth={2.5} />
+                <span className="text-sm sm:text-base font-bold text-purple-700 dark:text-purple-400">
+                  {isEditMode ? "Editing" : "Draft"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+
+        {/* Permission Advisor (Only if location not granted) */}
+        {permissions.location !== "granted" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 overflow-hidden rounded-[2rem] p-6 shadow-xl relative border bg-white/80 dark:bg-gray-800/80 border-white/40 dark:border-gray-700/50 backdrop-blur-xl transition-all duration-500"
+          >
+            <div className="flex flex-col lg:flex-row gap-6 items-center">
+              <div className={`p-4 rounded-3xl border transition-all ${
+                permissions.location === "denied" ? "bg-red-500/10 border-red-200/50 text-red-600" : "bg-blue-500/10 border-blue-200/50 text-blue-600"
+              }`}>
+                <MapPinIcon className="w-6 h-6" />
+              </div>
+              <div className="flex-1 text-center lg:text-left">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  Location Access Required | إذن الوصول مطلوب
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  To set accurate coordinates for this session, we need access to your GPS.
+                  <br />
+                  <span className="dir-rtl block font-medium mt-1">
+                    لتحديد إحداثيات الجلسة بدقة، نحتاج للوصول إلى الموقع الجغرافي.
+                  </span>
+                </p>
+              </div>
+              <button
+                onClick={requestLocationPermission}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-95"
+              >
+                Enable Access | تفعيل الموقع
+              </button>
+            </div>
+            
+            {permissions.location === "denied" && (
+              <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/50">
+                <p className="text-xs text-amber-800 dark:text-amber-400 text-center">
+                  <b>Location blocked:</b> Please click the 🔒 icon in the address bar to reset permissions. | <b>الموقع محظور:</b> اضغط على القفل 🔒 لإعادة تعيين الأذونات.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        <div className="flex-1 flex flex-col lg:flex-row gap-8 min-h-0">
+
           {/* Left Column - Form */}
           <div className="flex-1 flex flex-col min-h-0">
             {/* Stepper */}
-            <div className="flex items-center justify-between mb-6 md:mb-8 px-1 md:px-2 flex-shrink-0">
+            <div className="flex items-center justify-between mb-8 px-1 md:px-2 flex-shrink-0">
               {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center flex-1 last:flex-none">
+                <div key={step.id} className="flex items-center flex-1 last:flex-none relative">
                   <div
-                    className={`flex items-center gap-2 cursor-pointer group ${index <= currentStep ? "text-purple-600 dark:text-purple-400" : "text-gray-600"}`}
+                    className={`flex items-center gap-3 cursor-pointer group z-10 transition-all ${index <= currentStep ? "text-purple-600 dark:text-purple-400" : "text-gray-400 dark:text-gray-600"}`}
                     onClick={() => setCurrentStep(index)}
                     role="button"
                     tabIndex={0}
@@ -350,15 +475,28 @@ export default function ProfessorAttendanceCreate() {
                     }}
                   >
                     <div
-                      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all ${index <= currentStep ? "border-purple-600 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"}`}
+                      className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${
+                        index < currentStep 
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500" 
+                          : index === currentStep
+                            ? "border-purple-600 bg-purple-50 dark:bg-purple-900/20 shadow-lg shadow-purple-500/10 scale-110"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                      }`}
                     >
-                      <step.icon className="w-4 h-4 md:w-5 md:h-5" />
+                      {index < currentStep ? (
+                        <Activity className="w-5 h-5" />
+                      ) : (
+                        <step.icon className="w-5 h-5" />
+                      )}
                     </div>
-                    <span className="font-medium hidden md:block text-sm md:text-base">{step.title}</span>
+                    <div className="hidden lg:block">
+                       <p className={`text-xs uppercase font-bold tracking-wider mb-0.5 ${index <= currentStep ? "text-purple-500" : "text-gray-400"}`}>Step {index + 1}</p>
+                       <span className="font-black text-sm">{step.title}</span>
+                    </div>
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`h-0.5 flex-1 mx-2 md:mx-4 transition-colors ${index < currentStep ? "bg-purple-200 dark:bg-purple-900" : "bg-gray-100 dark:bg-gray-800"}`}
+                      className={`h-0.5 flex-1 mx-2 md:mx-4 transition-colors duration-500 ${index < currentStep ? "bg-emerald-500" : "bg-gray-100 dark:bg-gray-800"}`}
                     />
                   )}
                 </div>
@@ -376,19 +514,25 @@ export default function ProfessorAttendanceCreate() {
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-6"
                   >
-                    <div className="bg-white dark:bg-cardDark rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Session Details</h2>
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="course-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Course
+                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-xl border border-white/40 dark:border-gray-700/50">
+                      <h2 className="text-xl font-black mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                            <Layout className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                         </div>
+                         Session Details | تفاصيل الجلسة
+                      </h2>
+                      
+                      <div className="space-y-6">
+                        <div className="relative">
+                          <label htmlFor="course-select" className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
+                            Target Course
                           </label>
                           <select
                             id="course-select"
                             value={formData.courseId}
                             onChange={(e) => handleInputChange("courseId", e.target.value)}
                             onBlur={() => handleBlur("courseId")}
-                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${errors.courseId ? "border-red-300 focus:ring-red-200" : "border-gray-200 dark:border-gray-700"}`}
+                            className={`w-full px-5 py-4 rounded-2xl border bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all font-medium appearance-none ${errors.courseId ? "border-red-300 ring-4 ring-red-500/10" : "border-gray-200 dark:border-gray-700 hover:border-purple-400"}`}
                           >
                             <option value="">Select a course...</option>
                             {courses.map((course) => (
@@ -397,11 +541,15 @@ export default function ProfessorAttendanceCreate() {
                               </option>
                             ))}
                           </select>
-                          {errors.courseId && <p className="text-red-500 text-xs mt-1">{errors.courseId}</p>}
+                          <div className="absolute right-5 top-[3.25rem] pointer-events-none">
+                             <ChevronRight className="w-5 h-5 text-gray-400 rotate-90" />
+                          </div>
+                          {errors.courseId && <p className="text-red-500 text-xs font-bold mt-2 flex items-center gap-1"><span className="w-1 h-1 bg-red-500 rounded-full" /> {errors.courseId}</p>}
                         </div>
+
                         <div>
-                          <label htmlFor="session-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Title
+                          <label htmlFor="session-title" className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
+                            Session Title
                           </label>
                           <input
                             id="session-title"
@@ -410,12 +558,13 @@ export default function ProfessorAttendanceCreate() {
                             onChange={(e) => handleInputChange("title", e.target.value)}
                             onBlur={() => handleBlur("title")}
                             placeholder="e.g. Week 5: Neural Networks"
-                            className={`w-full px-4 py-3 rounded-xl border bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all ${errors.title ? "border-red-300 focus:ring-red-200" : "border-gray-200 dark:border-gray-700"}`}
+                            className={`w-full px-5 py-4 rounded-2xl border bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all font-medium ${errors.title ? "border-red-300 ring-4 ring-red-500/10" : "border-gray-200 dark:border-gray-700 hover:border-purple-400"}`}
                           />
-                          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+                          {errors.title && <p className="text-red-500 text-xs font-bold mt-2 flex items-center gap-1"><span className="w-1 h-1 bg-red-500 rounded-full" /> {errors.title}</p>}
                         </div>
+
                         <div>
-                          <label htmlFor="session-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label htmlFor="session-description" className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
                             Description (Optional)
                           </label>
                           <textarea
@@ -424,7 +573,7 @@ export default function ProfessorAttendanceCreate() {
                             onChange={(e) => handleInputChange("description", e.target.value)}
                             placeholder="Brief description of the session topics..."
                             rows={4}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
+                            className="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all font-medium resize-none hover:border-purple-400"
                           />
                         </div>
                       </div>
@@ -457,11 +606,11 @@ export default function ProfessorAttendanceCreate() {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md sticky bottom-0 z-20 -mx-2 px-2">
               <button
                 onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
                 disabled={currentStep === 0}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${currentStep === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"}`}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all ${currentStep === 0 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 active:scale-95"}`}
               >
                 Back
               </button>
@@ -469,17 +618,21 @@ export default function ProfessorAttendanceCreate() {
               {currentStep < steps.length - 1 ? (
                 <button
                   onClick={() => setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))}
-                  className="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+                  className="px-10 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-bold hover:shadow-xl transition-all active:scale-95 flex items-center gap-2 group"
                 >
-                  Next Step <ChevronRight className="w-4 h-4" />
+                  Next Step <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               ) : (
                 <button
                   onClick={handleSubmit}
                   disabled={isCreating || isUpdating}
-                  className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center gap-1"
+                  className="px-12 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl font-bold hover:shadow-2xl hover:shadow-purple-500/30 transition-all active:scale-95 flex items-center gap-2 group"
                 >
-                  {isCreating || isUpdating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {isCreating || isUpdating ? (
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                  )}
                   {isEditMode ? "Update Session" : "Create Session"}
                 </button>
               )}
