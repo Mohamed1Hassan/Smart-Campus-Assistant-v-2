@@ -3,11 +3,12 @@
 import React from "react";
 import { Check, Loader2 } from "lucide-react";
 
-interface EditingUser {
+export interface EditingUser {
   id: string;
   firstName: string;
   lastName: string;
   universityId: string;
+  [key: string]: string | number | boolean | undefined | null | unknown[];
 }
 
 interface UserEditModalProps {
@@ -82,7 +83,7 @@ export default function UserEditModal({
             <input
               type="password"
               value={editPassword}
-              onChange={(e) => setEditPassword(e.target.value)}
+            onChange={(e) => setEditPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-sm"
               placeholder="Enter new password to change"
             />

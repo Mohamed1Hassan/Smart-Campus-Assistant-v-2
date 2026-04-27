@@ -53,6 +53,10 @@ interface RawScheduleItem {
   startTime: string;
   endTime: string;
   courseName: string;
+  course?: {
+    courseName: string;
+    courseCode: string;
+  };
   room?: string;
 }
 
@@ -129,7 +133,7 @@ export default function ProfessorDashboard() {
             .filter(
               (s) => s.professorId === professorId && s.dayOfWeek === dayOfWeek,
             )
-            .map((s: any) => {
+            .map((s) => {
               const [startH, startM] = s.startTime.split(":").map(Number);
               const [endH, endM] = s.endTime.split(":").map(Number);
               const now = new Date();

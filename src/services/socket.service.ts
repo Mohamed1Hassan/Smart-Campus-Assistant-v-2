@@ -94,11 +94,15 @@ export class SocketService {
       let channel = this.channels.get(target);
       
       if (!channel) {
-        channel = this.supabase.channel(target);
-        this.channels.set(target, channel);
+        const newChannel = this.supabase.channel(target);
+        if (!newChannel) return;
+        
+        channel = newChannel;
+        this.channels.set(target, channel as RealtimeChannel);
         
         // We MUST subscribe to the channel to send broadcasts reliably
         await new Promise<void>((resolve, reject) => {
+          if (!channel) return reject(new Error('Channel is null'));
           channel.subscribe((status: string) => {
             if (status === 'SUBSCRIBED') resolve();
             if (status === 'CHANNEL_ERROR') reject(new Error('Channel error'));
@@ -106,11 +110,13 @@ export class SocketService {
         });
       }
 
-      await channel.send({
-        type: 'broadcast',
-        event: `${target}:${event}`,
-        payload: payload, 
-      });
+      if (channel) {
+        await channel.send({
+          type: 'broadcast',
+          event: `${target}:${event}`,
+          payload: payload, 
+        });
+      }
     } catch (error) {
       console.error(`[SocketService] Broadcast error (${target}:${event}):`, error);
     }

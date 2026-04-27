@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { apiClient } from "@/services/api";
+import type { EditingUser } from "./UserEditModal";
 
 // Lazy load heavy modal components for better Lighthouse performance
 const UserAddModal = dynamic(() => import("./UserAddModal"), { 
@@ -361,8 +362,8 @@ export default function UserManagementDashboard() {
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleEditUser}
         isSubmitting={isSubmitting}
-        editingUser={editingUser}
-        setEditingUser={setEditingUser}
+        editingUser={editingUser as EditingUser | null}
+        setEditingUser={setEditingUser as unknown as React.Dispatch<React.SetStateAction<EditingUser | null>>}
         editPassword={editPassword}
         setEditPassword={setEditPassword}
       />
