@@ -24,10 +24,14 @@ import {
   Activity,
   QrCode,
   AlertTriangle,
+  Camera,
+  MapPin,
+  Shield,
 } from "lucide-react";
 import { SuccessAnimation } from "@/components/common/SuccessAnimation";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 // Sub-components
 import ScannerSection from "@/components/student/attendance/ScannerSection";
@@ -743,14 +747,27 @@ export default function StudentAttendance() {
     }, []);
 
   const checkDeviceCapabilities = useCallback(async () => {
+    // Check Camera Permission
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach((track) => track.stop());
-      setPermissions((prev) => ({ ...prev, camera: "granted" }));
-    } catch {
-      setPermissions((prev) => ({ ...prev, camera: "denied" }));
+      if (navigator.permissions && navigator.permissions.query) {
+        const camPerm = await navigator.permissions.query({ name: 'camera' as PermissionName });
+        setPermissions(prev => ({ ...prev, camera: camPerm.state }));
+        camPerm.onchange = () => setPermissions(prev => ({ ...prev, camera: camPerm.state }));
+      } else {
+        // Fallback for browsers that don't support camera permission query
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach((track) => track.stop());
+        setPermissions((prev) => ({ ...prev, camera: "granted" }));
+      }
+    } catch (err) {
+      console.warn("Camera check failed:", err);
+      // If error is NotAllowedError, it's definitely denied
+      if (err instanceof Error && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+        setPermissions((prev) => ({ ...prev, camera: "denied" }));
+      }
     }
 
+    // Check Location Permission
     if (navigator.permissions && navigator.permissions.query) {
       try {
         const result = await navigator.permissions.query({
@@ -763,6 +780,17 @@ export default function StudentAttendance() {
       } catch (error) {
         console.warn("Location permission query failed:", error);
       }
+    } else {
+      // Fallback: request a low-accuracy position to check
+      navigator.geolocation.getCurrentPosition(
+        () => setPermissions(prev => ({ ...prev, location: "granted" })),
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            setPermissions(prev => ({ ...prev, location: "denied" }));
+          }
+        },
+        { timeout: 2000 }
+      );
     }
 
     if (window.PublicKeyCredential) {
@@ -775,6 +803,42 @@ export default function StudentAttendance() {
     const fingerprint = await generateDeviceFingerprint();
     setDeviceFingerprint(fingerprint);
   }, [generateDeviceFingerprint]);
+
+  const requestAllPermissions = useCallback(async () => {
+    // 1. Request Camera
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      setPermissions(prev => ({ ...prev, camera: "granted" }));
+    } catch (err) {
+      setPermissions(prev => ({ ...prev, camera: "denied" }));
+    }
+
+    // 2. Request Location
+    return new Promise<void>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setPermissions(prev => ({ ...prev, location: "granted" }));
+          const location: LocationData = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+            timestamp: new Date(),
+            isVerified: true,
+            isWithinRadius: true,
+          };
+          setLocationData(location);
+          resolve();
+        },
+        (err) => {
+          setPermissions(prev => ({ ...prev, location: "denied" }));
+          resolve();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }, []);
+
 
   const isInitialized = React.useRef(false);
 
@@ -1369,72 +1433,94 @@ export default function StudentAttendance() {
       {/* Stats Overview */}
       <StatsOverview stats={attendanceStats} />
 
-      {/* Permission Advisor Banner */}
-      {(permissions.camera === "denied" ||
-        permissions.location === "denied") && (
-        <m.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-3xl p-6 shadow-sm overflow-hidden relative"
-        >
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-            <AlertTriangle className="w-32 h-32" />
-          </div>
-          <div className="flex flex-col md:flex-row gap-6 relative z-10">
-            <div className="p-4 bg-amber-100 dark:bg-amber-800 rounded-2xl h-fit flex-shrink-0 flex items-center justify-center">
-              <AlertTriangle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+      {/* Permission Onboarding & Advisor */}
+      <m.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`mb-8 overflow-hidden rounded-[2.5rem] p-8 shadow-xl relative border transition-all duration-500 ${
+          permissions.camera === "granted" && permissions.location === "granted"
+            ? "bg-emerald-50/30 border-emerald-100 dark:bg-emerald-900/5 dark:border-emerald-800/20"
+            : "bg-white/80 dark:bg-gray-800/80 border-white/40 dark:border-gray-700/50 backdrop-blur-xl"
+        }`}
+      >
+        <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
+          {/* Status Indicators */}
+          <div className="flex flex-row lg:flex-col gap-4 w-full lg:w-auto">
+            <div className={`flex-1 lg:w-48 p-4 rounded-3xl border transition-all ${
+              permissions.camera === "granted" 
+                ? "bg-emerald-500/10 border-emerald-200/50 text-emerald-600" 
+                : permissions.camera === "denied"
+                  ? "bg-red-500/10 border-red-200/50 text-red-600"
+                  : "bg-blue-500/10 border-blue-200/50 text-blue-600"
+            }`}>
+              <div className="flex items-center gap-3">
+                <Camera className="w-5 h-5" />
+                <span className="font-bold text-sm">Camera</span>
+                <Badge className="ml-auto text-[10px] uppercase">{permissions.camera}</Badge>
+              </div>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-amber-900 dark:text-amber-200 mb-2 flex flex-wrap gap-2 items-center">
-                <span>إذن الوصول مطلوب</span>
-                <span className="text-sm font-normal opacity-50 font-sans">
-                  |
-                </span>
-                <span className="font-sans">Permission Required</span>
-              </h2>
-              <p className="text-base text-amber-800 dark:text-amber-300 mb-6 leading-relaxed">
-                <span className="font-bold">يرجى ملاحظة:</span> نظام الحضور
-                يتطلب الوصول للكاميرا (لمسح الكود) والموقع (للتأكد من وجودك في
-                المحاضرة).
-                <br />
-                <span className="font-sans italic">
-                  Attendance tracking requires access to both Camera and
-                  Location.
-                </span>
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white/60 dark:bg-black/20 p-4 rounded-2xl border border-amber-100 dark:border-amber-800/50">
-                  <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-3 uppercase tracking-wider">
-                    How to Fix (English)
-                  </p>
-                  <ol className="text-sm text-amber-800 dark:text-amber-400 list-decimal pl-4 space-y-2">
-                    <li>Click the 🔒 icon in address bar</li>
-                    <li>
-                      Switch <span className="font-bold">Camera</span> &{" "}
-                      <span className="font-bold">Location</span> to{" "}
-                      <b>Allow</b>
-                    </li>
-                    <li>Refresh this page</li>
-                  </ol>
-                </div>
-                <div className="bg-white/60 dark:bg-black/20 p-4 rounded-2xl border border-amber-100 dark:border-amber-800/50 text-right">
-                  <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-3 uppercase tracking-wider">
-                    خطوات الحل (بالعربية)
-                  </p>
-                  <ol className="text-sm text-amber-800 dark:text-amber-400 list-decimal pr-4 space-y-2 dir-rtl text-right">
-                    <li>اضغط على أيقونة القفل 🔒 بجوار رابط الصفحة</li>
-                    <li>
-                      قم بتفعيل خيار &quot;الكاميرا&quot; و &quot;الموقع&quot;
-                    </li>
-                    <li>أعد تحميل الصفحة</li>
-                  </ol>
-                </div>
+            <div className={`flex-1 lg:w-48 p-4 rounded-3xl border transition-all ${
+              permissions.location === "granted" 
+                ? "bg-emerald-500/10 border-emerald-200/50 text-emerald-600" 
+                : permissions.location === "denied"
+                  ? "bg-red-500/10 border-red-200/50 text-red-600"
+                  : "bg-blue-500/10 border-blue-200/50 text-blue-600"
+            }`}>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5" />
+                <span className="font-bold text-sm">Location</span>
+                <Badge className="ml-auto text-[10px] uppercase">{permissions.location}</Badge>
               </div>
             </div>
           </div>
-        </m.div>
-      )}
+
+          <div className="flex-1 text-center lg:text-left">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+              {permissions.camera === "granted" && permissions.location === "granted" 
+                ? "Systems Ready" 
+                : "Required Permissions"}
+              <span className="mx-3 text-gray-300 font-normal">|</span>
+              <span className="text-blue-600 dark:text-blue-400">أذونات الوصول</span>
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
+              {permissions.camera === "granted" && permissions.location === "granted"
+                ? "All security systems are active. You can now proceed to scan the attendance QR code."
+                : "To register your attendance, we need to verify your presence using the camera and GPS. This ensures a fair and secure academic environment."}
+              <br />
+              <span className="dir-rtl block mt-1 font-medium">
+                {permissions.camera === "granted" && permissions.location === "granted"
+                  ? "جميع الأنظمة جاهزة. يمكنك الآن البدء في مسح كود الحضور."
+                  : "لتسجيل حضورك، نحتاج للتأكد من وجودك في القاعة عبر الكاميرا والموقع الجغرافي. هذا يضمن بيئة أكاديمية عادلة وآمنة."}
+              </span>
+            </p>
+
+            {(permissions.camera !== "granted" || permissions.location !== "granted") && (
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                <Button
+                  onClick={requestAllPermissions}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-2xl font-black shadow-lg shadow-blue-500/20 group"
+                >
+                  <Shield className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                  Authorize System | تفعيل النظام
+                </Button>
+                
+                {(permissions.camera === "denied" || permissions.location === "denied") && (
+                  <div className="text-left bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl border border-amber-200 dark:border-amber-800/50 w-full">
+                    <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-2 uppercase tracking-wider flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" /> How to Fix / كيفية الإصلاح
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] text-amber-800 dark:text-amber-400">
+                      <p>Click the <b>Lock 🔒</b> icon in your browser address bar and set <b>Camera</b> and <b>Location</b> to <b>Allow</b>.</p>
+                      <p className="text-right dir-rtl">اضغط على أيقونة <b>القفل 🔒</b> في شريط العنوان، وقم بتغيير إعدادات <b>الكاميرا</b> و <b>الموقع</b> إلى <b>سماح</b>.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </m.div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0">
         {/* Left Column - Scanner & Verification */}
