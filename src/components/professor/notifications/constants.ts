@@ -102,7 +102,10 @@ export const mockNotifications: NotificationItem[] = [
 ];
 
 // Helper to parse timestamp
-export const parseTimestamp = (ts: string): Date => {
+export const parseTimestamp = (ts: string | undefined | null): Date => {
+  const now = new Date();
+  if (!ts) return now;
+
   // Try ISO format first
   const isoDate = new Date(ts);
   if (!isNaN(isoDate.getTime())) {
@@ -110,7 +113,6 @@ export const parseTimestamp = (ts: string): Date => {
   }
 
   // Parse relative time like "5 minutes ago", "1 hour ago", "2 days ago"
-  const now = new Date();
   const matches = ts.match(/(\d+)\s+(minute|hour|day|week|month)s?\s+ago/i);
   if (matches) {
     const amount = parseInt(matches[1]);

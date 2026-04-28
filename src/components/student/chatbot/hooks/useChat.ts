@@ -137,7 +137,7 @@ export const useChat = (): UseChatReturn => {
 
   // Call backend API for complex queries
   const callBackendAPI = useCallback(
-    async (message: string): Promise<string> => {
+    async (message: string): Promise<{ text: string; redirect?: string }> => {
       try {
         const language = detectLanguage(message);
 
@@ -172,11 +172,13 @@ export const useChat = (): UseChatReturn => {
         const data = await response.json();
 
         if (data.success) {
-          return (
-            data.reply ||
-            data.message ||
-            "Sorry, I could not process your request."
-          );
+          return {
+            text:
+              data.reply ||
+              data.message ||
+              "Sorry, I could not process your request.",
+            redirect: data.redirect,
+          };
         } else {
           throw new Error(data.error || "Unknown error");
         }
@@ -184,11 +186,12 @@ export const useChat = (): UseChatReturn => {
         console.error("Backend API error:", error);
         const language = detectLanguage(message);
 
-        if (language === "ar") {
-          return "عذرًا، لا أستطيع الحصول على إجابة الآن. حاول مرة أخرى بعد قليل.";
-        } else {
-          return "Sorry, I can't fetch an answer right now. Try again in a moment.";
-        }
+        const errorText =
+          language === "ar"
+            ? "عذرًا، لا أستطيع الحصول على إجابة الآن. حاول مرة أخرى بعد قليل."
+            : "Sorry, I can't fetch an answer right now. Try again in a moment.";
+
+        return { text: errorText };
       }
     },
     [],
@@ -196,17 +199,17 @@ export const useChat = (): UseChatReturn => {
 
   // Main message processing logic
   const processMessage = useCallback(
-    async (userMessage: string): Promise<string> => {
+    async (userMessage: string): Promise<{ text: string; redirect?: string }> => {
       // Step 1: Check knowledge base
       const kbReply = checkKnowledgeBase(userMessage);
       if (kbReply) {
-        return kbReply;
+        return { text: kbReply };
       }
 
       // Step 2: Check predefined responses
       const predefinedReply = checkPredefinedResponses(userMessage);
       if (predefinedReply) {
-        return predefinedReply;
+        return { text: predefinedReply };
       }
 
       // Step 3: Call backend API
@@ -240,12 +243,12 @@ export const useChat = (): UseChatReturn => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Process message and get reply
-        const replyText = await processMessage(text);
-        const language = detectLanguage(replyText);
+        const result = await processMessage(text);
+        const language = detectLanguage(result.text);
 
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          text: replyText,
+          text: result.text,
           isUser: false,
           timestamp: new Date(),
           language,
@@ -255,6 +258,13 @@ export const useChat = (): UseChatReturn => {
           const newMessages = [...prev, botMessage];
           return newMessages.slice(-MAX_MESSAGES);
         });
+
+        // Handle redirect if present
+        if (result.redirect) {
+          setTimeout(() => {
+            window.location.href = result.redirect!;
+          }, 1500); // Give user a moment to read the confirmation message
+        }
       } catch (error) {
         console.error("Error processing message:", error);
 

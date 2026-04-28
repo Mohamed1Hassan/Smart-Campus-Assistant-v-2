@@ -513,7 +513,6 @@ export default function StudentDashboard({
               }
               icon={GraduationCap}
               color="bg-emerald-500/10 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400"
-              subtitle="Based on Attendance"
             />
             <StatCardStudent
               title="Credits"

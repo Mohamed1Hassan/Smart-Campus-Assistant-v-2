@@ -219,6 +219,7 @@ const mapCategoryToUIType = (
   const cat = category?.toLowerCase();
   switch (cat) {
     case "exam":
+      return "exam";
     case "assignment":
       return "assignment";
     case "attendance":

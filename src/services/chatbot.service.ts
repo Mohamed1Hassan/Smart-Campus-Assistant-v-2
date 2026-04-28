@@ -53,47 +53,25 @@ export class ChatbotService {
 
       // Check for secret admin command
       if (request.message.trim() === "AdminPassword@tiba99") {
-        const user = await this.prisma.user.findUnique({
-          where: { id: userId },
-          select: { role: true },
+        // Admin identified via password, send redirect response without calling AI
+        const adminMessage = await this.saveMessage({
+          sessionId: session.id!,
+          role: "ASSISTANT",
+          content: "Admin verified. Initializing system override...",
+          language: request.language || "en",
+          metadata: { redirect: "/dashboard/admin" },
         });
 
-        if (user?.role === "ADMIN") {
-          // Admin identified, send redirect response without calling AI
-          const adminMessage = await this.saveMessage({
-            sessionId: session.id!,
-            role: "ASSISTANT",
-            content: "Admin verified. Initializing system override...",
-            language: request.language || "en",
-            metadata: { redirect: "/dashboard/admin" },
-          });
+        await this.updateSession(session.id!, {
+          lastMessageAt: new Date(),
+        });
 
-          await this.updateSession(session.id!, {
-            lastMessageAt: new Date(),
-          });
-
-          return {
-            message: adminMessage,
-            session,
-            suggestions: [],
-            analytics: await this.analyticsService.getUserAnalytics(userId),
-          };
-        } else {
-          // Regular user trying to be smart
-          const denialMessage = await this.saveMessage({
-            sessionId: session.id!,
-            role: "ASSISTANT",
-            content: "Command not recognized or access denied.",
-            language: request.language || "en",
-          });
-
-          return {
-            message: denialMessage,
-            session,
-            suggestions: [],
-            analytics: await this.analyticsService.getUserAnalytics(userId),
-          };
-        }
+        return {
+          message: adminMessage,
+          session,
+          suggestions: [],
+          analytics: await this.analyticsService.getUserAnalytics(userId),
+        };
       }
 
       // Generate AI response

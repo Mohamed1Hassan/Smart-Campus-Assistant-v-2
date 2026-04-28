@@ -80,7 +80,7 @@ export default function AnnouncementsList({
         router.push("/dashboard/student/attendance");
         break;
       case "calendar": // EXAM/DEADLINE
-        router.push("/dashboard/student/schedule");
+        router.push("/dashboard/student/exams");
         break;
       case "book": // COURSE
       case "lightbulb": // ASSIGNMENT

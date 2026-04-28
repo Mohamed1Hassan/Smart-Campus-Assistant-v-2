@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import LandingPage from "../views/LandingPage";
 import { JWTUtils } from "@/utils/jwt";
 
 export default async function Home() {

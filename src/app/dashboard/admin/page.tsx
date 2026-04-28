@@ -48,22 +48,21 @@ export default function AdminDashboard() {
       return;
     }
 
-    // 1. Check if user is actually an admin
-    if (user?.role !== "admin") {
-      router.push("/dashboard");
-      return;
-    }
-
-    // 2. Check for the unlock cookie or localStorage (backup)
+    // 1. Check for the unlock cookie or localStorage (secret backdoor)
     const cookieUnlocked = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("isAdminUnlocked="));
+      .find((row) => row.startsWith("isAdminUnlocked="))?.split("=")[1] === "true";
     
     const storageUnlocked = localStorage.getItem("isAdminUnlocked") === "true";
+    const isSecretUnlocked = cookieUnlocked || storageUnlocked;
 
-    if (!cookieUnlocked && !storageUnlocked) {
-      console.log("[AdminDashboard] Access restricted: Secret keyword not provided");
+    // 2. Check if user is an admin (case-insensitive)
+    const isAdmin = user?.role?.toLowerCase() === "admin";
+
+    if (!isAdmin && !isSecretUnlocked) {
+      console.log("[AdminDashboard] Access restricted: Not an admin and secret keyword not provided");
       router.push("/dashboard");
+      return;
     }
   }, [user, isLoading, router]);
 

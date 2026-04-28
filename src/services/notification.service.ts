@@ -266,6 +266,24 @@ export class NotificationService {
   }
 
   /**
+   * Delete all notifications for a user
+   */
+  async deleteAllNotifications(userId: number): Promise<number> {
+    try {
+      const result = await prisma.notification.deleteMany({
+        where: {
+          userId,
+        },
+      });
+
+      return result.count;
+    } catch (error) {
+      console.error("Error deleting all notifications:", error);
+      throw new Error("Failed to delete all notifications");
+    }
+  }
+
+  /**
    * Get unread notifications count
    */
   async getUnreadCount(userId: number): Promise<number> {

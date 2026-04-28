@@ -45,7 +45,49 @@ const NotificationSkeleton = () => (
   </div>
 );
 
-// No content needed here as helpers moved to constants.ts
+interface ApiNotification {
+  id: string | number;
+  category?: string;
+  type?: string;
+  title?: string;
+  message?: string;
+  description?: string;
+  createdAt?: string;
+  timestamp?: string;
+  isRead?: boolean;
+  read?: boolean;
+  metadata?: {
+    studentName?: string;
+    courseName?: string;
+  };
+  studentName?: string;
+  courseName?: string;
+}
+
+// Mapping helper for API notifications to UI format
+const mapApiNotificationToItem = (n: ApiNotification): NotificationItem => {
+  const category = n.category?.toUpperCase();
+  let type: NotificationItem["type"] = "system";
+
+  if (category === "ASSIGNMENT" || category === "DEADLINE") type = "assignment";
+  else if (category === "EXAM") type = "assignment";
+  else if (category === "ATTENDANCE") type = "submission";
+  else if (category === "REMINDER" || category === "COURSE") type = "schedule";
+  else if (category === "ANNOUNCEMENT") type = "message";
+  else if (n.type === "SECURITY") type = "system";
+
+  return {
+    id: String(n.id),
+    type,
+    title: n.title || "Notification",
+    description: n.message || n.description || "",
+    timestamp: n.createdAt || n.timestamp || new Date().toISOString(),
+    read: n.isRead || n.read || false,
+    studentName: n.metadata?.studentName || n.studentName,
+    courseName: n.metadata?.courseName || n.courseName,
+    priority: (n.type === "URGENT" || n.type === "ERROR" || n.type === "SECURITY" ? "urgent" : "normal") as NotificationItem["priority"],
+  };
+};
 
 interface NotificationGroup {
   label: string;
@@ -148,7 +190,8 @@ export default function ProfessorNotifications() {
               : null;
 
           if (notificationsData) {
-            setNotifications(notificationsData as NotificationItem[]);
+            const mapped = (notificationsData as ApiNotification[]).map(mapApiNotificationToItem);
+            setNotifications(mapped);
             setLastSync(new Date());
             return;
           }
@@ -271,7 +314,8 @@ export default function ProfessorNotifications() {
     [showSuccess, showError, showWarning, showInfo],
   );
 
-  const handleToggleRead = useCallback((id: string) => {
+  const handleToggleRead = useCallback(async (id: string) => {
+    // Optimistic update
     setNotifications((prev) =>
       prev.map((notification) =>
         notification.id === id
@@ -279,30 +323,69 @@ export default function ProfessorNotifications() {
           : notification,
       ),
     );
-  }, []);
 
-  const handleMarkAllAsRead = () => {
+    try {
+      const notification = notifications.find((n) => n.id === id);
+      if (!notification) return;
+
+      // If it was unread and we are marking it as read
+      if (!notification.read) {
+        await apiClient.patch(`/api/notifications/${id}`);
+      }
+      // Note: Backend might not support marking as UNREAD yet, 
+      // but we update local state regardless for better UX.
+    } catch (error) {
+      if (DEV) console.error("Failed to toggle read status:", error);
+      // Revert on error if needed, but usually not necessary for this kind of UI
+    }
+  }, [notifications]);
+
+  const handleMarkAllAsRead = async () => {
+    // Optimistic update
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, read: true })),
     );
-    showToast(
-      "success",
-      "All notifications marked as read",
-      "You're all caught up!",
-    );
+
+    try {
+      const res = await apiClient.patch("/api/notifications/read-all");
+      if (res.success) {
+        showToast(
+          "success",
+          "All notifications marked as read",
+          "You're all caught up!",
+        );
+      }
+    } catch (error) {
+      if (DEV) console.error("Failed to mark all as read:", error);
+      showToast("error", "Failed to update notifications");
+    }
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (
       typeof window !== "undefined" &&
       window.confirm("Clear all notifications? This action cannot be undone.")
     ) {
+      // Optimistic update
+      const previousNotifications = [...notifications];
       setNotifications([]);
-      showToast(
-        "success",
-        "All notifications cleared",
-        "Your notification list is now empty.",
-      );
+
+      try {
+        const res = await apiClient.delete("/api/notifications/clear-all");
+        if (res.success) {
+          showToast(
+            "success",
+            "All notifications cleared",
+            "Your notification list is now empty.",
+          );
+        } else {
+          throw new Error("Failed to clear");
+        }
+      } catch (error) {
+        if (DEV) console.error("Failed to clear notifications:", error);
+        setNotifications(previousNotifications);
+        showToast("error", "Failed to clear notifications");
+      }
     }
   };
 
@@ -322,9 +405,12 @@ export default function ProfessorNotifications() {
         }
 
         if (notificationsData) {
-          setNotifications(notificationsData);
+          const mapped = (notificationsData as ApiNotification[]).map(
+            mapApiNotificationToItem,
+          );
+          setNotifications(mapped);
           setLastSync(new Date());
-          if (DEV) console.log("Notifications refreshed:", notificationsData.length);
+          if (DEV) console.log("Notifications refreshed:", mapped.length);
         }
       }
     } catch (error) {

@@ -20,6 +20,7 @@ export const Logo = ({
           src="/logo-light.png"
           alt="Smart Campus Assistant Logo"
           fill
+          sizes="(max-width: 768px) 100px, 150px"
           className={`object-contain p-1 ${isAuto ? 'dark:hidden' : (isForcedLight ? 'block' : 'hidden')}`}
           priority
           fetchPriority="high"
@@ -31,6 +32,7 @@ export const Logo = ({
           src="/logo-dark.png"
           alt="Smart Campus Assistant Logo"
           fill
+          sizes="(max-width: 768px) 100px, 150px"
           className={`object-contain p-1 ${isAuto ? 'hidden dark:block' : (isForcedDark ? 'block' : 'hidden')}`}
           priority
           fetchPriority="high"

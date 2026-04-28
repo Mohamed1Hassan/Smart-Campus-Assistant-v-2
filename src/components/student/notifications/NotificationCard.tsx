@@ -20,6 +20,7 @@ export interface NotificationItem {
   id: string;
   type:
     | "assignment"
+    | "exam"
     | "grade"
     | "schedule"
     | "system"
@@ -52,6 +53,12 @@ const notificationConfig = {
     color: "text-yellow-600 dark:text-yellow-400",
     bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
     borderColor: "border-l-yellow-500",
+  },
+  exam: {
+    icon: FileText,
+    color: "text-red-600 dark:text-red-400",
+    bgColor: "bg-red-50 dark:bg-red-900/20",
+    borderColor: "border-l-red-500",
   },
   grade: {
     icon: GraduationCap,
@@ -163,6 +170,9 @@ export default function NotificationCard({
         break;
       case "schedule":
         router.push("/dashboard/student/schedule");
+        break;
+      case "exam":
+        router.push("/dashboard/student/exams");
         break;
       case "assignment":
       case "grade":
