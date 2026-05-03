@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     "منصة معهد طيبة التعليمية",
   ],
   authors: [{ name: "Smart Campus Team" }],
+  applicationName: "Smart Campus Assistant",
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
   alternates: {
     canonical: "/",
@@ -45,13 +48,18 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
     ],
     apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "mask-icon", url: "/icon.png", color: "#2563eb" },
     ],
   },
+  manifest: "/manifest.json",
   openGraph: {
     type: "website",
     locale: "ar_EG",
@@ -76,11 +84,13 @@ export const metadata: Metadata = {
       "النظام الذكي المتكامل لإدارة الحضور والعملية التعليمية في معهد طيبة العالي.",
     images: ["/og-image.png"],
   },
+  category: "education",
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#2563eb",
 };
 
 export default function RootLayout({
@@ -94,16 +104,23 @@ export default function RootLayout({
     name: "معهد طيبة العالي - Thebes Academy",
     alternateName: ["معهد طيبة", "Thebes Higher Institute", "أكاديمية طيبة"],
     url: "https://thebes-academy-portal.vercel.app",
-    logo: "https://thebes-academy-portal.vercel.app/icon.png",
+    logo: "https://thebes-academy-portal.vercel.app/smart-campus-logo.png",
+    image: "https://thebes-academy-portal.vercel.app/og-image.png",
     description: "مؤسسة تعليمية رائدة تقدم برامج أكاديمية متنوعة. نظام الحضور والغياب الذكي للطلاب وأعضاء هيئة التدريس.",
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "EG",
+    },
     sameAs: [
-      "https://thebesacademy.edu.eg/" // Main original site if applicable
+      "https://thebesacademy.edu.eg/"
     ]
   };
 
   return (
-    <html lang="ar" dir="ltr" className="scroll-smooth" data-scroll-behavior="smooth">
+    <html lang="ar" dir="rtl" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
