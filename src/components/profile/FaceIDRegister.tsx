@@ -7,7 +7,6 @@ import {
   Shield,
   CheckCircle,
   AlertCircle,
-  Loader2,
   ScanFace,
   RefreshCw,
 } from "lucide-react";
@@ -20,6 +19,8 @@ interface FaceIDRegisterProps {
   isRegistered?: boolean;
   onComplete?: () => void;
 }
+
+type ScanStep = "CENTER" | "LEFT" | "RIGHT" | "DONE";
 
 export default function FaceIDRegister({
   isRegistered = false,
@@ -35,13 +36,16 @@ export default function FaceIDRegister({
     | "ALREADY_REGISTERED"
     | "ERROR"
   >(isRegistered ? "ALREADY_REGISTERED" : "IDLE");
+  const [scanStep, setScanStep] = useState<ScanStep>("CENTER");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { success, error: toastError } = useToast();
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const descriptorsRef = useRef<Float32Array[]>([]);
+  const isScanningRef = useRef(false);
+
+  const { success, error: toastError } = useToast();
   const MODELS_URL = "/models";
   const [stream, setStream] = useState<MediaStream | null>(null);
-
   const [forceReconfigure, setForceReconfigure] = useState(false);
 
   useEffect(() => {
@@ -52,16 +56,25 @@ export default function FaceIDRegister({
 
   useEffect(() => {
     return () => {
+      isScanningRef.current = false;
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [stream]);
 
+  // Start continuous scanning when video is ready
   useEffect(() => {
     if (status === "CAPTURING" && videoRef.current && stream) {
       videoRef.current.srcObject = stream;
+      videoRef.current.onloadedmetadata = () => {
+        // Start the scanning loop automatically
+        startScanningLoop();
+      };
+    } else {
+      isScanningRef.current = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, stream]);
 
   const loadModels = async () => {
@@ -74,9 +87,7 @@ export default function FaceIDRegister({
     } catch (err) {
       console.error("Model loading error:", err);
       setStatus("ERROR");
-      setErrorMsg(
-        "Failed to load biometric models. Please check your connection."
-      );
+      setErrorMsg("Failed to load biometric models. Please check your connection.");
     }
   };
 
@@ -94,27 +105,73 @@ export default function FaceIDRegister({
     }
   };
 
-  const captureAndRegister = async () => {
-    if (!videoRef.current) return;
+  const startScanningLoop = async () => {
+    isScanningRef.current = true;
+    descriptorsRef.current = [];
+    setScanStep("CENTER");
 
-    try {
-      const detection = await faceapi
-        .detectSingleFace(videoRef.current)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+    const scan = async () => {
+      if (!isScanningRef.current || !videoRef.current) return;
 
-      if (!detection) {
-        toastError("No face detected. Please align your face within the frame.");
-        return;
+      try {
+        const detection = await faceapi
+          .detectSingleFace(videoRef.current)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if (detection) {
+          const jawOutline = detection.landmarks.getJawOutline();
+          const nose = detection.landmarks.getNose()[3];
+          const leftEdge = jawOutline[0].x;
+          const rightEdge = jawOutline[16].x;
+          const faceWidth = rightEdge - leftEdge;
+          const noseRatio = (nose.x - leftEdge) / faceWidth;
+
+          const count = descriptorsRef.current.length;
+
+          if (count === 0 && noseRatio >= 0.4 && noseRatio <= 0.6) {
+            descriptorsRef.current.push(detection.descriptor);
+            setScanStep("LEFT");
+          } else if (count === 1 && noseRatio > 0.65) {
+            descriptorsRef.current.push(detection.descriptor);
+            setScanStep("RIGHT");
+          } else if (count === 2 && noseRatio < 0.35) {
+            descriptorsRef.current.push(detection.descriptor);
+            setScanStep("DONE");
+            isScanningRef.current = false;
+            await finishRegistration();
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Scan error", err);
       }
 
-      setStatus("PROCESSING");
+      if (isScanningRef.current) {
+        setTimeout(scan, 300); // 300ms interval to avoid CPU overload
+      }
+    };
+    scan();
+  };
 
-      const res = await registerFaceAction(Array.from(detection.descriptor));
+  const finishRegistration = async () => {
+    setStatus("PROCESSING");
+    try {
+      // Average the 3 descriptors for high accuracy
+      const avgDescriptor = new Float32Array(128);
+      for (let i = 0; i < 128; i++) {
+        avgDescriptor[i] =
+          (descriptorsRef.current[0][i] +
+            descriptorsRef.current[1][i] +
+            descriptorsRef.current[2][i]) /
+          3;
+      }
+
+      const res = await registerFaceAction(Array.from(avgDescriptor));
 
       if (res.success) {
         setStatus("SUCCESS");
-        success("FaceID registered successfully!");
+        success("FaceID configured securely!");
 
         if (stream) {
           stream.getTracks().forEach((track) => track.stop());
@@ -125,19 +182,19 @@ export default function FaceIDRegister({
           if (onComplete) onComplete();
         }, 2000);
       } else {
-        setStatus("CAPTURING");
         throw new Error(res.error);
       }
     } catch (err: unknown) {
       console.error("Registration error:", err);
-      setStatus("CAPTURING");
-      const errorMessage =
-        err instanceof Error ? err.message : "Face registration failed";
+      const errorMessage = err instanceof Error ? err.message : "Face registration failed";
       toastError(errorMessage);
+      
+      // Reset state and try again
+      setStatus("CAPTURING");
+      startScanningLoop();
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -146,7 +203,6 @@ export default function FaceIDRegister({
 
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/50 shadow-2xl overflow-hidden relative">
-      {/* Decorative background glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-32 bg-indigo-500/20 dark:bg-indigo-500/10 blur-[100px] pointer-events-none" />
 
       <div className="p-6 border-b border-gray-100/50 dark:border-gray-700/50 flex items-center gap-3 relative z-10">
@@ -219,7 +275,7 @@ export default function FaceIDRegister({
               <p className="text-gray-600 dark:text-gray-300 font-semibold animate-pulse text-lg">
                 {status === "LOADING_MODELS"
                   ? "Initializing Neural Engine..."
-                  : "Analyzing Facial Topology..."}
+                  : "Finalizing Biometric Profile..."}
               </p>
             </motion.div>
           )}
@@ -279,28 +335,10 @@ export default function FaceIDRegister({
                       playsInline
                       className="w-full h-full object-cover mirror"
                     />
-                    {/* The new Premium Biometric Overlay */}
-                    <BiometricOverlay status={status} />
+                    <BiometricOverlay status={status} scanStep={scanStep} />
                   </>
                 )}
               </div>
-
-              {status === "CAPTURING" && (
-                <div className="space-y-4 w-full">
-                  <div className="bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-xl p-4 text-center">
-                    <p className="text-sm font-medium text-indigo-800 dark:text-indigo-300">
-                      Align your face within the scanning ring
-                    </p>
-                  </div>
-                  <button
-                    onClick={captureAndRegister}
-                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all flex items-center justify-center gap-2 text-lg"
-                  >
-                    <ScanFace className="w-6 h-6" />
-                    Verify Identity
-                  </button>
-                </div>
-              )}
             </motion.div>
           )}
 
