@@ -53,12 +53,20 @@ export class FaceService {
 
       const requiredModels = [
         "ssd_mobilenetv1_model-weights_manifest.json",
+        "ssd_mobilenetv1_model-shard1",
+        "ssd_mobilenetv1_model-shard2",
         "face_landmark_68_model-weights_manifest.json",
+        "face_landmark_68_model-shard1",
         "face_recognition_model-weights_manifest.json",
+        "face_recognition_model-shard1",
+        "face_recognition_model-shard2",
       ];
 
       const missingModels = requiredModels.filter(
-        (m) => !fs.existsSync(path.join(this.MODELS_PATH, m)),
+        (m) => {
+          const filePath = path.join(this.MODELS_PATH, m);
+          return !fs.existsSync(filePath) || fs.statSync(filePath).size === 0;
+        }
       );
 
       if (missingModels.length > 0) {

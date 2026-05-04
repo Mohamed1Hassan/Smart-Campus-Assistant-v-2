@@ -16,6 +16,7 @@ const modelsToDownload = [
     // Face Recognition
     "face_recognition_model-weights_manifest.json",
     "face_recognition_model-shard1",
+    "face_recognition_model-shard2",
 ];
 
 if (!fs.existsSync(TARGET_DIR)) {
