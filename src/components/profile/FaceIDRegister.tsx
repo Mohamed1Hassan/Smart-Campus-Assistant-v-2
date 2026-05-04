@@ -42,11 +42,13 @@ export default function FaceIDRegister({
   const MODELS_URL = "/models";
   const [stream, setStream] = useState<MediaStream | null>(null);
 
+  const [forceReconfigure, setForceReconfigure] = useState(false);
+
   useEffect(() => {
-    if (isRegistered && status === "IDLE") {
+    if (isRegistered && status === "IDLE" && !forceReconfigure) {
       setStatus("ALREADY_REGISTERED");
     }
-  }, [isRegistered, status]);
+  }, [isRegistered, status, forceReconfigure]);
 
   useEffect(() => {
     return () => {
@@ -356,7 +358,10 @@ export default function FaceIDRegister({
                 </p>
               </div>
               <button
-                onClick={() => setStatus("IDLE")}
+                onClick={() => {
+                  setForceReconfigure(true);
+                  setStatus("IDLE");
+                }}
                 className="w-full py-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-2xl font-bold transition-all mt-4"
               >
                 Reconfigure FaceID
