@@ -538,117 +538,98 @@ class AttendanceService {
 
   /**
    * Scan QR Code and mark attendance with security checks
+   * OPTIMIZED for high concurrency (2000+ students)
    */
+  private static sessionCache = new Map<string, { data: any, timestamp: number }>();
+  private static CACHE_TTL = 30000; // 30 seconds
+
   async scanQRCode(data: ScanQRCodeData) {
-    const { userId, sessionId, qrCode, location, deviceFingerprint, photo } =
-      data;
+    const { userId, sessionId, qrCode, location, deviceFingerprint, photo } = data;
+    const now = Date.now();
 
-    // 1. Fetch Session & User
-    let session = await prisma.attendanceSession.findUnique({
-      where: { id: sessionId },
-      include: { course: true },
-    });
-
-    // Fallback: If sessionId didn't work, try searching by qrCode field
-    if (!session && qrCode) {
-      session = await prisma.attendanceSession.findFirst({
-        where: { qrCode: qrCode },
+    // 1. Get Session Data (Cached to prevent DB hammering)
+    let session = AttendanceService.sessionCache.get(sessionId)?.data;
+    if (!session || (now - (AttendanceService.sessionCache.get(sessionId)?.timestamp || 0) > AttendanceService.CACHE_TTL)) {
+      session = await prisma.attendanceSession.findUnique({
+        where: { id: sessionId },
         include: { course: true },
       });
+      if (session) {
+        AttendanceService.sessionCache.set(sessionId, { data: session, timestamp: now });
+      }
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { major: true, level: true },
-    });
-
     if (!session) throw new Error("Session not found");
-    if (!user) throw new Error("User not found");
     if (session.status !== "ACTIVE") throw new Error("Session is not active");
-    
-    // Validate QR code - handle both plain string and JSON string from student scan
+
+    // 2. Immediate QR Validation (No DB call needed)
     let providedCode = qrCode;
     try {
       if (qrCode.startsWith("{")) {
         const parsed = JSON.parse(qrCode);
         if (parsed.qrCode) providedCode = parsed.qrCode;
       }
-    } catch (e) {
-      // Not a JSON or invalid JSON, use as is
-    }
-
+    } catch (e) {}
     if (session.qrCode !== providedCode) throw new Error("Invalid QR code");
 
-    // Check authorization: Major/Level match OR Active Enrollment
-    const isEnrolled = await prisma.courseEnrollment.findFirst({
-      where: {
-        studentId: userId,
-        courseId: session.courseId,
-        status: "ACTIVE",
-      },
-    });
-
-    const isMatch =
-      session.course.major === user.major &&
-      session.course.level === user.level;
-
-    if (!isEnrolled && !isMatch) {
-      throw new Error(
-        "You are not authorized to mark attendance for this course",
-      );
-    }
-
-    // 2. Check if already marked
-    const existingRecord = await prisma.attendanceRecord.findFirst({
-      where: { sessionId, studentId: userId },
-    });
-    if (existingRecord) throw new Error("Attendance already marked");
-
-    const security =
-      (session.securitySettings as unknown as SecuritySettings) || {};
-
-    // 3. Device Verification
-    if (security.requireDeviceCheck && deviceFingerprint) {
-      const registeredDevice = await prisma.deviceFingerprint.findFirst({
-        where: {
-          studentId: userId,
-          fingerprint: deviceFingerprint,
-          isActive: true,
+    // 3. Consolidated User Fetch: Profile + Enrollment + Device in ONE DB call
+    const userData = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        major: true,
+        level: true,
+        faceDescriptor: true,
+        enrollments: {
+          where: { courseId: session.courseId, status: "ACTIVE" },
+          take: 1
         },
-      });
-      if (!registeredDevice) {
-        throw new Error("Device not registered for this student");
+        deviceFingerprints: {
+          where: { isActive: true },
+          select: { fingerprint: true }
+        },
+        attendanceRecords: {
+          where: { sessionId: session.id },
+          take: 1
+        }
       }
+    });
+
+    if (!userData) throw new Error("User not found");
+    if (userData.attendanceRecords.length > 0) throw new Error("Attendance already marked");
+
+    // 4. Authorization Check
+    const isEnrolled = userData.enrollments.length > 0;
+    const isMatch = session.course.major === userData.major && session.course.level === userData.level;
+    if (!isEnrolled && !isMatch) {
+      throw new Error("You are not authorized to mark attendance for this course");
     }
 
-    // 4. Face Verification
-    if (security.requirePhoto && photo) {
-      const student = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { faceDescriptor: true },
-      });
+    const security = (session.securitySettings as unknown as SecuritySettings) || {};
 
-      if (student?.faceDescriptor) {
+    // 5. Device Verification
+    if (security.requireDeviceCheck && deviceFingerprint) {
+      const isDeviceValid = userData.deviceFingerprints.some(d => d.fingerprint === deviceFingerprint);
+      if (!isDeviceValid) throw new Error("Device not registered for this student");
+    }
+
+    // 6. Face Verification (Heavy CPU - Only if enabled)
+    if (security.requirePhoto && photo) {
+      if (userData.faceDescriptor) {
         const faceResult = await FaceService.verifyFace(
           photo,
-          student.faceDescriptor as unknown as number[],
+          userData.faceDescriptor as unknown as number[],
         );
-        if (!faceResult.isMatch) {
-          throw new Error("Face verification failed");
-        }
+        if (!faceResult.isMatch) throw new Error("Face verification failed");
       } else {
         throw new Error("Face ID not registered. Please set up in profile.");
       }
     }
 
-    // 5. Fraud Score Calculation
-    const registeredFingerprints = (
-      await prisma.deviceFingerprint.findMany({
-        where: { studentId: userId, isActive: true },
-        select: { fingerprint: true },
-      })
-    ).map((d) => d.fingerprint);
-
+    // 7. Fraud Score Calculation
+    const registeredFingerprints = userData.deviceFingerprints.map((d) => d.fingerprint);
     const fraudScore = calculateFraudScore({
       location,
       sessionLocation: {
@@ -661,21 +642,7 @@ class AttendanceService {
       sessionEndTime: session.endTime,
     });
 
-    // 6. Log Fraud Alert if necessary
-    if (fraudScore > 70) {
-      await prisma.fraudAlert.create({
-        data: {
-          studentId: userId,
-          sessionId: session.id,
-          alertType: "FRAUD_DETECTED",
-          severity: "HIGH",
-          description: `High fraud score (${fraudScore}) detected during scan.`,
-          metadata: { fraudScore, location, deviceFingerprint },
-        },
-      });
-    }
-
-    // 7. Create attendance record
+    // 8. Create attendance record and optional alert (ONE TRANSACTION if possible, but separate is fine)
     const record = await prisma.attendanceRecord.create({
       data: {
         sessionId: session.id,
@@ -688,25 +655,36 @@ class AttendanceService {
         fraudScore,
       },
       include: {
-        student: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
+        student: { select: { firstName: true, lastName: true } },
       },
     });
 
-    // 8. Emit real-time update
-    socketService.emitAttendanceMarked({
-      sessionId,
-      studentId: String(userId),
-      studentName: `${record.student.firstName} ${record.student.lastName}`,
-      timestamp: new Date(),
-      status: "PRESENT",
-      location: location as any,
-      fraudScore,
-    });
+    // 9. Background Tasks (DO NOT AWAIT - speed up response)
+    if (fraudScore > 70) {
+      prisma.fraudAlert.create({
+        data: {
+          studentId: userId,
+          sessionId: session.id,
+          alertType: "FRAUD_DETECTED",
+          severity: "HIGH",
+          description: `High fraud score (${fraudScore}) detected during scan.`,
+          metadata: { fraudScore, location, deviceFingerprint },
+        },
+      }).catch(err => console.error("Async FraudAlert failed", err));
+    }
+
+    // Async socket emission
+    setTimeout(() => {
+      socketService.emitAttendanceMarked({
+        sessionId,
+        studentId: String(userId),
+        studentName: `${record.student.firstName} ${record.student.lastName}`,
+        timestamp: new Date(),
+        status: "PRESENT",
+        location: location as any,
+        fraudScore,
+      });
+    }, 0);
 
     return record;
   }
