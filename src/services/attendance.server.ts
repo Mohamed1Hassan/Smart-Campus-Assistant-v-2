@@ -631,7 +631,11 @@ class AttendanceService {
     // 7. Fraud Score Calculation
     const registeredFingerprints = userData.deviceFingerprints.map((d) => d.fingerprint);
     const fraudScore = calculateFraudScore({
-      location,
+      location: location ? {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy,
+      } : undefined,
       sessionLocation: {
         ...(session.location as unknown as LocationData),
         radius: security.proximityThreshold || 50,

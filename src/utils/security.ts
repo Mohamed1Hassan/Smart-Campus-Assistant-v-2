@@ -19,7 +19,7 @@ export const calculateDistance = (
 };
 
 export interface FraudScoreData {
-  location?: { latitude: number; longitude: number };
+  location?: { latitude: number; longitude: number; accuracy?: number };
   sessionLocation?: { latitude: number; longitude: number; radius: number };
   deviceFingerprint?: string;
   registeredFingerprints: string[];
@@ -41,7 +41,13 @@ export const calculateFraudScore = (data: FraudScoreData): number => {
       data.sessionLocation.longitude,
     );
 
-    if (distance > data.sessionLocation.radius) {
+    // Fair Geofencing: Distance - Accuracy <= Radius
+    // If accuracy is missing, default to 0
+    const accuracy = data.location.accuracy || 0;
+    const effectiveDistance = Math.max(0, distance - accuracy);
+
+    if (effectiveDistance > data.sessionLocation.radius) {
+      // Scale the score based on how far they are, or just fixed 50
       score += 50;
     }
   }
